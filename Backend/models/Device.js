@@ -1,12 +1,18 @@
 // Author: NTLoc
-// Example from chatGPT
 
 const mongoose = require('mongoose');
 
 const deviceSchema = new mongoose.Schema({
-  name: String,
-  type: String,
-  status: { type: String, default: 'off' },
+  Type: String,
+  Device_status: String,
+  RoomID: {    
+    type: mongoose.Schema.Types.ObjectId,   // key uses ObjectId
+    ref: "Room"
+  },
+  UserID: {    
+    type: mongoose.Schema.Types.ObjectId,   // key uses ObjectId
+    ref: "User"
+  }
 });
 
 module.exports = mongoose.model('Device', deviceSchema);
