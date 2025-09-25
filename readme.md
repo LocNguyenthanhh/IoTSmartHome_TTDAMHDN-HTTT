@@ -69,8 +69,7 @@ IOTSMARTHOME_TTDAMHDN-HTTT/
 ## ⚡ Cài đặt & Chạy
 1. **Clone** dự án:
    ```bash
-   git clone <repo_url>
-   cd project
+   git clone https://github.com/LocNguyenthanhh/IoTSmartHome_TTDAMHDN-HTTT.git
 2. **Cài dependencies**:
     npm install
 
