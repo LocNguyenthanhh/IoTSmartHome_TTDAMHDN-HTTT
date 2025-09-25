@@ -69,17 +69,15 @@ IOTSMARTHOME_TTDAMHDN-HTTT/
 ## ⚡ Cài đặt & Chạy
 1. **Clone** dự án:
    ```bash
-   git clone <repo_url>
-   cd project
-2. **Cài dependencies**:
-    npm install
+   git clone https://github.com/LocNguyenthanhh/IoTSmartHome_TTDAMHDN-HTTT.git
 
-3. **Tạo file .env** (ví dụ):
-    MONGO_URI=mongodb://localhost:27017/IoTSmartHome
-    ADAFRUIT_KEY=your_adafruit_key
-    PORT=3000
+2. **Cài dependencies**:
+    npm install requirements.txt
+
+3. **Tạo file .env**:
+
 
 4. **Chạy server**:
     npm run dev
 Hoặc:
-    node server.js
+    node Backend\server.js

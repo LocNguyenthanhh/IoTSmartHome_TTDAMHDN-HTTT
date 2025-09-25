@@ -1,0 +1,23 @@
+{
+  "name": "iotsmarthome_ttdamhdn-httt",
+  "version": "1.0.0",
+  "description": "Dự án demo hệ thống **Cloud Server** dùng **Node.js + MongoDB + Adafruit IO**  \r để quản lý dữ liệu từ thiết bị IoT và gửi lệnh điều khiển.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LocNguyenthanhh/IoTSmartHome_TTDAMHDN-HTTT.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LocNguyenthanhh/IoTSmartHome_TTDAMHDN-HTTT/issues"
+  },
+  "homepage": "https://github.com/LocNguyenthanhh/IoTSmartHome_TTDAMHDN-HTTT#readme",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
