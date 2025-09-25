@@ -75,7 +75,7 @@ IOTSMARTHOME_TTDAMHDN-HTTT/
 
 3. **Tạo file .env**:
     MONGO_URI=mongodb://localhost:27017/IoTSmartHome
-    PORT=3000
+    PORT=27017 
 
     ADAFRUIT_AIO_USERNAME = "NTLoc"
     ADAFRUIT_AIO_KEY      = "aio_hDTi82luasd9t9StQRX6vZZFo2rD"
