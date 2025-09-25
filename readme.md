@@ -70,14 +70,13 @@ IOTSMARTHOME_TTDAMHDN-HTTT/
 1. **Clone** dự án:
    ```bash
    git clone https://github.com/LocNguyenthanhh/IoTSmartHome_TTDAMHDN-HTTT.git
-
 2. **Cài dependencies**:
-    npm install requirements.txt
+    npm install
 
-3. **Tạo file .env**:
-    MONGO_URI="mongodb://127.0.0.1:27017/IoTSmartHome"
-
-    PORT=27017
+3. **Tạo file .env** (ví dụ):
+    MONGO_URI=mongodb://localhost:27017/IoTSmartHome
+    ADAFRUIT_KEY=your_adafruit_key
+    PORT=3000
 
 4. **Chạy server**:
     npm run dev
