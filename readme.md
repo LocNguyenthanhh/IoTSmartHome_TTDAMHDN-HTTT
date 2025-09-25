@@ -73,10 +73,13 @@ IOTSMARTHOME_TTDAMHDN-HTTT/
 2. **Cài dependencies**:
     npm install
 
-3. **Tạo file .env** (ví dụ):
+3. **Tạo file .env**:
     MONGO_URI=mongodb://localhost:27017/IoTSmartHome
-    ADAFRUIT_KEY=your_adafruit_key
     PORT=3000
+
+    ADAFRUIT_AIO_USERNAME = "NTLoc"
+    ADAFRUIT_AIO_KEY      = "aio_hDTi82luasd9t9StQRX6vZZFo2rD"
+    AIO_LED_KEY           = "bbc-led"
 
 4. **Chạy server**:
     npm run dev
