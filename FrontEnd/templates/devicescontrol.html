@@ -328,11 +328,11 @@
             
         </div>
         <div class="device-grid active">
-            <div class="card active" data-device-id="1">
+            <div class="card active" data-device-id="68d6fa31e49fe3e1ff224306">
                 <div class="top-row">
                     <span class="icon">💡</span>
                     <label class="toggle-switch">
-                        <input type="checkbox" checked onchange="toggleSwitch(this, 1)">
+                        <input type="checkbox" checked onchange="toggleSwitch(this, '68d6fa31e49fe3e1ff224306')">
                         <span class="toggle-slider"></span>
                     </label>
                 </div>
@@ -354,11 +354,11 @@
                     <div class="device-brand">Panasonic</div>
                 </div>
             </div>
-            <div class="card active" data-device-id="3">
+            <div class="card" data-device-id="3">
                 <div class="top-row">
                     <span class="icon">📶</span>
                     <label class="toggle-switch">
-                        <input type="checkbox" checked onchange="toggleSwitch(this, 3)">
+                        <input type="checkbox" onchange="toggleSwitch(this, 3)">
                         <span class="toggle-slider"></span>
                     </label>
                 </div>
@@ -401,7 +401,6 @@
         </div>
         <a href="#" class="add-btn" onclick="showAddForm()">Add</a>
     </div>
-
     <script>
         function toggleSwitch(checkbox, deviceId) {
             const card = checkbox.closest('.card');
@@ -411,7 +410,23 @@
             } else {
                 card.classList.remove('active');
             }
-            console.log(`Device ${deviceId} updated to ${isActive ? 'ON' : 'OFF'}`);
+            console.log(`Device updated to ${isActive ? 'ON' : 'OFF'} by toggle`);
+
+            // Gửi request POST tới Flask
+            fetch("/toggle_device", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: deviceId, state: isActive })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success){
+                    console.log(`Server updated device ${deviceId} successfully`);
+                } else {
+                    console.error(`Failed to update device ${deviceId}:`, data.message);
+                }
+            })
+            .catch(err => console.error("Error sending toggle:", err));
         }
 
         function showAddForm() {
@@ -438,5 +453,25 @@
             cancelAdd();
         }
     </script>
+    <script src="//cdn.socket.io/4.5.1/socket.io.min.js"></script>
+    <script>
+        
+        const socket = io('http://127.0.0.1:5000');
+        socket.on('deviceUpdated', (device) => {
+            console.log('Device updated:', device);
+            const el = document.querySelector(`[data-device-id="${device.id}"]`);
+            if (el) {
+                const checkbox = el.querySelector('input[type="checkbox"]');
+                checkbox.checked = device.state;
+                if(device.state){
+                    el.classList.add('active');
+                } else {
+                    el.classList.remove('active');
+                }
+            }
+        });
+        
+    </script>
+
 </body>
 </html>

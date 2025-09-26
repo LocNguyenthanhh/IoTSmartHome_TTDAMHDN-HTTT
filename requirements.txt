@@ -7,3 +7,5 @@ morgan
 nodemon
 adafruit-io
 flask
+axios
+mqtt
