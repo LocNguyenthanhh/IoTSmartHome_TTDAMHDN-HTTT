@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Control</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            font-size: 14px;
+            position: relative;
+            overflow-y: auto;
+        }
+        .container {
+            max-width: 393px;
+            width: 100%;
+            margin: 0 auto;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            box-sizing: border-box;
+            padding-top: 110px;
+        }
+        .header {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            padding: 5px 10px;
+            color: #000;
+            height: 60px;
+            position: fixed;
+            top: 40px;
+            left: 0;
+            z-index: 10;
+            border: none;
+            box-shadow: none;
+        }
+        .header .icon-row {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            align-items: center;
+            margin-bottom: 2px;
+        }
+        .header .back {
+            font-size: 25px;
+            cursor: pointer;
+            padding-left: 25px;
+        }
+        .header .title {
+            font-size: 30px;
+            font-weight: bold;
+            font-style: italic;
+            text-align: center;
+            width: 100;
+        }
+        .header .home {
+            font-size: 25px;
+            cursor: pointer;
+            padding-right: 35px;
+        }
+        .nav-tabs {
+            display: flex;
+            justify-content: flex-start;
+            width: 100%;
+            padding: 10px 15px;
+            color: #8e8e93;
+            font-size: 14.5px;
+            overflow-x: auto; /* Cho phép cuộn ngang */
+            white-space: nowrap; /* Ngăn các tab xuống dòng */
+            height: 60px;
+            position: fixed;
+            top: 130px;
+            z-index: 10;
+            border-bottom: 1px solid #e5e5e7;
+            box-sizing: border-box;
+            -webkit-overflow-scrolling: touch; /* Hỗ trợ cuộn mượt trên iOS */
+        }
+        .nav-tabs::-webkit-scrollbar {
+            display: none; /* Ẩn thanh cuộn trên Webkit (Chrome, Safari) */
+        }
+        .nav-tabs span {
+            margin-right: 20px;
+            cursor: pointer;
+            padding: 5px 10px;
+            transition: color 0.3s;
+        }
+        .nav-tabs span:hover {
+            color: #000;
+        }
+        .nav-tabs .active {
+            color: #000;
+            font-weight: 600;
+            border-bottom: 2px solid #007aff;
+        }
+        .device-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-gap: 10px;
+            width: 100%;
+            max-width: 360px;
+            margin: 190px auto 20px;
+            padding: 0 10px;
+            box-sizing: border-box;
+            border: none;
+            display: none; /* Ẩn mặc định, chỉ hiển thị khi không ở chế độ add */
+        }
+        .device-grid.active {
+            display: grid;
+        }
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 180px;
+            box-sizing: border-box;
+            transition: all 0.3s;
+            border: 1px solid #000;
+            border-radius: 15px;
+            position: relative;
+        }
+        .card.active {
+            background: #007aff;
+            color: #fff;
+            border: none;
+        }
+        .card .icon {
+            font-size: 30px;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        .top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: auto;
+        }
+        .card-content {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-top: auto;
+        }
+        .device-type {
+            font-size: 22px;
+            font-weight: 600;
+            margin: 0 0 2px 0;
+            word-wrap: break-word;
+        }
+        .device-brand {
+            font-size: 18px;
+            color: #8e8e93;
+            margin: 0;
+            word-wrap: break-word;
+        }
+        .card.active .device-brand {
+            color: rgba(255,255,255,0.8);
+        }
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #e5e5e7;
+            transition: 0.4s;
+            border-radius: 12px;
+        }
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 2px;
+            bottom: 2px;
+            background-color: #fff;
+            transition: 0.4s;
+            border-radius: 50%;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        input:checked + .toggle-slider {
+            background-color: #669BF7;
+        }
+        input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+            background-color: #fff;
+        }
+        .add-device-form {
+            weight:320px;
+            height: auto;;
+            padding: 20px;
+            background-color: #BFECF5;
+            border-radius: 12px;
+            margin: 20px 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: none; /* Ẩn mặc định, chỉ hiển thị khi thêm thiết bị */
+            position: relative;
+            top: 100px; /* Thêm khoảng cách từ nav-tabs */
+        }
+        .add-device-form.active {
+            display: flex;
+            flex-direction: column;
+            gap: 10px; /* Khoảng cách đều giữa các mục */
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 2px; /* Giảm khoảng cách giữa label và input */
+        }
+        .form-group:first-child {
+            margin-top: 0; /* Loại bỏ margin-top cho mục đầu tiên */
+        }
+        .form-group label {
+            font-size: 18px;
+            color: #333;
+            font-weight: bold;
+        }
+        .form-group input {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #e5e5e7;
+            border-radius: 8px;
+            outline: none;
+        }
+        .form-group input:focus {
+            border-color: #007aff;
+        }
+        .buttons {
+            margin-top: 10px; /* Khoảng cách đều với mục trên */
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+        }
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            flex: 1;
+            transition: background-color 0.3s;
+        }
+        .btn-save {
+            background-color: #DD1010;
+            color: #ffffff;
+        }
+        .btn-save:hover {
+            background-color: #f57e7e;
+        }
+        .btn-cancel {
+            background-color: #4CAF50;
+            color: #fff;
+        }
+        .btn-cancel:hover {
+            background-color: #45a049;
+        }
+        .add-btn {
+            width: 60px;
+            height: 60px;
+            background: #C0DBF3;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgb(0, 0, 0);
+            font-size: 18px; /* Giảm font-size để vừa với nút */
+            font-weight: bold;
+            line-height: 60px; /* Căn giữa theo chiều cao nút */
+            text-align: center;
+            text-decoration: none;
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 20px;
+            box-shadow: 0 6px 12px rgba(192, 219, 243, 0.4);
+            border: none;
+            transition: opacity 0.3s;
+            z-index: 5;
+            display: block; /* Hiển thị mặc định */
+        }
+        .add-btn.hidden {
+            display: none; /* Ẩn khi form hiển thị */
+        }
+        .add-btn:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="icon-row">
+                <span class="back">&lt;</span>
+                <span class="home">🏠</span>
+            </div>
+            <span class="title">Devices Control</span>
+        </div>
+        <div class="nav-tabs">
+            <span class="active">Living Room</span>
+            <span>Bedroom</span>
+            <span>Bathroom</span>
+            <span>Kitchen-Dining</span>
+            
+        </div>
+        <div class="device-grid active">
+            <div class="card active" data-device-id="1">
+                <div class="top-row">
+                    <span class="icon">💡</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked onchange="toggleSwitch(this, 1)">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="card-content">
+                    <div class="device-type">Light bulbs</div>
+                    <div class="device-brand">Philips Hue</div>
+                </div>
+            </div>
+            <div class="card" data-device-id="2">
+                <div class="top-row">
+                    <span class="icon">📺</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" onchange="toggleSwitch(this, 2)">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="card-content">
+                    <div class="device-type">Smart TV</div>
+                    <div class="device-brand">Panasonic</div>
+                </div>
+            </div>
+            <div class="card active" data-device-id="3">
+                <div class="top-row">
+                    <span class="icon">📶</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked onchange="toggleSwitch(this, 3)">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="card-content">
+                    <div class="device-type">Wi-Fi Router</div>
+                    <div class="device-brand">TP Link</div>
+                </div>
+            </div>
+            <div class="card" data-device-id="4">
+                <div class="top-row">
+                    <span class="icon">📹</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" onchange="toggleSwitch(this, 4)">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="card-content">
+                    <div class="device-type">CCTV</div>
+                    <div class="device-brand">Security Camera 360°</div>
+                </div>
+            </div>
+        </div>
+        <div class="add-device-form">
+            <div class="form-group">
+                <label for="device-type">Device Type</label>
+                <input type="text" id="device-type" placeholder="Enter device type">
+            </div>
+            <div class="form-group">
+                <label for="device-id">Device ID</label>
+                <input type="text" id="device-id" placeholder="Enter device ID">
+            </div>
+            <!-- <div class="form-group">
+                <label for="brand">Brand</label>
+                <input type="text" id="brand" placeholder="Enter brand">
+            </div> -->
+            <div class="buttons">
+                <button class="btn btn-save" onclick="saveDevice()">Save</button>
+                <button class="btn btn-cancel" onclick="cancelAdd()">Cancel</button>
+            </div>
+        </div>
+        <a href="#" class="add-btn" onclick="showAddForm()">Add</a>
+    </div>
+
+    <script>
+        function toggleSwitch(checkbox, deviceId) {
+            const card = checkbox.closest('.card');
+            const isActive = checkbox.checked;
+            if (isActive) {
+                card.classList.add('active');
+            } else {
+                card.classList.remove('active');
+            }
+            console.log(`Device ${deviceId} updated to ${isActive ? 'ON' : 'OFF'}`);
+        }
+
+        function showAddForm() {
+            document.querySelector('.device-grid').classList.remove('active');
+            document.querySelector('.add-device-form').classList.add('active');
+            document.querySelector('.header .title').textContent = 'Add Device';
+            document.querySelector('.add-btn').classList.add('hidden'); // Ẩn nút Add
+        }
+
+        function cancelAdd() {
+            document.querySelector('.add-device-form').classList.remove('active');
+            document.querySelector('.device-grid').classList.add('active');
+            document.querySelector('.header .title').textContent = 'Devices Control';
+            document.querySelector('.add-btn').classList.remove('hidden'); // Hiện lại nút Add
+            // Reset form
+            document.getElementById('device-type').value = '';
+            document.getElementById('device-type').value = '';
+            document.getElementById('brand').value = '';
+        }
+
+        function saveDevice() {
+            // Logic lưu thiết bị (giả lập)
+            alert('Device saved! (Mockup)');
+            cancelAdd();
+        }
+    </script>
+</body>
+</html>
