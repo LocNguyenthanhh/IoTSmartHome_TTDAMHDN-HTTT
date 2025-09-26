@@ -71,7 +71,7 @@ IOTSMARTHOME_TTDAMHDN-HTTT/
    ```bash
    git clone https://github.com/LocNguyenthanhh/IoTSmartHome_TTDAMHDN-HTTT.git
 2. **Cài dependencies**:
-    npm install
+    npm install requirement.txt
 
 3. **Tạo file .env**:
     MONGO_URI=mongodb://localhost:27017/IoTSmartHome
