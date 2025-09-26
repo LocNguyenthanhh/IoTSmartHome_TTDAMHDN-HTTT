@@ -72,13 +72,14 @@ IOTSMARTHOME_TTDAMHDN-HTTT/
    git clone https://github.com/LocNguyenthanhh/IoTSmartHome_TTDAMHDN-HTTT.git
 2. **Cài dependencies**:
     npm install requirement.txt
+    pip install flask jsonify requests flask_socketio
 
 3. **Tạo file .env**:
-    MONGO_URI=mongodb://localhost:27017/IoTSmartHome
+    MONGO_URI= "MONGO_URI=mongodb://127.0.0.1:27017/IoTSmartHome"
     PORT=27017 
 
     ADAFRUIT_AIO_USERNAME = "NTLoc"
-    ADAFRUIT_AIO_KEY      = "aio_hDTi82luasd9t9StQRX6vZZFo2rD"
+    ADAFRUIT_AIO_KEY      = "aio_LcQP69TGeY6Akc5h8zxbuUzQv4JQ"
     AIO_LED_KEY           = "bbc-led"
 
 4. **Chạy server**:

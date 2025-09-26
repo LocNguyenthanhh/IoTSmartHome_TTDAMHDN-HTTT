@@ -18,6 +18,9 @@
   },
   "homepage": "https://github.com/LocNguyenthanhh/IoTSmartHome_TTDAMHDN-HTTT#readme",
   "dependencies": {
-    "express": "^5.1.0"
+    "axios": "^1.12.2",
+    "express": "^5.1.0",
+    "mqtt": "^5.14.1",
+    "uuid": "^13.0.0"
   }
 }
