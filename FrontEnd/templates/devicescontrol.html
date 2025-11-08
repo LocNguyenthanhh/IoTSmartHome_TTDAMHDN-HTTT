@@ -341,12 +341,12 @@
             <span onclick="filterDevices('Bathroom')">Bathroom</span>
             <span onclick="filterDevices('Kitchen')">Kitchen</span>
         </div>
-        <div class="device-grid active" id="deviceGrid">
-            <div class="card active" data-device-id="1" data-room="Living Room">
+        <div class="device-grid active">
+            <div class="card active" data-device-id="1">
                 <div class="top-row">
                     <span class="icon">💡</span>
                     <label class="toggle-switch">
-                        <input type="checkbox" checked onchange="toggleSwitch(this, '1')">
+                        <input type="checkbox" checked onchange="toggleSwitch(this, 1)">
                         <span class="toggle-slider"></span>
                     </label>
                 </div>
@@ -376,11 +376,11 @@
                     <button class="btn-action" onclick="deleteDevice('2')">Delete</button>
                 </div>
             </div>
-            <div class="card active" data-device-id="3" data-room="Bedroom">
+            <div class="card active" data-device-id="3">
                 <div class="top-row">
                     <span class="icon">📶</span>
                     <label class="toggle-switch">
-                        <input type="checkbox" checked onchange="toggleSwitch(this, '3')">
+                        <input type="checkbox" checked onchange="toggleSwitch(this, 3)">
                         <span class="toggle-slider"></span>
                     </label>
                 </div>
@@ -435,7 +435,6 @@
         </div>
         <a href="#" class="add-btn" onclick="showAddForm()">Add</a>
     </div>
-
     <script>
         // Map device types to icons (case-insensitive)
         const deviceIcons = {
@@ -453,7 +452,23 @@
             } else {
                 card.classList.remove('active');
             }
-            console.log(`Device ${deviceId} updated to ${isActive ? 'ON' : 'OFF'}`);
+            console.log(`Device updated to ${isActive ? 'ON' : 'OFF'} by toggle`);
+
+            // Gửi request POST tới Flask
+            fetch("/toggle_device", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: deviceId, state: isActive })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success){
+                    console.log(`Server updated device ${deviceId} successfully`);
+                } else {
+                    console.error(`Failed to update device ${deviceId}:`, data.message);
+                }
+            })
+            .catch(err => console.error("Error sending toggle:", err));
         }
 
         function showAddForm() {
@@ -622,5 +637,25 @@
             }
         }
     </script>
+    <script src="//cdn.socket.io/4.5.1/socket.io.min.js"></script>
+    <script>
+        
+        const socket = io('http://127.0.0.1:5000');
+        socket.on('deviceUpdated', (device) => {
+            console.log('Device updated:', device);
+            const el = document.querySelector(`[data-device-id="${device.id}"]`);
+            if (el) {
+                const checkbox = el.querySelector('input[type="checkbox"]');
+                checkbox.checked = device.state;
+                if(device.state){
+                    el.classList.add('active');
+                } else {
+                    el.classList.remove('active');
+                }
+            }
+        });
+        
+    </script>
+
 </body>
 </html>

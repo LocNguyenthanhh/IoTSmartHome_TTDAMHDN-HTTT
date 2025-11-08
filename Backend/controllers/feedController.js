@@ -1,6 +1,6 @@
 // Backend/controllers/feedController.js
-const { getFeedData, sendFeedData } = require('../services/adafruitService');
-const Dialog = require('../models/Dialog');
+const { getFeedData, sendFeedData } = require('../services/adafruitServices.js');
+const Dialog = require('../models/Dialog.js');
 
 exports.fetchFeedAndSave = async (req, res) => {
   try {
