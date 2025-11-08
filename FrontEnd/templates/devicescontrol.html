@@ -62,7 +62,7 @@
             font-weight: bold;
             font-style: italic;
             text-align: center;
-            width: 100;
+            width: 100%;
         }
         .header .home {
             font-size: 25px;
@@ -76,18 +76,18 @@
             padding: 10px 15px;
             color: #8e8e93;
             font-size: 14.5px;
-            overflow-x: auto; /* Cho phép cuộn ngang */
-            white-space: nowrap; /* Ngăn các tab xuống dòng */
+            overflow-x: auto;
+            white-space: nowrap;
             height: 60px;
             position: fixed;
             top: 130px;
             z-index: 10;
             border-bottom: 1px solid #e5e5e7;
             box-sizing: border-box;
-            -webkit-overflow-scrolling: touch; /* Hỗ trợ cuộn mượt trên iOS */
+            -webkit-overflow-scrolling: touch;
         }
         .nav-tabs::-webkit-scrollbar {
-            display: none; /* Ẩn thanh cuộn trên Webkit (Chrome, Safari) */
+            display: none;
         }
         .nav-tabs span {
             margin-right: 20px;
@@ -113,7 +113,7 @@
             padding: 0 10px;
             box-sizing: border-box;
             border: none;
-            display: none; /* Ẩn mặc định, chỉ hiển thị khi không ở chế độ add */
+            display: none;
         }
         .device-grid.active {
             display: grid;
@@ -122,15 +122,14 @@
             background: #fff;
             border-radius: 12px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            padding: 15px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            height: 180px;
+            height: 140px;
             box-sizing: border-box;
             transition: all 0.3s;
             border: 1px solid #000;
-            border-radius: 15px;
             position: relative;
         }
         .card.active {
@@ -139,15 +138,15 @@
             border: none;
         }
         .card .icon {
-            font-size: 30px;
-            margin-bottom: 8px;
+            font-size: 24px;
+            margin-bottom: 5px;
             text-align: center;
         }
         .top-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: auto;
+            margin-bottom: 5px;
         }
         .card-content {
             display: flex;
@@ -156,13 +155,13 @@
             margin-top: auto;
         }
         .device-type {
-            font-size: 22px;
+            font-size: 18px;
             font-weight: 600;
             margin: 0 0 2px 0;
             word-wrap: break-word;
         }
         .device-brand {
-            font-size: 18px;
+            font-size: 14px;
             color: #8e8e93;
             margin: 0;
             word-wrap: break-word;
@@ -172,8 +171,8 @@
         }
         .toggle-switch {
             position: relative;
-            width: 44px;
-            height: 24px;
+            width: 40px;
+            height: 20px;
         }
         .toggle-switch input {
             opacity: 0;
@@ -189,13 +188,13 @@
             bottom: 0;
             background-color: #e5e5e7;
             transition: 0.4s;
-            border-radius: 12px;
+            border-radius: 10px;
         }
         .toggle-slider:before {
             position: absolute;
             content: "";
-            height: 20px;
-            width: 20px;
+            height: 16px;
+            width: 16px;
             left: 2px;
             bottom: 2px;
             background-color: #fff;
@@ -210,30 +209,46 @@
             transform: translateX(20px);
             background-color: #fff;
         }
+        .card-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+        }
+        .btn-action {
+            background: none;
+            border: none;
+            font-size: 12px;
+            color: #007aff;
+            cursor: pointer;
+            padding: 2px 5px;
+        }
+        .btn-action:hover {
+            color: #0056b3;
+        }
         .add-device-form {
-            weight:320px;
-            height: auto;;
+            width: 320px;
+            height: auto;
             padding: 20px;
             background-color: #BFECF5;
             border-radius: 12px;
             margin: 20px 10px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            display: none; /* Ẩn mặc định, chỉ hiển thị khi thêm thiết bị */
+            display: none;
             position: relative;
-            top: 100px; /* Thêm khoảng cách từ nav-tabs */
+            top: 100px;
         }
         .add-device-form.active {
             display: flex;
             flex-direction: column;
-            gap: 10px; /* Khoảng cách đều giữa các mục */
+            gap: 10px;
         }
         .form-group {
             display: flex;
             flex-direction: column;
-            gap: 2px; /* Giảm khoảng cách giữa label và input */
+            gap: 2px;
         }
         .form-group:first-child {
-            margin-top: 0; /* Loại bỏ margin-top cho mục đầu tiên */
+            margin-top: 0;
         }
         .form-group label {
             font-size: 18px;
@@ -251,7 +266,7 @@
             border-color: #007aff;
         }
         .buttons {
-            margin-top: 10px; /* Khoảng cách đều với mục trên */
+            margin-top: 10px;
             display: flex;
             justify-content: space-between;
             gap: 15px;
@@ -288,9 +303,9 @@
             align-items: center;
             justify-content: center;
             color: rgb(0, 0, 0);
-            font-size: 18px; /* Giảm font-size để vừa với nút */
+            font-size: 18px;
             font-weight: bold;
-            line-height: 60px; /* Căn giữa theo chiều cao nút */
+            line-height: 60px;
             text-align: center;
             text-decoration: none;
             position: fixed;
@@ -301,10 +316,10 @@
             border: none;
             transition: opacity 0.3s;
             z-index: 5;
-            display: block; /* Hiển thị mặc định */
+            display: block;
         }
         .add-btn.hidden {
-            display: none; /* Ẩn khi form hiển thị */
+            display: none;
         }
         .add-btn:hover {
             opacity: 0.8;
@@ -321,18 +336,17 @@
             <span class="title">Devices Control</span>
         </div>
         <div class="nav-tabs">
-            <span class="active">Living Room</span>
-            <span>Bedroom</span>
-            <span>Bathroom</span>
-            <span>Kitchen-Dining</span>
-            
+            <span class="active" onclick="filterDevices('Living Room')">Living Room</span>
+            <span onclick="filterDevices('Bedroom')">Bedroom</span>
+            <span onclick="filterDevices('Bathroom')">Bathroom</span>
+            <span onclick="filterDevices('Kitchen')">Kitchen</span>
         </div>
-        <div class="device-grid active">
-            <div class="card active" data-device-id="1">
+        <div class="device-grid active" id="deviceGrid">
+            <div class="card active" data-device-id="1" data-room="Living Room">
                 <div class="top-row">
                     <span class="icon">💡</span>
                     <label class="toggle-switch">
-                        <input type="checkbox" checked onchange="toggleSwitch(this, 1)">
+                        <input type="checkbox" checked onchange="toggleSwitch(this, '1')">
                         <span class="toggle-slider"></span>
                     </label>
                 </div>
@@ -340,12 +354,16 @@
                     <div class="device-type">Light bulbs</div>
                     <div class="device-brand">Philips Hue</div>
                 </div>
+                <div class="card-actions">
+                    <button class="btn-action" onclick="editDevice('1')">Edit</button>
+                    <button class="btn-action" onclick="deleteDevice('1')">Delete</button>
+                </div>
             </div>
-            <div class="card" data-device-id="2">
+            <div class="card" data-device-id="2" data-room="Living Room">
                 <div class="top-row">
                     <span class="icon">📺</span>
                     <label class="toggle-switch">
-                        <input type="checkbox" onchange="toggleSwitch(this, 2)">
+                        <input type="checkbox" onchange="toggleSwitch(this, '2')">
                         <span class="toggle-slider"></span>
                     </label>
                 </div>
@@ -353,12 +371,16 @@
                     <div class="device-type">Smart TV</div>
                     <div class="device-brand">Panasonic</div>
                 </div>
+                <div class="card-actions">
+                    <button class="btn-action" onclick="editDevice('2')">Edit</button>
+                    <button class="btn-action" onclick="deleteDevice('2')">Delete</button>
+                </div>
             </div>
-            <div class="card active" data-device-id="3">
+            <div class="card active" data-device-id="3" data-room="Bedroom">
                 <div class="top-row">
                     <span class="icon">📶</span>
                     <label class="toggle-switch">
-                        <input type="checkbox" checked onchange="toggleSwitch(this, 3)">
+                        <input type="checkbox" checked onchange="toggleSwitch(this, '3')">
                         <span class="toggle-slider"></span>
                     </label>
                 </div>
@@ -366,12 +388,16 @@
                     <div class="device-type">Wi-Fi Router</div>
                     <div class="device-brand">TP Link</div>
                 </div>
+                <div class="card-actions">
+                    <button class="btn-action" onclick="editDevice('3')">Edit</button>
+                    <button class="btn-action" onclick="deleteDevice('3')">Delete</button>
+                </div>
             </div>
-            <div class="card" data-device-id="4">
+            <div class="card" data-device-id="4" data-room="Bathroom">
                 <div class="top-row">
                     <span class="icon">📹</span>
                     <label class="toggle-switch">
-                        <input type="checkbox" onchange="toggleSwitch(this, 4)">
+                        <input type="checkbox" onchange="toggleSwitch(this, '4')">
                         <span class="toggle-slider"></span>
                     </label>
                 </div>
@@ -379,21 +405,29 @@
                     <div class="device-type">CCTV</div>
                     <div class="device-brand">Security Camera 360°</div>
                 </div>
+                <div class="card-actions">
+                    <button class="btn-action" onclick="editDevice('4')">Edit</button>
+                    <button class="btn-action" onclick="deleteDevice('4')">Delete</button>
+                </div>
             </div>
         </div>
-        <div class="add-device-form">
+        <div class="add-device-form" id="addForm">
             <div class="form-group">
                 <label for="device-type">Device Type</label>
-                <input type="text" id="device-type" placeholder="Enter device type">
+                <input type="text" id="device-type" placeholder="Enter device type (e.g., Light bulbs, Smart TV)">
             </div>
             <div class="form-group">
                 <label for="device-id">Device ID</label>
                 <input type="text" id="device-id" placeholder="Enter device ID">
             </div>
-            <!-- <div class="form-group">
+            <div class="form-group">
                 <label for="brand">Brand</label>
-                <input type="text" id="brand" placeholder="Enter brand">
-            </div> -->
+                <input type="text" id="brand" placeholder="Enter brand (optional)">
+            </div>
+            <div class="form-group">
+                <label for="room">Room</label>
+                <input type="text" id="room" placeholder="Enter room (e.g., Living Room)">
+            </div>
             <div class="buttons">
                 <button class="btn btn-save" onclick="saveDevice()">Save</button>
                 <button class="btn btn-cancel" onclick="cancelAdd()">Cancel</button>
@@ -403,6 +437,14 @@
     </div>
 
     <script>
+        // Map device types to icons (case-insensitive)
+        const deviceIcons = {
+            'light bulbs': '💡',
+            'smart tv': '📺',
+            'wi-fi router': '📶',
+            'cctv': '📹'
+        };
+
         function toggleSwitch(checkbox, deviceId) {
             const card = checkbox.closest('.card');
             const isActive = checkbox.checked;
@@ -415,27 +457,169 @@
         }
 
         function showAddForm() {
-            document.querySelector('.device-grid').classList.remove('active');
-            document.querySelector('.add-device-form').classList.add('active');
+            document.getElementById('deviceGrid').classList.remove('active');
+            document.getElementById('addForm').classList.add('active');
             document.querySelector('.header .title').textContent = 'Add Device';
-            document.querySelector('.add-btn').classList.add('hidden'); // Ẩn nút Add
+            document.querySelector('.add-btn').classList.add('hidden');
         }
 
         function cancelAdd() {
-            document.querySelector('.add-device-form').classList.remove('active');
-            document.querySelector('.device-grid').classList.add('active');
+            document.getElementById('addForm').classList.remove('active');
+            document.getElementById('deviceGrid').classList.add('active');
             document.querySelector('.header .title').textContent = 'Devices Control';
-            document.querySelector('.add-btn').classList.remove('hidden'); // Hiện lại nút Add
+            document.querySelector('.add-btn').classList.remove('hidden');
             // Reset form
             document.getElementById('device-type').value = '';
-            document.getElementById('device-type').value = '';
+            document.getElementById('device-id').value = '';
             document.getElementById('brand').value = '';
+            document.getElementById('room').value = '';
         }
 
         function saveDevice() {
-            // Logic lưu thiết bị (giả lập)
-            alert('Device saved! (Mockup)');
+            const deviceType = document.getElementById('device-type').value.trim();
+            const deviceId = document.getElementById('device-id').value.trim();
+            const brand = document.getElementById('brand').value.trim();
+            const room = document.getElementById('room').value.trim();
+
+            if (!deviceType || !deviceId || !room) {
+                alert('Please fill in all required fields (Device Type, Device ID, Room).');
+                return;
+            }
+
+            // Generate a unique device ID (increment highest existing ID)
+            const existingIds = Array.from(document.querySelectorAll('.card')).map(card =>
+                parseInt(card.getAttribute('data-device-id'))
+            );
+            const newDeviceId = existingIds.length ? Math.max(...existingIds) + 1 : 1;
+
+            // Determine icon based on device type (case-insensitive)
+            const deviceTypeLower = deviceType.toLowerCase();
+            const icon = deviceIcons[deviceTypeLower] || '🔌';
+
+            // Create new device card
+            const card = document.createElement('div');
+            card.classList.add('card');
+            card.setAttribute('data-device-id', newDeviceId);
+            card.setAttribute('data-room', room);
+
+            card.innerHTML = `
+                <div class="top-row">
+                    <span class="icon">${icon}</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" onchange="toggleSwitch(this, '${newDeviceId}')">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="card-content">
+                    <div class="device-type">${deviceType}</div>
+                    <div class="device-brand">${brand || 'Unknown'}</div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn-action" onclick="editDevice('${newDeviceId}')">Edit</button>
+                    <button class="btn-action" onclick="deleteDevice('${newDeviceId}')">Delete</button>
+                </div>
+            `;
+
+            // Append to device grid
+            document.getElementById('deviceGrid').appendChild(card);
+
+            // Reset and hide form
             cancelAdd();
+        }
+
+        function filterDevices(room) {
+            const cards = document.querySelectorAll('.card');
+            const tabs = document.querySelectorAll('.nav-tabs span');
+
+            // Update active tab
+            tabs.forEach(tab => tab.classList.remove('active'));
+            document.querySelector(`.nav-tabs span[onclick="filterDevices('${room}')"]`).classList.add('active');
+
+            // Filter devices by room
+            cards.forEach(card => {
+                if (room === 'All' || card.getAttribute('data-room') === room) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function editDevice(deviceId) {
+            const card = document.querySelector(`.card[data-device-id="${deviceId}"]`);
+            if (!card) {
+                console.error(`Card with deviceId ${deviceId} not found`);
+                return;
+            }
+            const deviceType = card.querySelector('.device-type').textContent;
+            const brand = card.querySelector('.device-brand').textContent;
+            const room = card.getAttribute('data-room');
+
+            // Pre-fill the form
+            document.getElementById('device-type').value = deviceType;
+            document.getElementById('device-id').value = deviceId;
+            document.getElementById('brand').value = brand === 'Unknown' ? '' : brand;
+            document.getElementById('room').value = room;
+
+            // Show the form
+            showAddForm();
+
+            // Override save to update instead of add
+            window.currentEditingId = deviceId;
+            document.querySelector('.btn-save').onclick = function() {
+                updateDevice(deviceId);
+            };
+        }
+
+        function updateDevice(deviceId) {
+            const deviceType = document.getElementById('device-type').value.trim();
+            const brand = document.getElementById('brand').value.trim();
+            const room = document.getElementById('room').value.trim();
+
+            if (!deviceType || !room) {
+                alert('Please fill in all required fields (Device Type, Room).');
+                return;
+            }
+
+            const card = document.querySelector(`.card[data-device-id="${deviceId}"]`);
+            if (!card) {
+                console.error(`Card with deviceId ${deviceId} not found during update`);
+                return;
+            }
+            const deviceTypeLower = deviceType.toLowerCase();
+            const icon = deviceIcons[deviceTypeLower] || '🔌';
+
+            card.innerHTML = `
+                <div class="top-row">
+                    <span class="icon">${icon}</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" ${card.classList.contains('active') ? 'checked' : ''} onchange="toggleSwitch(this, '${deviceId}')">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="card-content">
+                    <div class="device-type">${deviceType}</div>
+                    <div class="device-brand">${brand || 'Unknown'}</div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn-action" onclick="editDevice('${deviceId}')">Edit</button>
+                    <button class="btn-action" onclick="deleteDevice('${deviceId}')">Delete</button>
+                </div>
+            `;
+            card.setAttribute('data-room', room);
+
+            cancelAdd();
+            delete window.currentEditingId;
+            document.querySelector('.btn-save').onclick = saveDevice; // Restore original save function
+        }
+
+        function deleteDevice(deviceId) {
+            const card = document.querySelector(`.card[data-device-id="${deviceId}"]`);
+            if (card) {
+                card.remove();
+            } else {
+                console.error(`Card with deviceId ${deviceId} not found for deletion`);
+            }
         }
     </script>
 </body>
