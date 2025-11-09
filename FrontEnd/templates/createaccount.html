@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 800;
+            font-style: italic;
+            letter-spacing: -0.5px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 18px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            border: none;
+            background: #f5f5f5;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #333;
+            transition: all 0.3s;
+        }
+
+        input.error {
+            background: #ffebee;
+            border: 1px solid #f44336;
+        }
+
+        input.success {
+            background: #e8f5e9;
+            border: 1px solid #4caf50;
+        }
+
+        input::placeholder {
+            color: #999;
+        }
+
+        input:focus {
+            outline: none;
+            background: #ebebeb;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #999;
+            width: 20px;
+            height: 20px;
+            user-select: none;
+        }
+
+        .password-toggle:hover {
+            color: #666;
+        }
+
+        .password-toggle svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .create-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #ff8c00, #ff6600);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: transform 0.2s;
+        }
+
+        .create-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .create-btn:active {
+            transform: translateY(0);
+        }
+
+        .divider {
+            text-align: center;
+            margin: 25px 0;
+            position: relative;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 40%;
+            height: 1px;
+            background: #ddd;
+        }
+
+        .divider::before {
+            left: 0;
+        }
+
+        .divider::after {
+            right: 0;
+        }
+
+        .divider span {
+            font-size: 20px;
+            font-weight: 800;
+            color: #000000;
+        }
+
+        .social-login {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .social-btn {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .social-btn:hover {
+            background: #f9f9f9;
+            border-color: #ccc;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .footer a {
+            color: #ff6600;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            color: #f44336;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        /* Success Modal */
+        .success-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .success-modal.show {
+            display: flex;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .success-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+            animation: scaleUp 0.3s ease-out;
+        }
+
+        @keyframes scaleUp {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: #4caf50;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: checkmarkPop 0.5s ease-out 0.2s backwards;
+        }
+
+        @keyframes checkmarkPop {
+            0% {
+                transform: scale(0);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .success-icon svg {
+            width: 50px;
+            height: 50px;
+            stroke: white;
+        }
+
+        .success-content h2 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .success-content p {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .verify-email {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .verify-email p {
+            margin: 0;
+            font-size: 13px;
+            color: #1976d2;
+        }
+
+        .ok-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #4caf50, #45a049);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .ok-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .ok-btn:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>CREATE ACCOUNT</h1>
+            <p>Sign up to get started</p>
+        </div>
+
+        <div class="form-group">
+            <label>Username</label>
+            <div class="input-wrapper">
+                <span class="input-icon">👤</span>
+                <input type="text" id="username" placeholder="Enter your username">
+            </div>
+            <div class="error-message" id="usernameError"></div>
+        </div>
+
+        <div class="form-group">
+            <label>Email Address</label>
+            <div class="input-wrapper">
+                <span class="input-icon">✉️</span>
+                <input type="email" id="email" placeholder="Enter your email">
+            </div>
+            <div class="error-message" id="emailError"></div>
+        </div>
+
+        <div class="form-group">
+            <label>Password</label>
+            <div class="input-wrapper">
+                <span class="input-icon">🔒</span>
+                <input type="password" id="password" placeholder="Enter your password">
+                <span class="password-toggle" id="toggleIcon" onclick="togglePassword()">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                    </svg>
+                </span>
+            </div>
+            <div class="error-message" id="passwordError"></div>
+        </div>
+
+        <button class="create-btn" onclick="handleCreateAccount()">Create Account</button>
+
+        <div class="divider">
+            <span>OR</span>
+        </div>
+
+        <p style="text-align: center; font-size: 14px; font-weight: 600; color: #666; margin-bottom: 15px;">Sign up using</p>
+
+        <div class="social-login">
+            <button class="social-btn">
+                <span style="color: #4285F4; font-weight: 700;">G</span> Google
+            </button>
+            <button class="social-btn">
+                <span style="color: #1877F2; font-weight: 700;">f</span> Facebook
+            </button>
+        </div>
+
+        <div class="footer">
+            Already have an account? <a href="login.html" id="loginLink">Login</a>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="success-modal" id="successModal">
+        <div class="success-content">
+            <div class="success-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                </svg>
+            </div>
+            <h2>Account Created!</h2>
+            <p>Your account has been successfully created.</p>
+            <div class="verify-email">
+                <p><strong>📧 Verify Your Email</strong></p>
+                <p>We've sent a verification link to your email address. Please check your inbox and click the link to activate your account.</p>
+            </div>
+            <button class="ok-btn" onclick="closeSuccessModal()">Got it!</button>
+        </div>
+    </div>
+
+    <script>
+        // Validation functions
+        function validateUsername(username) {
+            if (username.trim() === '') {
+                return 'Username is required';
+            }
+            if (username.length < 3) {
+                return 'Username must be at least 3 characters';
+            }
+            if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+                return 'Username can only contain letters, numbers, and underscores';
+            }
+            return null;
+        }
+
+        function validateEmail(email) {
+            if (email.trim() === '') {
+                return 'Email is required';
+            }
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                return 'Please enter a valid email address';
+            }
+            
+            // Kiểm tra domain phổ biến
+            const allowedDomains = [
+                'gmail.com',
+                'yahoo.com',
+                'outlook.com',
+                'hotmail.com',
+                'icloud.com',
+                'live.com',
+                'msn.com',
+                'aol.com',
+                'mail.com',
+                'protonmail.com',
+                'zoho.com',
+                'yandex.com',
+                'gmx.com',
+                'fastmail.com'
+            ];
+            
+            const domain = email.split('@')[1]?.toLowerCase();
+            if (!allowedDomains.includes(domain)) {
+                return 'Please use a valid email provider (Gmail, Yahoo, Outlook, etc.)';
+            }
+            
+            return null;
+        }
+
+        function validatePassword(password) {
+            if (password.trim() === '') {
+                return 'Password is required';
+            }
+            if (password.length < 6) {
+                return 'Password must be at least 6 characters';
+            }
+            return null;
+        }
+
+        // Show error message
+        function showError(inputId, errorId, message) {
+            const input = document.getElementById(inputId);
+            const error = document.getElementById(errorId);
+            input.classList.add('error');
+            input.classList.remove('success');
+            error.textContent = message;
+            error.classList.add('show');
+        }
+
+        // Show success state
+        function showSuccess(inputId, errorId) {
+            const input = document.getElementById(inputId);
+            const error = document.getElementById(errorId);
+            input.classList.remove('error');
+            input.classList.add('success');
+            error.classList.remove('show');
+        }
+
+        // Clear validation state
+        function clearValidation(inputId, errorId) {
+            const input = document.getElementById(inputId);
+            const error = document.getElementById(errorId);
+            input.classList.remove('error', 'success');
+            error.classList.remove('show');
+        }
+
+        // Handle create account
+        function handleCreateAccount() {
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            let isValid = true;
+
+            // Validate username
+            const usernameError = validateUsername(username);
+            if (usernameError) {
+                showError('username', 'usernameError', usernameError);
+                isValid = false;
+            } else {
+                showSuccess('username', 'usernameError');
+            }
+
+            // Validate email
+            const emailError = validateEmail(email);
+            if (emailError) {
+                showError('email', 'emailError', emailError);
+                isValid = false;
+            } else {
+                showSuccess('email', 'emailError');
+            }
+
+            // Validate password
+            const passwordError = validatePassword(password);
+            if (passwordError) {
+                showError('password', 'passwordError', passwordError);
+                isValid = false;
+            } else {
+                showSuccess('password', 'passwordError');
+            }
+
+            // If all valid, show success modal
+            if (isValid) {
+                document.getElementById('successModal').classList.add('show');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        // Close success modal
+        function closeSuccessModal() {
+            document.getElementById('successModal').classList.remove('show');
+            document.body.style.overflow = '';
+            
+            // Reset form
+            document.getElementById('username').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('password').value = '';
+            clearValidation('username', 'usernameError');
+            clearValidation('email', 'emailError');
+            clearValidation('password', 'passwordError');
+            
+            // Redirect to login page
+            window.location.href = 'login.html';
+        }
+
+        // Real-time validation
+        document.getElementById('username').addEventListener('input', function() {
+            const error = validateUsername(this.value);
+            if (this.value === '') {
+                clearValidation('username', 'usernameError');
+            } else if (error) {
+                showError('username', 'usernameError', error);
+            } else {
+                showSuccess('username', 'usernameError');
+            }
+        });
+
+        document.getElementById('email').addEventListener('input', function() {
+            const error = validateEmail(this.value);
+            if (this.value === '') {
+                clearValidation('email', 'emailError');
+            } else if (error) {
+                showError('email', 'emailError', error);
+            } else {
+                showSuccess('email', 'emailError');
+            }
+        });
+
+        document.getElementById('password').addEventListener('input', function() {
+            const error = validatePassword(this.value);
+            if (this.value === '') {
+                clearValidation('password', 'passwordError');
+            } else if (error) {
+                showError('password', 'passwordError', error);
+            } else {
+                showSuccess('password', 'passwordError');
+            }
+        });
+
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('toggleIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                // Icon mắt mở - đang hiển thị mật khẩu
+                toggleIcon.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                `;
+            } else {
+                passwordInput.type = 'password';
+                // Icon mắt đóng - đang ẩn mật khẩu
+                toggleIcon.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                    </svg>
+                `;
+            }
+        }
+
+        // Handle login link click (nếu không có file login.html)
+        document.getElementById('loginLink').addEventListener('click', function(e) {
+            // Nếu bạn chưa có file login.html, có thể hiển thị thông báo
+            // Bỏ comment dòng dưới nếu muốn kiểm tra
+            // e.preventDefault();
+            // alert('Trang Login đang được phát triển. Vui lòng tạo file login.html');
+        });
+    </script>
+</body>
+</html>

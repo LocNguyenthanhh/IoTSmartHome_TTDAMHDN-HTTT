@@ -1,92 +1,99 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Schedules</title>
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        * {
             margin: 0;
             padding: 0;
-            background-color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100vh;
-            font-size: 14px;
-            position: relative;
-            overflow-y: auto;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e3f2fd 100%);
+            min-height: 100vh;
         }
 
         .container {
-            max-width: 393px;
-            width: 100%;
+            max-width: 480px;
             margin: 0 auto;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            box-sizing: border-box;
-            padding-top: 110px;
         }
 
+        /* Header */
         .header {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            padding: 5px 10px;
-            color: #000;
-            height: 60px;
-            position: fixed;
-            top: 40px;
-            left: 0;
-            z-index: 10;
-            border: none;
-            box-shadow: none;
-        }
-        .header .icon-row {
+            background: white;
+            padding: 16px 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             display: flex;
             justify-content: space-between;
-            width: 100%;
             align-items: center;
-            margin-bottom: 2px;
-        }
-        .header .back {
-            font-size: 25px;
-            cursor: pointer;
-            padding-left: 25px;
-        }
-        .header .title {
-            font-size: 30px;
-            font-weight: bold;
-            font-style: italic;
-            text-align: center;
-            width: 100%;
-        }
-        .header .home {
-            font-size: 25px;
-            cursor: pointer;
-            padding-right: 35px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
-        .icon-menu {
+        .header-left {
             display: flex;
-            justify-content: flex-start;
-            gap: 20px;
-            padding: 15px 15px;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .add-btn, .home-btn {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: white;
+            font-size: 20px;
+            font-weight: 300;
+        }
+
+        .home-btn {
+            background: #f3f4f6;
+            color: #1f2937;
+        }
+
+        .add-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .home-btn:hover {
+            background: #e5e7eb;
+            transform: scale(1.05);
+        }
+
+        .add-btn:active, .home-btn:active {
+            transform: scale(0.95);
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        /* Icon Menu */
+        .icon-menu {
+            background: white;
+            padding: 16px 24px;
+            display: flex;
+            gap: 16px;
             overflow-x: auto;
-            scrollbar-width: none;
-            position: fixed;
-            top: 130px;
-            left: 0;
-            right: 0;
-            z-index: 10;
-            background-color: #ffffff;
-            max-width: 393px;
-            margin: 0 auto;
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 72px;
+            z-index: 99;
+            -webkit-overflow-scrolling: touch;
         }
 
         .icon-menu::-webkit-scrollbar {
@@ -94,72 +101,103 @@
         }
 
         .icon-item {
-            min-width: 70px;
-            height: 70px;
-            background: transparent;
-            border-radius: 18px;
+            min-width: 60px;
+            height: 60px;
+            background: #f3f4f6;
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.2s;
-            font-size: 36px;
+            transition: all 0.3s;
+            font-size: 28px;
+            border: 2px solid transparent;
         }
 
         .icon-item:hover {
-            opacity: 0.7;
+            opacity: 0.8;
         }
 
         .icon-item.active {
-            background: #d4e3f7;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            transform: scale(1.05);
         }
 
+        /* Content */
+        .content {
+            padding: 24px;
+        }
+
+        /* Schedule List */
         .schedule-list {
-            padding: 0 15px;
-            margin-top: 80px;
-            padding-bottom: 100px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 100px;
         }
 
         .schedule-item {
             background: white;
             border-radius: 16px;
-            padding: 15px;
-            margin-bottom: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: all 0.3s;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 2px solid transparent;
+        }
+
+        .schedule-item:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border-color: #e5e7eb;
+        }
+
+        .schedule-info {
+            flex: 1;
         }
 
         .schedule-info h3 {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 4px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 8px;
         }
 
         .schedule-code {
-            font-size: 20px;
-            font-weight: bold;
-            font-style: italic;
-            color: #333;
+            display: inline-block;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
             margin-bottom: 8px;
         }
 
         .schedule-time {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .schedule-time::before {
+            content: "🕐";
             font-size: 16px;
-            font-style: italic;
-            color: #666;
-            margin-bottom: 2px;
-            font-weight: 500;
         }
 
         .schedule-note {
-            font-size: 15px;
-            color: #999;
+            font-size: 13px;
+            color: #9ca3af;
             font-style: italic;
-            font-weight: 200;
+            margin-top: 6px;
         }
 
+        /* Toggle Switch */
         .toggle-switch {
             position: relative;
             width: 51px;
@@ -179,306 +217,619 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: #e5e5e7;
-            transition: 0.4s;
+            background-color: #e5e7eb;
+            transition: 0.3s;
             border-radius: 16px;
         }
 
         .toggle-slider:before {
             position: absolute;
             content: "";
-            height: 27px;
-            width: 27px;
-            left: 2px;
-            bottom: 2px;
-            background-color: #fff;
-            transition: 0.4s;
+            height: 25px;
+            width: 25px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
             border-radius: 50%;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         input:checked + .toggle-slider {
-            background-color: #4A90E2;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
         }
 
         input:checked + .toggle-slider:before {
             transform: translateX(20px);
         }
 
-        .add-schedule-form {
-            width: 320px;
-            height: auto;
-            padding: 20px;
-            background-color: #BFECF5;
-            border-radius: 12px;
-            margin: 20px 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        /* Add Form */
+        .add-form {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 100px;
             display: none;
-            position: relative;
-            top: 100px;
         }
-        .add-schedule-form.active {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-        .form-group:first-child {
-            margin-top: 0;
-        }
-        .form-group label {
-            font-size: 18px;
-            color: #333;
-            font-weight: bold;
-        }
-        .form-group input {
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #e5e5e7;
-            border-radius: 8px;
-            outline: none;
-        }
-        .form-group input:focus {
-            border-color: #007aff;
-        }
-        .buttons {
-            margin-top: 10px;
-            display: flex;
-            justify-content: space-between;
-            gap: 15px;
-        }
-        .btn {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            flex: 1;
-            transition: background-color 0.3s;
-        }
-        .btn-save {
-            background-color: #DD1010;
-            color: #ffffff;
-        }
-        .btn-save:hover {
-            background-color: #f57e7e;
-        }
-        .btn-cancel {
-            background-color: #4CAF50;
-            color: #fff;
-        }
-        .btn-cancel:hover {
-            background-color: #45a049;
-        }
-        .add-btn {
-            width: 60px;
-            height: 60px;
-            background: #C0DBF3;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: rgb(0, 0, 0);
-            font-size: 18px;
-            font-weight: bold;
-            line-height: 60px;
-            text-align: center;
-            text-decoration: none;
-            position: fixed;
-            left: 50%;
-            transform: translateX(-50%);
-            bottom: 20px;
-            box-shadow: 0 6px 12px rgba(192, 219, 243, 0.4);
-            border: none;
-            transition: opacity 0.3s;
-            z-index: 5;
+
+        .add-form.active {
             display: block;
         }
-        .add-btn.hidden {
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+        }
+
+        .btn-save:hover {
+            opacity: 0.9;
+        }
+
+        .btn-cancel {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .btn-cancel:hover {
+            background: #e5e7eb;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
             display: none;
         }
-        .add-btn:hover {
-            opacity: 0.8;
+
+        .empty-state.show {
+            display: block;
+        }
+
+        .empty-state svg {
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 18px;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .edit-btn, .delete-btn {
+            background: #f3f4f6;
+            color: #6b7280;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .edit-btn:hover {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: #fca5a5;
+            color: #dc2626;
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- Header -->
         <div class="header">
-            <div class="icon-row">
-                <span class="back">&lt;</span>
-                <span class="home">🏠</span>
+            <div class="header-left">
+                <h1 class="header-title" id="headerTitle">Schedules</h1>
             </div>
-            <span class="title">Schedules</span>
+            <div class="header-left">
+                <button class="add-btn" id="headerAddBtn" onclick="showAddForm()">+</button>
+                <button class="home-btn" onclick="goHome()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                </button>
+            </div>
         </div>
 
+        <!-- Icon Menu -->
         <div class="icon-menu">
-            <span class="icon-item active" onclick="filterSchedule('light')">💡</span>
-            <span class="icon-item" onclick="filterSchedule('tv')">📺</span>
-            <span class="icon-item" onclick="filterSchedule('wifi')">📶</span>
-            <span class="icon-item" onclick="filterSchedule('ac')">❄️</span>
+            <span class="icon-item active" data-filter="all" onclick="filterSchedule('all')">📋</span>
+            <span class="icon-item" data-filter="light" onclick="filterSchedule('light')">💡</span>
+            <span class="icon-item" data-filter="tv" onclick="filterSchedule('tv')">📺</span>
+            <span class="icon-item" data-filter="wifi" onclick="filterSchedule('wifi')">📶</span>
+            <span class="icon-item" data-filter="ac" onclick="filterSchedule('ac')">❄️</span>
+            <span class="icon-item" data-filter="fan" onclick="filterSchedule('fan')">🌀</span>
         </div>
 
-        <div class="schedule-list" id="scheduleList">
-            <div class="schedule-item" data-device-type="light">
-                <div class="schedule-info">
-                    <h3>Living room</h3>
-                    <div class="schedule-code">LR01</div>
-                    <div class="schedule-time">8:00 AM</div>
-                    <div class="schedule-time">23:00 PM</div>
-                    <div class="schedule-note">Note</div>
-                </div>
-                <label class="toggle-switch">
-                    <input type="checkbox" checked onchange="toggleSwitch(this, 'LR01')">
-                    <span class="toggle-slider"></span>
-                </label>
+        <!-- Content -->
+        <div class="content">
+            <!-- Schedule List -->
+            <div class="schedule-list" id="scheduleList"></div>
+
+            <!-- Empty State -->
+            <div class="empty-state" id="emptyState">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+                <h3>No schedules found</h3>
+                <p>Try selecting a different device type</p>
             </div>
 
-            <div class="schedule-item" data-device-type="light">
-                <div class="schedule-info">
-                    <h3>Bedroom</h3>
-                    <div class="schedule-code">BR01</div>
-                    <div class="schedule-time">22:00 PM</div>
+            <!-- Add Form -->
+            <div class="add-form" id="addForm">
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <select id="location">
+                        <option value="">Select Room</option>
+                        <option value="Living room">🛋️ Living room</option>
+                        <option value="Bedroom">🛏️ Bedroom</option>
+                        <option value="Kitchen">🍳 Kitchen</option>
+                        <option value="Bathroom">🚿 Bathroom</option>
+                        <option value="Office">💼 Office</option>
+                        <option value="Garage">🚗 Garage</option>
+                        <option value="Garden">🌳 Garden</option>
+                    </select>
                 </div>
-                <label class="toggle-switch">
-                    <input type="checkbox" checked onchange="toggleSwitch(this, 'BR01')">
-                    <span class="toggle-slider"></span>
-                </label>
-            </div>
 
-            <div class="schedule-item" data-device-type="ac">
-                <div class="schedule-info">
-                    <h3>Bedroom</h3>
-                    <div class="schedule-code">BR02</div>
-                    <div class="schedule-time">21:00 PM</div>
-                    <div class="schedule-note">Note</div>
+                <div class="form-group">
+                    <label for="deviceId">Device Code</label>
+                    <input type="text" id="deviceId" placeholder="e.g., LR01">
                 </div>
-                <label class="toggle-switch">
-                    <input type="checkbox" checked onchange="toggleSwitch(this, 'BR02')">
-                    <span class="toggle-slider"></span>
-                </label>
+
+                <div class="form-group">
+                    <label for="deviceType">Device Type</label>
+                    <select id="deviceType">
+                        <option value="">Select Device Type</option>
+                        <option value="light">💡 Light</option>
+                        <option value="tv">📺 TV</option>
+                        <option value="wifi">📶 WiFi</option>
+                        <option value="ac">❄️ Air Conditioner</option>
+                        <option value="fan">🌀 Fan</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="timeOn">Turn On Time</label>
+                    <input type="time" id="timeOn">
+                </div>
+
+                <div class="form-group">
+                    <label for="timeOff">Turn Off Time (Optional)</label>
+                    <input type="time" id="timeOff">
+                </div>
+
+                <div class="form-group">
+                    <label for="note">Note (Optional)</label>
+                    <input type="text" id="note" placeholder="e.g., Auto turn on/off">
+                </div>
+
+                <div class="form-buttons">
+                    <button class="btn btn-save" onclick="saveSchedule()">Save Schedule</button>
+                    <button class="btn btn-cancel" onclick="cancelForm()">Cancel</button>
+                </div>
             </div>
         </div>
-
-        <div class="add-schedule-form" id="addForm">
-            <div class="form-group">
-                <label>Device ID</label>
-                <input type="text" id="deviceId" placeholder="Enter device ID" />
-            </div>
-
-            <div class="form-group">
-                <label>Device Type</label>
-                <input type="text" id="deviceType" placeholder="Enter device type (e.g., light, tv, wifi, ac)" />
-            </div>
-
-            <div class="form-group">
-                <label>Time</label>
-                <input type="text" id="scheduleTime" placeholder="Enter time (e.g., 8:00 AM)" />
-            </div>
-
-            <div class="form-group">
-                <label>Location</label>
-                <input type="text" id="location" placeholder="Enter location (e.g., Living room)" />
-            </div>
-
-            <div class="form-group">
-                <label>Note (Optional)</label>
-                <input type="text" id="note" placeholder="Enter note" />
-            </div>
-
-            <div class="buttons">
-                <button class="btn btn-save" onclick="saveSchedule()">Save</button>
-                <button class="btn btn-cancel" onclick="cancelAdd()">Cancel</button>
-            </div>
-        </div>
-        <a href="#" class="add-btn" onclick="showAddForm()">Add</a>
     </div>
 
     <script>
-        function toggleSwitch(checkbox, deviceId) {
-            const scheduleItem = checkbox.closest('.schedule-item');
-            const isActive = checkbox.checked;
-            console.log(`Device ${deviceId} updated to ${isActive ? 'ON' : 'OFF'}`);
+        // ============================================
+        // UTILITY FUNCTIONS
+        // ============================================
+
+        // Format time để hiển thị
+        function formatTime(time24) {
+            if (!time24) return null;
+            const [hours, minutes] = time24.split(':');
+            const hour = parseInt(hours);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const hour12 = hour % 12 || 12;
+            return `${hour12}:${minutes} ${ampm}`;
         }
 
-        function showAddForm() {
+        // Tạo string hiển thị time
+        function getTimeDisplay(timeOn, timeOff) {
+            const onTime = formatTime(timeOn);
+            if (timeOff) {
+                const offTime = formatTime(timeOff);
+                return `${onTime} - ${offTime}`;
+            }
+            return onTime;
+        }
+
+        // ============================================
+        // DATA LAYER - Thay thế bằng API calls sau này
+        // ============================================
+
+        // Mock initial data (sau này sẽ fetch từ database)
+        const INITIAL_SCHEDULES = [
+            {
+                id: 1,
+                location: 'Living room',
+                deviceId: 'LR01',
+                deviceType: 'light',
+                timeOn: '08:00',
+                timeOff: '23:00',
+                note: 'Auto turn on/off lights',
+                isActive: true
+            },
+            {
+                id: 2,
+                location: 'Bedroom',
+                deviceId: 'BR01',
+                deviceType: 'light',
+                timeOn: '22:00',
+                timeOff: null,
+                note: 'Turn off before sleep',
+                isActive: true
+            },
+            {
+                id: 3,
+                location: 'Bedroom',
+                deviceId: 'BR02',
+                deviceType: 'ac',
+                timeOn: '21:00',
+                timeOff: null,
+                note: 'Cool room before sleep',
+                isActive: true
+            }
+        ];
+
+        // State management
+        let schedules = [];
+        let currentFilter = 'all';
+        let editingScheduleId = null; // Track schedule đang edit
+
+        // ============================================
+        // API FUNCTIONS - Thay thế bằng real API
+        // ============================================
+
+        // GET all schedules từ database
+        async function fetchSchedules() {
+            // TODO: Thay bằng API call
+            // const response = await fetch('/api/schedules');
+            // return await response.json();
+            
+            // Tạm thời dùng localStorage
+            const stored = localStorage.getItem('schedules');
+            if (stored) {
+                return JSON.parse(stored);
+            }
+            return INITIAL_SCHEDULES;
+        }
+
+        // POST - Tạo schedule mới
+        async function createSchedule(scheduleData) {
+            // TODO: Thay bằng API call
+            // const response = await fetch('/api/schedules', {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify(scheduleData)
+            // });
+            // return await response.json();
+            
+            const newSchedule = {
+                id: Date.now(),
+                ...scheduleData,
+                isActive: true
+            };
+            schedules.push(newSchedule);
+            saveToStorage();
+            return newSchedule;
+        }
+
+        // PUT - Cập nhật schedule
+        async function updateSchedule(id, updates) {
+            // TODO: Thay bằng API call
+            // const response = await fetch(`/api/schedules/${id}`, {
+            //     method: 'PUT',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify(updates)
+            // });
+            // return await response.json();
+            
+            const index = schedules.findIndex(s => s.id === id);
+            if (index !== -1) {
+                schedules[index] = { ...schedules[index], ...updates };
+                saveToStorage();
+                return schedules[index];
+            }
+            return null;
+        }
+
+        // DELETE - Xóa schedule
+        async function deleteSchedule(id) {
+            // TODO: Thay bằng API call
+            // await fetch(`/api/schedules/${id}`, { method: 'DELETE' });
+            
+            schedules = schedules.filter(s => s.id !== id);
+            saveToStorage();
+        }
+
+        // Lưu vào localStorage (tạm thời)
+        function saveToStorage() {
+            localStorage.setItem('schedules', JSON.stringify(schedules));
+        }
+
+        // ============================================
+        // UI RENDERING FUNCTIONS
+        // ============================================
+
+        // Render một schedule item
+        function renderScheduleItem(schedule) {
+            const item = document.createElement('div');
+            item.classList.add('schedule-item');
+            item.setAttribute('data-device-type', schedule.deviceType);
+            item.setAttribute('data-id', schedule.id);
+
+            const timeDisplay = getTimeDisplay(schedule.timeOn, schedule.timeOff);
+
+            item.innerHTML = `
+                <div class="schedule-info">
+                    <h3>${schedule.location}</h3>
+                    <span class="schedule-code">${schedule.deviceId}</span>
+                    <div class="schedule-time">${timeDisplay}</div>
+                    ${schedule.note ? `<div class="schedule-note">${schedule.note}</div>` : ''}
+                </div>
+                <div class="action-buttons">
+                    <label class="toggle-switch">
+                        <input type="checkbox" ${schedule.isActive ? 'checked' : ''} 
+                               onchange="toggleSchedule(${schedule.id}, this.checked)">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <button class="edit-btn" onclick="handleEdit(${schedule.id})">
+                        <span>✏️</span>
+                    </button>
+                    <button class="delete-btn" onclick="handleDelete(${schedule.id})">
+                        <span>🗑️</span>
+                    </button>
+                </div>
+            `;
+
+            return item;
+        }
+
+        // Render toàn bộ danh sách
+        function renderScheduleList() {
+            const listElement = document.getElementById('scheduleList');
+            const emptyState = document.getElementById('emptyState');
+            
+            // Filter schedules
+            const filteredSchedules = currentFilter === 'all' 
+                ? schedules 
+                : schedules.filter(s => s.deviceType === currentFilter);
+
+            // Clear list
+            listElement.innerHTML = '';
+
+            // Render items
+            if (filteredSchedules.length === 0) {
+                emptyState.classList.add('show');
+            } else {
+                emptyState.classList.remove('show');
+                filteredSchedules.forEach(schedule => {
+                    listElement.appendChild(renderScheduleItem(schedule));
+                });
+            }
+        }
+
+        // ============================================
+        // EVENT HANDLERS
+        // ============================================
+
+        // Toggle schedule active/inactive
+        async function toggleSchedule(id, isActive) {
+            await updateSchedule(id, { isActive });
+            console.log(`Schedule ${id} ${isActive ? 'enabled' : 'disabled'}`);
+        }
+
+        // Delete schedule
+        async function handleDelete(id) {
+            if (confirm('Are you sure you want to delete this schedule?')) {
+                await deleteSchedule(id);
+                renderScheduleList();
+            }
+        }
+
+        // Edit schedule
+        function handleEdit(id) {
+            const schedule = schedules.find(s => s.id === id);
+            if (!schedule) return;
+
+            // Populate form với data hiện tại
+            editingScheduleId = id;
+            document.getElementById('location').value = schedule.location;
+            document.getElementById('deviceId').value = schedule.deviceId;
+            document.getElementById('deviceType').value = schedule.deviceType;
+            document.getElementById('timeOn').value = schedule.timeOn || '';
+            document.getElementById('timeOff').value = schedule.timeOff || '';
+            document.getElementById('note').value = schedule.note || '';
+
+            // Show form
             document.getElementById('scheduleList').style.display = 'none';
+            document.getElementById('emptyState').classList.remove('show');
             document.getElementById('addForm').classList.add('active');
-            document.querySelector('.header .title').textContent = 'Add Schedules';
-            document.querySelector('.add-btn').classList.add('hidden');
+            document.getElementById('headerTitle').textContent = 'Edit Schedule';
+            document.getElementById('headerAddBtn').style.display = 'none';
+
+            // Đổi text button
+            const saveBtn = document.querySelector('.btn-save');
+            saveBtn.textContent = 'Update Schedule';
         }
 
-        function cancelAdd() {
+        // Filter schedules
+        function filterSchedule(deviceType) {
+            currentFilter = deviceType;
+            
+            // Update active icon
+            const iconItems = document.querySelectorAll('.icon-item');
+            iconItems.forEach(item => {
+                if (item.getAttribute('data-filter') === deviceType) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+
+            renderScheduleList();
+        }
+
+        // Show add form
+        function showAddForm() {
+            editingScheduleId = null; // Reset editing mode
+            document.getElementById('scheduleList').style.display = 'none';
+            document.getElementById('emptyState').classList.remove('show');
+            document.getElementById('addForm').classList.add('active');
+            document.getElementById('headerTitle').textContent = 'Add Schedule';
+            document.getElementById('headerAddBtn').style.display = 'none';
+
+            // Reset button text
+            const saveBtn = document.querySelector('.btn-save');
+            saveBtn.textContent = 'Save Schedule';
+        }
+
+        // Cancel form
+        function cancelForm() {
+            editingScheduleId = null; // Reset editing mode
+            document.getElementById('scheduleList').style.display = 'flex';
             document.getElementById('addForm').classList.remove('active');
-            document.getElementById('scheduleList').style.display = 'block';
-            document.querySelector('.header .title').textContent = 'Schedules';
-            document.querySelector('.add-btn').classList.remove('hidden');
-            // Reset form
+            document.getElementById('headerTitle').textContent = 'Schedules';
+            document.getElementById('headerAddBtn').style.display = 'flex';
+            
+            // Clear form
+            document.getElementById('location').value = '';
             document.getElementById('deviceId').value = '';
             document.getElementById('deviceType').value = '';
-            document.getElementById('scheduleTime').value = '';
-            document.getElementById('location').value = '';
+            document.getElementById('timeOn').value = '';
+            document.getElementById('timeOff').value = '';
             document.getElementById('note').value = '';
+
+            // Reset button text
+            const saveBtn = document.querySelector('.btn-save');
+            saveBtn.textContent = 'Save Schedule';
         }
 
-        function saveSchedule() {
-            const deviceId = document.getElementById('deviceId').value.trim();
-            const deviceType = document.getElementById('deviceType').value.trim();
-            const scheduleTime = document.getElementById('scheduleTime').value.trim();
+        // Save schedule
+        async function saveSchedule() {
             const location = document.getElementById('location').value.trim();
+            const deviceId = document.getElementById('deviceId').value.trim();
+            const deviceType = document.getElementById('deviceType').value;
+            const timeOn = document.getElementById('timeOn').value;
+            const timeOff = document.getElementById('timeOff').value || null;
             const note = document.getElementById('note').value.trim();
 
-            if (!deviceId || !deviceType || !scheduleTime || !location) {
-                alert('Please fill in all required fields (Device ID, Device Type, Time, Location).');
+            if (!location || !deviceId || !deviceType || !timeOn) {
+                alert('Please fill in all required fields');
                 return;
             }
 
-            // Create new schedule item
-            const scheduleItem = document.createElement('div');
-            scheduleItem.classList.add('schedule-item');
-            scheduleItem.setAttribute('data-device-type', deviceType.toLowerCase());
+            const scheduleData = {
+                location,
+                deviceId,
+                deviceType,
+                timeOn,
+                timeOff,
+                note
+            };
 
-            scheduleItem.innerHTML = `
-                <div class="schedule-info">
-                    <h3>${location}</h3>
-                    <div class="schedule-code">${deviceId}</div>
-                    <div class="schedule-time">${scheduleTime}</div>
-                    ${note ? `<div class="schedule-note">${note}</div>` : ''}
-                </div>
-                <label class="toggle-switch">
-                    <input type="checkbox" checked onchange="toggleSwitch(this, '${deviceId}')">
-                    <span class="toggle-slider"></span>
-                </label>
-            `;
+            // Check nếu đang edit hay add mới
+            if (editingScheduleId) {
+                // Update existing schedule
+                await updateSchedule(editingScheduleId, scheduleData);
+            } else {
+                // Create new schedule
+                await createSchedule(scheduleData);
+            }
 
-            // Append to schedule list
-            document.getElementById('scheduleList').appendChild(scheduleItem);
-
-            // Reset and hide form
-            cancelAdd();
+            renderScheduleList();
+            cancelForm();
         }
 
-        function filterSchedule(deviceType) {
-            const scheduleItems = document.querySelectorAll('.schedule-item');
-            const iconItems = document.querySelectorAll('.icon-item');
-
-            // Update active icon
-            iconItems.forEach(item => item.classList.remove('active'));
-            document.querySelector(`.icon-item[onclick="filterSchedule('${deviceType}')"]`).classList.add('active');
-
-            // Filter schedule items
-            scheduleItems.forEach(item => {
-                if (deviceType === 'all' || item.getAttribute('data-device-type') === deviceType) {
-                    item.style.display = 'flex';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
+        // Navigation
+        function goHome() {
+            window.location.href = 'homepage.html';
         }
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+
+        async function init() {
+            // Load schedules from database/API
+            schedules = await fetchSchedules();
+            
+            // Render initial view
+            renderScheduleList();
+        }
+
+        // Start app
+        init();
     </script>
 </body>
 </html>

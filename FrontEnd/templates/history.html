@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e3f2fd 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 16px 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .home-btn {
+            width: 40px;
+            height: 40px;
+            background: #f3f4f6;
+            color: #1f2937;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .home-btn:hover {
+            background: #e5e7eb;
+            transform: scale(1.05);
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .filter-tabs {
+            background: white;
+            padding: 16px 24px;
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 72px;
+            z-index: 99;
+        }
+
+        .filter-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .filter-tab {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s;
+            background: #f3f4f6;
+            color: #6b7280;
+            border: none;
+        }
+
+        .filter-tab.active {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+        }
+
+        .content {
+            padding: 24px;
+        }
+
+        .stats-summary {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .stats-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 16px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .stat-icon-small {
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+            font-size: 16px;
+        }
+
+        .stat-icon-small.green { background: #dcfce7; }
+        .stat-icon-small.red { background: #fee2e2; }
+        .stat-icon-small.blue { background: #dbeafe; }
+
+        .date-section {
+            margin-bottom: 24px;
+        }
+
+        .date-header {
+            font-size: 14px;
+            font-weight: 600;
+            color: #6b7280;
+            margin-bottom: 12px;
+            padding-left: 4px;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .history-item {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .history-item:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border-color: #e5e7eb;
+        }
+
+        .history-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .history-icon.on {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+        }
+
+        .history-icon.off {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+        }
+
+        .history-icon.schedule {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        }
+
+        .history-icon.alert {
+            background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
+        }
+
+        .history-content {
+            flex: 1;
+        }
+
+        .history-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .history-device {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 6px;
+        }
+
+        .history-time {
+            font-size: 12px;
+            color: #9ca3af;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 6px;
+        }
+
+        .status-badge.on {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .status-badge.off {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .status-badge.scheduled {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+            display: none;
+        }
+
+        .empty-state.show {
+            display: block;
+        }
+
+        .empty-state svg {
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 18px;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .clear-btn {
+            width: 100%;
+            padding: 14px;
+            background: white;
+            border: 2px solid #fee2e2;
+            color: #dc2626;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 24px;
+        }
+
+        .clear-btn:hover {
+            background: #fee2e2;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <h1 class="header-title">History</h1>
+            </div>
+            <div class="header-left">
+                <button class="home-btn" onclick="goHome()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="filter-tabs">
+            <button class="filter-tab active" onclick="filterHistory('all')">All Activity</button>
+            <button class="filter-tab" onclick="filterHistory('on')">Turned On</button>
+            <button class="filter-tab" onclick="filterHistory('off')">Turned Off</button>
+            <button class="filter-tab" onclick="filterHistory('schedule')">Scheduled</button>
+            <button class="filter-tab" onclick="filterHistory('alert')">Alerts</button>
+        </div>
+
+        <div class="content">
+            <div class="stats-summary">
+                <div class="stats-title">Today's Summary</div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-icon-small green">✓</div>
+                        <div class="stat-value" id="statActivated">0</div>
+                        <div class="stat-label">Activated</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-icon-small red">✕</div>
+                        <div class="stat-value" id="statDeactivated">0</div>
+                        <div class="stat-label">Deactivated</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-icon-small blue">⚡</div>
+                        <div class="stat-value" id="statAuto">0</div>
+                        <div class="stat-label">Auto</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="historyContainer" class="loading">Loading history...</div>
+
+            <div class="empty-state" id="emptyState">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                <h3>No activity found</h3>
+                <p>Try selecting a different filter</p>
+            </div>
+
+            <button class="clear-btn" onclick="clearHistory()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 8px;">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+                Clear All History
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // ===== DATA STRUCTURE =====
+        // Đây là cấu trúc data mẫu - thay thế bằng API call
+        const MOCK_DATA = {
+            stats: {
+                activated: 12,
+                deactivated: 8,
+                auto: 5
+            },
+            history: [
+                {
+                    id: 1,
+                    type: 'on',
+                    icon: '💡',
+                    title: 'Light turned on',
+                    device: 'Living Room',
+                    deviceType: 'Light Bulbs',
+                    timestamp: new Date(Date.now() - 2 * 60000), // 2 minutes ago
+                    status: 'on'
+                },
+                {
+                    id: 2,
+                    type: 'schedule',
+                    icon: '❄️',
+                    title: 'Schedule executed',
+                    device: 'Bedroom',
+                    deviceType: 'Air Conditioner',
+                    timestamp: new Date(Date.now() - 15 * 60000), // 15 minutes ago
+                    status: 'scheduled'
+                },
+                {
+                    id: 3,
+                    type: 'off',
+                    icon: '📺',
+                    title: 'TV turned off',
+                    device: 'Living Room',
+                    deviceType: 'Smart TV',
+                    timestamp: new Date(Date.now() - 60 * 60000), // 1 hour ago
+                    status: 'off'
+                },
+                {
+                    id: 4,
+                    type: 'on',
+                    icon: '🌀',
+                    title: 'Fan turned on',
+                    device: 'Bedroom',
+                    deviceType: 'Ceiling Fan',
+                    timestamp: new Date(Date.now() - 2 * 60 * 60000), // 2 hours ago
+                    status: 'on'
+                },
+                {
+                    id: 5,
+                    type: 'alert',
+                    icon: '⚠️',
+                    title: 'High temperature alert',
+                    device: 'Kitchen',
+                    deviceType: 'Temperature Sensor',
+                    timestamp: new Date(Date.now() - 24 * 60 * 60000 - 30 * 60000), // Yesterday 23:30
+                    status: null
+                },
+                {
+                    id: 6,
+                    type: 'off',
+                    icon: '💡',
+                    title: 'All lights turned off',
+                    device: 'Bedroom',
+                    deviceType: 'Light Bulbs',
+                    timestamp: new Date(Date.now() - 24 * 60 * 60000 - 2 * 60 * 60000), // Yesterday 22:00
+                    status: 'off'
+                },
+                {
+                    id: 7,
+                    type: 'schedule',
+                    icon: '❄️',
+                    title: 'AC scheduled on',
+                    device: 'Bedroom',
+                    deviceType: 'Air Conditioner',
+                    timestamp: new Date(Date.now() - 24 * 60 * 60000 - 3 * 60 * 60000), // Yesterday 21:00
+                    status: 'scheduled'
+                }
+            ]
+        };
+
+        // ===== API FUNCTIONS =====
+        // Thay thế các function này bằng real API calls
+        
+        async function fetchHistoryData() {
+            // TODO: Replace with actual API call
+            // const response = await fetch('/api/history');
+            // return await response.json();
+            
+            // Simulate API delay
+            return new Promise((resolve) => {
+                setTimeout(() => resolve(MOCK_DATA), 500);
+            });
+        }
+
+        async function fetchStats() {
+            // TODO: Replace with actual API call
+            // const response = await fetch('/api/stats');
+            // return await response.json();
+            
+            return MOCK_DATA.stats;
+        }
+
+        async function deleteAllHistory() {
+            // TODO: Replace with actual API call
+            // const response = await fetch('/api/history', { method: 'DELETE' });
+            // return await response.json();
+            
+            return new Promise((resolve) => {
+                setTimeout(() => resolve({ success: true }), 300);
+            });
+        }
+
+        // ===== UTILITY FUNCTIONS =====
+        
+        function formatTimestamp(timestamp) {
+            const now = new Date();
+            const date = new Date(timestamp);
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+
+            if (diffMins < 1) return 'Just now';
+            if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
+            if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+            
+            // For yesterday and older
+            const hours = date.getHours().toString().padStart(2, '0');
+            const mins = date.getMinutes().toString().padStart(2, '0');
+            const timeStr = `${hours}:${mins}`;
+            
+            if (diffDays === 1) return `Yesterday at ${timeStr}`;
+            if (diffDays < 7) return `${diffDays} days ago at ${timeStr}`;
+            
+            return date.toLocaleDateString('vi-VN');
+        }
+
+        function groupByDate(historyItems) {
+            const groups = {
+                today: [],
+                yesterday: [],
+                older: []
+            };
+
+            const now = new Date();
+            const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const yesterdayStart = new Date(todayStart - 86400000);
+
+            historyItems.forEach(item => {
+                const itemDate = new Date(item.timestamp);
+                if (itemDate >= todayStart) {
+                    groups.today.push(item);
+                } else if (itemDate >= yesterdayStart) {
+                    groups.yesterday.push(item);
+                } else {
+                    groups.older.push(item);
+                }
+            });
+
+            return groups;
+        }
+
+        // ===== RENDER FUNCTIONS =====
+        
+        function renderHistoryItem(item) {
+            const statusBadge = item.status ? `<span class="status-badge ${item.status}">${item.status.toUpperCase()}</span>` : '';
+            
+            return `
+                <div class="history-item" data-type="${item.type}" data-id="${item.id}">
+                    <div class="history-icon ${item.type}">${item.icon}</div>
+                    <div class="history-content">
+                        <div class="history-title">${item.title}</div>
+                        <div class="history-device">${item.device} • ${item.deviceType}</div>
+                        <div class="history-time">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                            ${formatTimestamp(item.timestamp)}
+                        </div>
+                        ${statusBadge}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderDateSection(title, items) {
+            if (items.length === 0) return '';
+            
+            return `
+                <div class="date-section">
+                    <div class="date-header">${title}</div>
+                    <div class="history-list">
+                        ${items.map(item => renderHistoryItem(item)).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderHistory(historyData) {
+            const grouped = groupByDate(historyData);
+            const container = document.getElementById('historyContainer');
+            
+            let html = '';
+            html += renderDateSection('Today', grouped.today);
+            html += renderDateSection('Yesterday', grouped.yesterday);
+            html += renderDateSection('Older', grouped.older);
+            
+            if (html === '') {
+                document.getElementById('emptyState').classList.add('show');
+                container.innerHTML = '';
+            } else {
+                document.getElementById('emptyState').classList.remove('show');
+                container.innerHTML = html;
+            }
+        }
+
+        function renderStats(stats) {
+            document.getElementById('statActivated').textContent = stats.activated;
+            document.getElementById('statDeactivated').textContent = stats.deactivated;
+            document.getElementById('statAuto').textContent = stats.auto;
+        }
+
+        // ===== FILTER & INTERACTION =====
+        
+        let currentFilter = 'all';
+        let allHistoryData = [];
+
+        function filterHistory(type) {
+            currentFilter = type;
+            
+            const filterTabs = document.querySelectorAll('.filter-tab');
+            filterTabs.forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const filteredData = type === 'all' 
+                ? allHistoryData 
+                : allHistoryData.filter(item => item.type === type);
+
+            renderHistory(filteredData);
+        }
+
+        async function clearHistory() {
+            if (!confirm('Are you sure you want to clear all history? This action cannot be undone.')) {
+                return;
+            }
+
+            try {
+                await deleteAllHistory();
+                allHistoryData = [];
+                renderHistory([]);
+                renderStats({ activated: 0, deactivated: 0, auto: 0 });
+                alert('History cleared successfully!');
+            } catch (error) {
+                console.error('Error clearing history:', error);
+                alert('Failed to clear history. Please try again.');
+            }
+        }
+
+        // ===== NAVIGATION =====
+        
+        function goHome() {
+            window.location.href = 'homepage.html';
+        }
+
+        // ===== INITIALIZATION =====
+        
+        async function initializePage() {
+            try {
+                const data = await fetchHistoryData();
+                allHistoryData = data.history;
+                
+                renderHistory(allHistoryData);
+                renderStats(data.stats);
+            } catch (error) {
+                console.error('Error loading history:', error);
+                document.getElementById('historyContainer').innerHTML = 
+                    '<div style="text-align: center; padding: 40px; color: #dc2626;">Failed to load history. Please refresh the page.</div>';
+            }
+        }
+
+        // Load data when page loads
+        window.addEventListener('load', initializePage);
+
+        // Optional: Auto-refresh every 30 seconds
+        // setInterval(initializePage, 30000);
+    </script>
+</body>
+</html>
