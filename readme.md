@@ -84,7 +84,8 @@ IOTSMARTHOME_TTDAMHDN-HTTT/
 
 4. **Tạo file .env**:
    ```bash
-   MONGO_URI= "MONGO_URI=mongodb://127.0.0.1:27017/IoTSmartHome"
+   MONGO_URI= "MONGO_URI="mongodb+srv://dadnhttt:group1@cluster0.rotydvh.mongodb.net/mydb"
+
    PORT=3000 
    
    ADAFRUIT_AIO_USERNAME = "NTLoc"
