@@ -9,3 +9,5 @@ adafruit-io
 flask
 axios
 mqtt
+flask-socketio
+flask-cors
