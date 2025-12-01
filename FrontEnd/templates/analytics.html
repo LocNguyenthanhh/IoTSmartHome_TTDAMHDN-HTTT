@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Analytics</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> <!-- Font Awesome -->
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script> <!-- Socket.IO -->
     <style>
         * {
             margin: 0;
@@ -42,9 +43,22 @@
             gap: 16px;
         }
 
+        .header-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Nút Home */
         .home-btn {
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             background: #f3f4f6;
             color: #1f2937;
             border: none;
@@ -54,6 +68,7 @@
             justify-content: center;
             cursor: pointer;
             transition: all 0.2s;
+            text-decoration: none;
         }
 
         .home-btn:hover {
@@ -61,10 +76,34 @@
             transform: scale(1.05);
         }
 
-        .header-title {
+        .home-btn i {
             font-size: 20px;
-            font-weight: 700;
-            color: #1f2937;
+        }
+
+        /* Nút Devices */
+        .devices-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .devices-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .devices-btn i {
+            font-size: 16px;
         }
 
         .period-tabs {
@@ -426,6 +465,74 @@
             color: #166534;
             line-height: 1.6;
         }
+
+        /* Loading overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.8);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .loading-content {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .loading-spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid #f3f4f6;
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Real-time indicator */
+        .real-time-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: #10b981;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(16, 185, 129, 0.1);
+            padding: 4px 8px;
+            border-radius: 8px;
+        }
+
+        .real-time-dot {
+            width: 6px;
+            height: 6px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
     </style>
 </head>
 <body>
@@ -434,13 +541,14 @@
             <div class="header-left">
                 <h1 class="header-title">Analytics</h1>
             </div>
-            <div class="header-left">
-                <button class="home-btn" onclick="goHome()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                    </svg>
-                </button>
+            <div class="header-right">
+                <a href="homepage.html" class="home-btn" title="Home">
+                    <i class="fas fa-home"></i>
+                </a>
+                <a href="devicescontrol.html" class="devices-btn" title="Devices">
+                    <i class="fas fa-sliders-h"></i>
+                    <span>Devices</span>
+                </a>
             </div>
         </div>
 
@@ -454,12 +562,12 @@
         <div class="content">
             <div class="energy-card">
                 <div class="energy-header">
-                    <div class="energy-label">Total Energy Consumption</div>
-                    <div class="energy-icon">⚡</div>
+                    <div class="energy-label">Total Activity</div>
+                    <div class="energy-icon">📊</div>
                 </div>
                 <div class="energy-value">
                     <h1 id="totalEnergy">234</h1>
-                    <span>kWh</span>
+                    <span>activities</span>
                 </div>
                 <div class="energy-details">
                     <div class="energy-detail-item">
@@ -477,7 +585,7 @@
                         </svg>
                         <div class="energy-detail-text">
                             <div class="energy-detail-value" id="estimatedCost">$28.08</div>
-                            <div>Estimated cost</div>
+                            <div>Estimated savings</div>
                         </div>
                     </div>
                 </div>
@@ -489,8 +597,8 @@
                         <div class="stat-icon blue">⚡</div>
                         <span class="stat-trend down">↓ 15%</span>
                     </div>
-                    <div class="stat-value" id="peakUsage">156 kWh</div>
-                    <div class="stat-label">Peak Usage</div>
+                    <div class="stat-value" id="peakUsage">156</div>
+                    <div class="stat-label">Peak Activity</div>
                 </div>
 
                 <div class="stat-card">
@@ -513,27 +621,31 @@
 
                 <div class="stat-card">
                     <div class="stat-header">
-                        <div class="stat-icon red">🔥</div>
+                        <div class="stat-icon red">📱</div>
                         <span class="stat-trend down">↓ 12%</span>
                     </div>
-                    <div class="stat-value" id="avgTemp">18°C</div>
-                    <div class="stat-label">Avg Temp</div>
+                    <div class="stat-value" id="avgTemp">8</div>
+                    <div class="stat-label">Avg Devices</div>
                 </div>
             </div>
 
             <div class="chart-card">
                 <div class="chart-header">
-                    <div class="chart-title">Real-time Power Monitor</div>
+                    <div class="chart-title">Real-time Activity Monitor</div>
                 </div>
                 <div class="line-chart-container">
+                    <div class="real-time-indicator">
+                        <div class="real-time-dot"></div>
+                        <span>LIVE</span>
+                    </div>
                     <canvas id="lineChart"></canvas>
-                    <div class="chart-current-value" id="currentValue">0.0 kW</div>
+                    <div class="chart-current-value" id="currentValue">0 activities</div>
                 </div>
             </div>
 
             <div class="chart-card">
                 <div class="chart-header">
-                    <div class="chart-title" id="chartTitle">Weekly Energy Usage</div>
+                    <div class="chart-title" id="chartTitle">Weekly Activity</div>
                     <div class="chart-controls">
                         <button class="chart-btn" onclick="changeChartType('bar')" title="Bar Chart">
                             <i class="fas fa-chart-bar"></i>
@@ -570,145 +682,334 @@
         </div>
     </div>
 
-    <script>
-        const DATA = {
-            today: {
-                totalEnergy: 42,
-                comparison: -15,
-                cost: 5.04,
-                peakUsage: 38,
-                saved: 5.04,
-                activeTime: 8,
-                avgTemp: 22,
-                chartTitle: 'Today Energy Usage',
-                barData: [
-                    { label: 'Morning', value: 15 },
-                    { label: 'Afternoon', value: 12 },
-                    { label: 'Evening', value: 15 }
-                ],
-                lineData: [
-                    { label: '00:00', value: 2.5 },
-                    { label: '06:00', value: 1.8 },
-                    { label: '12:00', value: 3.2 },
-                    { label: '18:00', value: 2.9 },
-                    { label: 'Now', value: 2.6 }
-                ],
-                doughnutData: [
-                    { label: 'AC', value: 45 },
-                    { label: 'Lighting', value: 30 },
-                    { label: 'Entertainment', value: 15 },
-                    { label: 'Others', value: 10 }
-                ],
-                devices: [
-                    { name: 'Air Conditioner', icon: '❄️', color: 'blue', percentage: 45 },
-                    { name: 'Lighting', icon: '💡', color: 'yellow', percentage: 28 },
-                    { name: 'Entertainment', icon: '📺', color: 'purple', percentage: 18 },
-                    { name: 'Others', icon: '🔌', color: 'green', percentage: 9 }
-                ]
-            },
-            week: {
-                totalEnergy: 234,
-                comparison: -23,
-                cost: 28.08,
-                peakUsage: 156,
-                saved: 18.72,
-                activeTime: 42,
-                avgTemp: 18,
-                chartTitle: 'Weekly Energy Usage',
-                barData: [
-                    { label: 'Mon', value: 30 },
-                    { label: 'Tue', value: 35 },
-                    { label: 'Wed', value: 40 },
-                    { label: 'Thu', value: 32 },
-                    { label: 'Fri', value: 45 },
-                    { label: 'Sat', value: 48 },
-                    { label: 'Sun', value: 38 }
-                ],
-                doughnutData: [
-                    { label: 'AC', value: 45 },
-                    { label: 'Lighting', value: 28 },
-                    { label: 'Entertainment', value: 18 },
-                    { label: 'Others', value: 9 }
-                ],
-                devices: [
-                    { name: 'Air Conditioner', icon: '❄️', color: 'blue', percentage: 45 },
-                    { name: 'Lighting', icon: '💡', color: 'yellow', percentage: 28 },
-                    { name: 'Entertainment', icon: '📺', color: 'purple', percentage: 18 },
-                    { name: 'Others', icon: '🔌', color: 'green', percentage: 9 }
-                ]
-            },
-            month: {
-                totalEnergy: 986,
-                comparison: -18,
-                cost: 118.32,
-                peakUsage: 245,
-                saved: 78.88,
-                activeTime: 178,
-                avgTemp: 20,
-                chartTitle: 'Monthly Energy Usage',
-                barData: [
-                    { label: 'Week 1', value: 220 },
-                    { label: 'Week 2', value: 250 },
-                    { label: 'Week 3', value: 230 },
-                    { label: 'Week 4', value: 286 }
-                ],
-                doughnutData: [
-                    { label: 'AC', value: 42 },
-                    { label: 'Lighting', value: 25 },
-                    { label: 'Entertainment', value: 20 },
-                    { label: 'Others', value: 13 }
-                ],
-                devices: [
-                    { name: 'Air Conditioner', icon: '❄️', color: 'blue', percentage: 42 },
-                    { name: 'Lighting', icon: '💡', color: 'yellow', percentage: 25 },
-                    { name: 'Entertainment', icon: '📺', color: 'purple', percentage: 20 },
-                    { name: 'Others', icon: '🔌', color: 'green', percentage: 13 }
-                ]
-            },
-            year: {
-                totalEnergy: 11832,
-                comparison: -12,
-                cost: 1419.84,
-                peakUsage: 1245,
-                saved: 946.56,
-                activeTime: 2136,
-                avgTemp: 21,
-                chartTitle: 'Yearly Energy Usage',
-                barData: [
-                    { label: 'Q1', value: 3000 },
-                    { label: 'Q2', value: 2900 },
-                    { label: 'Q3', value: 3100 },
-                    { label: 'Q4', value: 2832 }
-                ],
-                doughnutData: [
-                    { label: 'AC', value: 48 },
-                    { label: 'Lighting', value: 22 },
-                    { label: 'Entertainment', value: 19 },
-                    { label: 'Others', value: 11 }
-                ],
-                devices: [
-                    { name: 'Air Conditioner', icon: '❄️', color: 'blue', percentage: 48 },
-                    { name: 'Lighting', icon: '💡', color: 'yellow', percentage: 22 },
-                    { name: 'Entertainment', icon: '📺', color: 'purple', percentage: 19 },
-                    { name: 'Others', icon: '🔌', color: 'green', percentage: 11 }
-                ]
-            }
-        };
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <div style="font-weight: 500; color: #4b5563;">Loading analytics...</div>
+        </div>
+    </div>
 
+    <script>
+        // Base URL cho API
+        const API_BASE = 'http://localhost:5000/api';
+        
+        // State
         let currentPeriod = 'week';
         let currentChartType = 'bar';
-        let energyChartInstance = null; // Biến để lưu instance của chart
+        let energyChartInstance = null;
+        let socket = null;
+        let hasRealTimeConnection = false;
 
-        function updateUI(period) {
-            const data = DATA[period];
+        // Khởi tạo Socket.IO
+        function initializeSocket() {
+            try {
+                socket = io('http://localhost:5000');
+                
+                socket.on('connect', () => {
+                    console.log('✅ Socket.IO connected');
+                    // Yêu cầu dữ liệu real-time ngay khi kết nối
+                    socket.emit('requestRealTimeData');
+                });
+                
+                socket.on('analyticsUpdate', (data) => {
+                    console.log('📊 Received analytics update:', data);
+                    if (data.period === currentPeriod) {
+                        updateWithSocketData(data);
+                    }
+                });
+                
+                // === REAL-TIME UPDATE LISTENER ===
+                socket.on('realTimeUpdate', (data) => {
+                    console.log('📈 Real-time update received:', data);
+                    hasRealTimeConnection = true;
+                    
+                    // Cập nhật biểu đồ real-time với dữ liệu thực
+                    if (data.currentActivity !== undefined) {
+                        updateRealTimeChartWithData(data.currentActivity);
+                    }
+                    
+                    // Cập nhật hiển thị số liệu hiện tại
+                    if (data.currentActivity !== undefined) {
+                        currentValueDisplay.textContent = 
+                            data.currentActivity.toFixed(0) + ' activities';
+                    }
+                    
+                    // Cập nhật total activity
+                    if (data.totalActivity !== undefined) {
+                        document.getElementById('totalEnergy').textContent = 
+                            data.totalActivity;
+                    }
+                    
+                    // Cập nhật peak usage
+                    if (data.peakUsage !== undefined) {
+                        document.getElementById('peakUsage').textContent = 
+                            data.peakUsage;
+                    }
+                    
+                    // Cập nhật energy saved
+                    if (data.energySaved !== undefined) {
+                        document.getElementById('saved').textContent = 
+                            '$' + data.energySaved.toFixed(2);
+                    }
+                    
+                    // Cập nhật active devices
+                    if (data.activeDevices !== undefined) {
+                        document.getElementById('avgTemp').textContent = 
+                            data.activeDevices;
+                    }
+                    
+                    // Cập nhật device usage breakdown
+                    if (data.devices && data.devices.length > 0) {
+                        updateRealTimeDeviceUsage(data.devices);
+                    }
+                });
+                
+            } catch (error) {
+                console.error('❌ Socket.IO initialization failed:', error);
+            }
+        }
+
+        // Lấy dữ liệu từ backend
+        async function fetchAnalyticsData(period) {
+            try {
+                console.log(`📡 Fetching analytics for period: ${period}`);
+                
+                // Hiển thị loading
+                showLoading();
+                
+                // Lấy activity data
+                const activityRes = await fetch(`${API_BASE}/analytics/activity?period=${period}`);
+                const activityData = await activityRes.json();
+                
+                // Lấy device usage
+                const usageRes = await fetch(`${API_BASE}/analytics/device-usage`);
+                const usageData = await usageRes.json();
+                
+                // Ẩn loading
+                hideLoading();
+                
+                if (activityData.success && usageData.success) {
+                    return {
+                        activity: activityData.data,
+                        deviceUsage: usageData.data
+                    };
+                } else {
+                    throw new Error('Failed to fetch data from backend');
+                }
+            } catch (error) {
+                console.error('❌ Error fetching analytics:', error);
+                hideLoading();
+                return null;
+            }
+        }
+
+        // Cập nhật UI với dữ liệu
+        async function updateUI(period) {
+            currentPeriod = period;
+            
+            // Cập nhật active tab
+            const tabs = document.querySelectorAll('.period-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Lấy dữ liệu
+            const analyticsData = await fetchAnalyticsData(period);
+            
+            if (!analyticsData) {
+                console.warn('⚠️ Using mock data');
+                updateWithMockData(period);
+                return;
+            }
+            
+            // Cập nhật với dữ liệu thực
+            updateWithRealData(analyticsData, period);
+        }
+
+        // Cập nhật với dữ liệu thực
+        function updateWithRealData(analyticsData, period) {
+            const { activity, deviceUsage } = analyticsData;
+            
+            if (!activity || !deviceUsage) {
+                updateWithMockData(period);
+                return;
+            }
+            
+            // Cập nhật energy card
+            document.getElementById('totalEnergy').textContent = activity.totalActivity || 0;
+            document.getElementById('comparison').textContent = (activity.comparison || 0) + '%';
+            document.getElementById('estimatedCost').textContent = '$' + calculateSavings(activity.totalActivity || 0);
+            
+            // Cập nhật stats grid
+            const peakActivity = getPeakActivity(activity.data);
+            document.getElementById('peakUsage').textContent = peakActivity;
+            document.getElementById('saved').textContent = '$' + calculateSavings(activity.comparison || 0);
+            document.getElementById('activeTime').textContent = getTotalActiveTime(activity.data) + 'h';
+            document.getElementById('avgTemp').textContent = getAvgDevices(activity.data);
+            
+            // Cập nhật chart title
+            document.getElementById('chartTitle').textContent = getChartTitle(period) + ' Activity';
+            
+            // Chuẩn bị dữ liệu cho chart
+            let chartData = prepareChartData(activity.data, period);
+            updateChart(chartData);
+            
+            // Cập nhật device usage
+            updateDeviceUsage(deviceUsage);
+            
+            // Gửi yêu cầu real-time data
+            if (socket) {
+                socket.emit('requestAnalytics', { period: period });
+            }
+        }
+
+        // Cập nhật với dữ liệu từ socket
+        function updateWithSocketData(data) {
+            if (data.activity && data.activity.data) {
+                const chartData = prepareChartData(data.activity.data, data.period);
+                updateChart(chartData);
+            }
+            
+            if (data.deviceUsage) {
+                updateDeviceUsage(data.deviceUsage);
+            }
+        }
+
+        // Cập nhật với mock data (fallback)
+        function updateWithMockData(period) {
+            const DATA = {
+                today: {
+                    totalEnergy: 42,
+                    comparison: -15,
+                    cost: 5.04,
+                    peakUsage: 38,
+                    saved: 5.04,
+                    activeTime: 8,
+                    avgTemp: 22,
+                    chartTitle: 'Today Activity',
+                    barData: [
+                        { label: 'Morning', value: 15 },
+                        { label: 'Afternoon', value: 12 },
+                        { label: 'Evening', value: 15 }
+                    ],
+                    lineData: [
+                        { label: '00:00', value: 2.5 },
+                        { label: '06:00', value: 1.8 },
+                        { label: '12:00', value: 3.2 },
+                        { label: '18:00', value: 2.9 },
+                        { label: 'Now', value: 2.6 }
+                    ],
+                    doughnutData: [
+                        { label: 'AC', value: 45 },
+                        { label: 'Lighting', value: 30 },
+                        { label: 'Entertainment', value: 15 },
+                        { label: 'Others', value: 10 }
+                    ],
+                    devices: [
+                        { name: 'Air Conditioner', icon: '❄️', color: 'blue', percentage: 45 },
+                        { name: 'Lighting', icon: '💡', color: 'yellow', percentage: 28 },
+                        { name: 'Entertainment', icon: '📺', color: 'purple', percentage: 18 },
+                        { name: 'Others', icon: '🔌', color: 'green', percentage: 9 }
+                    ]
+                },
+                week: {
+                    totalEnergy: 234,
+                    comparison: -23,
+                    cost: 28.08,
+                    peakUsage: 156,
+                    saved: 18.72,
+                    activeTime: 42,
+                    avgTemp: 18,
+                    chartTitle: 'Weekly Activity',
+                    barData: [
+                        { label: 'Mon', value: 30 },
+                        { label: 'Tue', value: 35 },
+                        { label: 'Wed', value: 40 },
+                        { label: 'Thu', value: 32 },
+                        { label: 'Fri', value: 45 },
+                        { label: 'Sat', value: 48 },
+                        { label: 'Sun', value: 38 }
+                    ],
+                    doughnutData: [
+                        { label: 'AC', value: 45 },
+                        { label: 'Lighting', value: 28 },
+                        { label: 'Entertainment', value: 18 },
+                        { label: 'Others', value: 9 }
+                    ],
+                    devices: [
+                        { name: 'Air Conditioner', icon: '❄️', color: 'blue', percentage: 45 },
+                        { name: 'Lighting', icon: '💡', color: 'yellow', percentage: 28 },
+                        { name: 'Entertainment', icon: '📺', color: 'purple', percentage: 18 },
+                        { name: 'Others', icon: '🔌', color: 'green', percentage: 9 }
+                    ]
+                },
+                month: {
+                    totalEnergy: 986,
+                    comparison: -18,
+                    cost: 118.32,
+                    peakUsage: 245,
+                    saved: 78.88,
+                    activeTime: 178,
+                    avgTemp: 20,
+                    chartTitle: 'Monthly Activity',
+                    barData: [
+                        { label: 'Week 1', value: 220 },
+                        { label: 'Week 2', value: 250 },
+                        { label: 'Week 3', value: 230 },
+                        { label: 'Week 4', value: 286 }
+                    ],
+                    doughnutData: [
+                        { label: 'AC', value: 42 },
+                        { label: 'Lighting', value: 25 },
+                        { label: 'Entertainment', value: 20 },
+                        { label: 'Others', value: 13 }
+                    ],
+                    devices: [
+                        { name: 'Air Conditioner', icon: '❄️', color: 'blue', percentage: 42 },
+                        { name: 'Lighting', icon: '💡', color: 'yellow', percentage: 25 },
+                        { name: 'Entertainment', icon: '📺', color: 'purple', percentage: 20 },
+                        { name: 'Others', icon: '🔌', color: 'green', percentage: 13 }
+                    ]
+                },
+                year: {
+                    totalEnergy: 11832,
+                    comparison: -12,
+                    cost: 1419.84,
+                    peakUsage: 1245,
+                    saved: 946.56,
+                    activeTime: 2136,
+                    avgTemp: 21,
+                    chartTitle: 'Yearly Activity',
+                    barData: [
+                        { label: 'Q1', value: 3000 },
+                        { label: 'Q2', value: 2900 },
+                        { label: 'Q3', value: 3100 },
+                        { label: 'Q4', value: 2832 }
+                    ],
+                    doughnutData: [
+                        { label: 'AC', value: 48 },
+                        { label: 'Lighting', value: 22 },
+                        { label: 'Entertainment', value: 19 },
+                        { label: 'Others', value: 11 }
+                    ],
+                    devices: [
+                        { name: 'Air Conditioner', icon: '❄️', color: 'blue', percentage: 48 },
+                        { name: 'Lighting', icon: '💡', color: 'yellow', percentage: 22 },
+                        { name: 'Entertainment', icon: '📺', color: 'purple', percentage: 19 },
+                        { name: 'Others', icon: '🔌', color: 'green', percentage: 11 }
+                    ]
+                }
+            };
+
+            const data = DATA[period] || DATA.week;
             
             document.getElementById('totalEnergy').textContent = data.totalEnergy;
             document.getElementById('comparison').textContent = data.comparison + '%';
             document.getElementById('estimatedCost').textContent = '$' + data.cost.toFixed(2);
-            document.getElementById('peakUsage').textContent = data.peakUsage + ' kWh';
+            document.getElementById('peakUsage').textContent = data.peakUsage;
             document.getElementById('saved').textContent = '$' + data.saved.toFixed(2);
             document.getElementById('activeTime').textContent = data.activeTime + 'h';
-            document.getElementById('avgTemp').textContent = data.avgTemp + '°C';
+            document.getElementById('avgTemp').textContent = data.avgTemp;
             document.getElementById('chartTitle').textContent = data.chartTitle;
             
             let chartData;
@@ -717,7 +1018,7 @@
                     chartData = data.barData;
                     break;
                 case 'line':
-                    chartData = period === 'today' ? data.lineData : data.barData; // Chỉ dùng lineData cho today
+                    chartData = period === 'today' ? data.lineData : data.barData;
                     break;
                 case 'doughnut':
                     chartData = data.doughnutData;
@@ -725,20 +1026,53 @@
             }
             updateChart(chartData);
             updateDeviceUsage(data.devices);
-
-            // Ẩn nút line chart cho các period khác ngoài today
-            const lineBtn = document.getElementById('lineBtn');
-            if (period === 'today') {
-                lineBtn.style.display = 'flex';
-            } else {
-                lineBtn.style.display = 'none';
-            }
         }
 
+        // Helper functions
+        function calculateSavings(activityCount) {
+            // Giả sử mỗi activity tiết kiệm $0.12
+            return (activityCount * 0.12).toFixed(2);
+        }
+        
+        function getPeakActivity(activityData) {
+            if (!activityData || activityData.length === 0) return 0;
+            return Math.max(...activityData.map(item => item.activityCount || 0));
+        }
+        
+        function getTotalActiveTime(activityData) {
+            if (!activityData || activityData.length === 0) return 0;
+            return activityData.reduce((sum, item) => sum + (item.activeDevices || 0), 0);
+        }
+        
+        function getAvgDevices(activityData) {
+            if (!activityData || activityData.length === 0) return 0;
+            const total = activityData.reduce((sum, item) => sum + (item.activeDevices || 0), 0);
+            return Math.round(total / activityData.length);
+        }
+        
+        function getChartTitle(period) {
+            switch (period) {
+                case 'today': return 'Today';
+                case 'week': return 'Weekly';
+                case 'month': return 'Monthly';
+                case 'year': return 'Yearly';
+                default: return 'Weekly';
+            }
+        }
+        
+        function prepareChartData(activityData, period) {
+            if (!activityData) return [];
+            
+            return activityData.map(item => ({
+                label: item.label,
+                value: item.activityCount || 0
+            }));
+        }
+
+        // Cập nhật chart
         function updateChart(chartData) {
             const ctx = document.getElementById('energyChart').getContext('2d');
 
-            // Hủy instance chart cũ nếu tồn tại
             if (energyChartInstance) {
                 energyChartInstance.destroy();
             }
@@ -754,17 +1088,27 @@
                         data: {
                             labels: labels,
                             datasets: [{
-                                label: 'Energy Usage (kWh)',
+                                label: 'Activity Count',
                                 data: values,
-                                backgroundColor: 'rgba(59, 130, 246, 0.8)', // Tone xanh dương
-                                borderColor: 'rgba(37, 99, 235, 1)', // Tone xanh dương đậm
+                                backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                                borderColor: 'rgba(37, 99, 235, 1)',
                                 borderWidth: 1
                             }]
                         },
                         options: {
                             scales: {
                                 y: {
-                                    beginAtZero: true
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Activity Count'
+                                    }
+                                },
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Time Period'
+                                    }
                                 }
                             },
                             plugins: {
@@ -782,11 +1126,11 @@
                         data: {
                             labels: labels,
                             datasets: [{
-                                label: 'Energy Usage (kWh)',
+                                label: 'Activity Count',
                                 data: values,
                                 fill: true,
-                                backgroundColor: 'rgba(59, 130, 246, 0.2)', // Tone xanh dương nhạt
-                                borderColor: 'rgba(37, 99, 235, 1)', // Tone xanh dương đậm
+                                backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                                borderColor: 'rgba(37, 99, 235, 1)',
                                 borderWidth: 2,
                                 tension: 0.4
                             }]
@@ -794,7 +1138,17 @@
                         options: {
                             scales: {
                                 y: {
-                                    beginAtZero: true
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Activity Count'
+                                    }
+                                },
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Time Period'
+                                    }
                                 }
                             },
                             plugins: {
@@ -807,18 +1161,22 @@
                     };
                     break;
                 case 'doughnut':
+                    // Tạo màu sắc động cho doughnut chart
+                    const backgroundColors = [
+                        'rgba(59, 130, 246, 0.8)',
+                        'rgba(37, 99, 235, 0.8)',
+                        'rgba(29, 78, 216, 0.8)',
+                        'rgba(30, 64, 175, 0.8)',
+                        'rgba(96, 165, 250, 0.8)'
+                    ];
+                    
                     chartConfig = {
                         type: 'doughnut',
                         data: {
                             labels: labels,
                             datasets: [{
                                 data: values,
-                                backgroundColor: [
-                                    'rgba(59, 130, 246, 0.8)', // Xanh dương nhạt
-                                    'rgba(37, 99, 235, 0.8)',  // Xanh dương trung bình
-                                    'rgba(29, 78, 216, 0.8)',  // Xanh dương đậm
-                                    'rgba(30, 64, 175, 0.8)'   // Xanh dương tối
-                                ],
+                                backgroundColor: backgroundColors.slice(0, Math.min(values.length, backgroundColors.length)),
                                 borderWidth: 1
                             }]
                         },
@@ -834,55 +1192,146 @@
                     break;
             }
 
-            // Tạo mới chart instance
             energyChartInstance = new Chart(ctx, chartConfig);
+            
+            // Ẩn nút line chart cho các period khác ngoài today
+            const lineBtn = document.getElementById('lineBtn');
+            if (currentPeriod === 'today') {
+                lineBtn.style.display = 'flex';
+            } else {
+                lineBtn.style.display = 'none';
+            }
         }
 
+        // Cập nhật device usage
         function updateDeviceUsage(devices) {
             const usageList = document.getElementById('usageList');
             usageList.innerHTML = '';
             
-            devices.forEach(device => {
+            if (!devices || devices.length === 0) {
+                usageList.innerHTML = '<div style="text-align: center; color: #6b7280; padding: 20px;">No device usage data available</div>';
+                return;
+            }
+            
+            // Sắp xếp theo percentage giảm dần
+            const sortedDevices = [...devices].sort((a, b) => b.percentage - a.percentage);
+            
+            // Chỉ hiển thị 4-5 thiết bị hàng đầu
+            const topDevices = sortedDevices.slice(0, 5);
+            
+            topDevices.forEach(device => {
                 const usageItem = document.createElement('div');
                 usageItem.className = 'usage-item';
+                
+                // Xác định icon và màu
+                const icon = getDeviceIcon(device.type);
+                const colorClass = getColorClass(device.type);
+                const percentage = device.percentage || 0;
+                
                 usageItem.innerHTML = `
-                    <div class="usage-icon ${device.color}">${device.icon}</div>
+                    <div class="usage-icon ${colorClass}">${icon}</div>
                     <div class="usage-info">
-                        <div class="usage-name">${device.name}</div>
+                        <div class="usage-name">${device.name || 'Unknown Device'}</div>
                         <div class="usage-bar-container">
                             <div class="usage-bar-bg">
-                                <div class="usage-bar-fill" style="width: ${device.percentage}%;"></div>
+                                <div class="usage-bar-fill" style="width: ${percentage}%;"></div>
                             </div>
-                            <div class="usage-percentage">${device.percentage}%</div>
+                            <div class="usage-percentage">${percentage}%</div>
                         </div>
                     </div>
                 `;
                 usageList.appendChild(usageItem);
             });
         }
-
-        function changePeriod(period) {
-            currentPeriod = period;
+        
+        // Cập nhật real-time device usage
+        function updateRealTimeDeviceUsage(devices) {
+            const usageList = document.getElementById('usageList');
+            usageList.innerHTML = '';
             
-            const tabs = document.querySelectorAll('.period-tab');
-            tabs.forEach(tab => tab.classList.remove('active'));
-            event.target.classList.add('active');
+            if (!devices || devices.length === 0) {
+                usageList.innerHTML = '<div style="text-align: center; color: #6b7280; padding: 20px;">No device usage data available</div>';
+                return;
+            }
             
-            updateUI(period);
+            // Tính tổng power
+            const totalPower = devices.reduce((sum, device) => sum + (device.power || 0), 1);
+            
+            // Hiển thị các thiết bị
+            devices.forEach(device => {
+                const usageItem = document.createElement('div');
+                usageItem.className = 'usage-item';
+                
+                // Xác định icon và màu
+                const icon = getDeviceIcon(device.type);
+                const colorClass = getColorClass(device.type);
+                const power = device.power || 0;
+                const percentage = totalPower > 0 ? Math.round((power / totalPower) * 100) : 0;
+                const status = device.status || 'Off';
+                
+                usageItem.innerHTML = `
+                    <div class="usage-icon ${colorClass}">${icon}</div>
+                    <div class="usage-info">
+                        <div class="usage-name">
+                            ${device.name || 'Unknown Device'}
+                            <span style="font-size: 11px; color: ${status === 'On' ? '#10b981' : '#6b7280'}; margin-left: 8px;">
+                                • ${status}
+                            </span>
+                        </div>
+                        <div class="usage-bar-container">
+                            <div class="usage-bar-bg">
+                                <div class="usage-bar-fill" style="width: ${percentage}%;"></div>
+                            </div>
+                            <div class="usage-percentage">${percentage}%</div>
+                        </div>
+                    </div>
+                `;
+                usageList.appendChild(usageItem);
+            });
+        }
+        
+        function getDeviceIcon(type) {
+            const icons = {
+                'Light': '💡',
+                'LED': '💡',
+                'AC': '❄️',
+                'TV': '📺',
+                'Fan': '🌀',
+                'Refrigerator': '🧊',
+                'Washer': '🧺',
+                'Oven': '🔥',
+                'Camera': '📷',
+                'Lock': '🔒',
+                'Speaker': '🔊',
+                'Sensor': '📡',
+                'Plug': '🔌',
+                'default': '🔌'
+            };
+            return icons[type] || icons.default;
+        }
+        
+        function getColorClass(type) {
+            const colors = {
+                'Light': 'yellow',
+                'LED': 'yellow',
+                'AC': 'blue',
+                'TV': 'purple',
+                'Fan': 'green',
+                'default': 'green'
+            };
+            return colors[type] || colors.default;
         }
 
-        function changeChartType(type) {
-            currentChartType = type;
-            const buttons = document.querySelectorAll('.chart-btn');
-            buttons.forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            updateUI(currentPeriod); // Cập nhật cả UI để lấy dữ liệu phù hợp
+        // Loading functions
+        function showLoading() {
+            document.getElementById('loadingOverlay').classList.add('active');
+        }
+        
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.remove('active');
         }
 
-        function goHome() {
-            window.location.href = 'homepage.html';
-        }
-
+        // Real-time chart functions
         const canvas = document.getElementById('lineChart');
         const ctx = canvas.getContext('2d');
         const currentValueDisplay = document.getElementById('currentValue');
@@ -898,8 +1347,9 @@
         const maxDataPoints = 50;
         let dataPoints = [];
 
+        // Khởi tạo với một số điểm dữ liệu ban đầu
         for (let i = 0; i < maxDataPoints; i++) {
-            dataPoints.push(Math.random() * 3 + 1);
+            dataPoints.push(15); // Giá trị khởi tạo
         }
 
         function drawLineChart() {
@@ -909,6 +1359,7 @@
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+            // Vẽ grid
             ctx.strokeStyle = '#e5e7eb';
             ctx.lineWidth = 1;
             for (let i = 0; i <= 4; i++) {
@@ -919,16 +1370,18 @@
                 ctx.stroke();
             }
 
+            // Vẽ labels
             ctx.fillStyle = '#9ca3af';
             ctx.font = '10px -apple-system';
             ctx.textAlign = 'right';
             for (let i = 0; i <= 4; i++) {
                 const y = padding + (height / 4) * i;
-                const value = (4 - i) * 1.25;
-                ctx.fillText(value.toFixed(1) + ' kW', padding - 10, y + 4);
+                const value = (4 - i) * 6.25; // Scale 0-25
+                ctx.fillText(value.toFixed(0) + ' act', padding - 10, y + 4);
             }
 
             if (dataPoints.length > 1) {
+                // Vẽ line chart
                 ctx.beginPath();
                 ctx.strokeStyle = '#3b82f6';
                 ctx.lineWidth = 3;
@@ -939,8 +1392,8 @@
 
                 for (let i = 0; i < dataPoints.length; i++) {
                     const x = padding + i * stepX;
-                    const normalizedValue = Math.max(0, Math.min(5, dataPoints[i]));
-                    const y = padding + height - (normalizedValue / 5) * height;
+                    const normalizedValue = Math.max(0, Math.min(25, dataPoints[i]));
+                    const y = padding + height - (normalizedValue / 25) * height;
 
                     if (i === 0) {
                         ctx.moveTo(x, y);
@@ -950,6 +1403,7 @@
                 }
                 ctx.stroke();
 
+                // Vẽ gradient fill
                 ctx.lineTo(canvas.width - padding, padding + height);
                 ctx.lineTo(padding, padding + height);
                 ctx.closePath();
@@ -960,36 +1414,90 @@
                 ctx.fillStyle = gradient;
                 ctx.fill();
 
-                const lastX = padding + (dataPoints.length - 1) * stepX;
-                const lastValue = dataPoints[dataPoints.length - 1];
-                const lastY = padding + height - (lastValue / 5) * height;
+                // Vẽ điểm cuối cùng
+                if (dataPoints.length > 0) {
+                    const lastX = padding + (dataPoints.length - 1) * stepX;
+                    const lastValue = dataPoints[dataPoints.length - 1];
+                    const lastY = padding + height - (lastValue / 25) * height;
 
-                ctx.beginPath();
-                ctx.arc(lastX, lastY, 5, 0, Math.PI * 2);
-                ctx.fillStyle = '#3b82f6';
-                ctx.fill();
-                ctx.strokeStyle = '#fff';
-                ctx.lineWidth = 2;
-                ctx.stroke();
+                    ctx.beginPath();
+                    ctx.arc(lastX, lastY, 5, 0, Math.PI * 2);
+                    ctx.fillStyle = '#3b82f6';
+                    ctx.fill();
+                    ctx.strokeStyle = '#fff';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                }
             }
         }
 
+        // Hàm cập nhật biểu đồ với mock data (fallback)
         function updateRealtimeChart() {
-            const newValue = Math.random() * 3 + 1 + Math.sin(Date.now() / 5000) * 0.5;
+            const newValue = Math.random() * 10 + 10 + Math.sin(Date.now() / 5000) * 5;
             dataPoints.push(newValue);
             
             if (dataPoints.length > maxDataPoints) {
                 dataPoints.shift();
             }
 
-            currentValueDisplay.textContent = newValue.toFixed(2) + ' kW';
+            currentValueDisplay.textContent = newValue.toFixed(0) + ' activities';
             drawLineChart();
         }
 
-        window.addEventListener('load', () => {
-            updateUI(currentPeriod);
+        // === HÀM CẬP NHẬT REAL-TIME VỚI DỮ LIỆU THỰC ===
+        function updateRealTimeChartWithData(realValue) {
+            // Thay vì random, dùng dữ liệu thực
+            dataPoints.push(realValue);
+            
+            if (dataPoints.length > maxDataPoints) {
+                dataPoints.shift();
+            }
+            
             drawLineChart();
-            setInterval(updateRealtimeChart, 1000);
+        }
+
+        // Event handlers
+        function changePeriod(period) {
+            updateUI(period);
+        }
+
+        function changeChartType(type) {
+            currentChartType = type;
+            const buttons = document.querySelectorAll('.chart-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            updateUI(currentPeriod);
+        }
+
+        // Navigation functions
+        function goToHome() {
+            window.location.href = 'homepage.html';
+        }
+
+        function goToDevices() {
+            window.location.href = 'devicescontrol.html';
+        }
+
+        // Khởi tạo khi trang load
+        window.addEventListener('load', () => {
+            console.log('📊 Analytics page loaded');
+            
+            // Khởi tạo Socket.IO
+            initializeSocket();
+            
+            // Load initial data
+            updateUI('week');
+            
+            // Start real-time chart updates
+            drawLineChart();
+            
+            // Fallback: nếu không có real-time data sau 3 giây, dùng mock data
+            setTimeout(() => {
+                if (!hasRealTimeConnection) {
+                    console.log('⚠️ No real-time connection, using mock updates');
+                    setInterval(updateRealtimeChart, 1000);
+                }
+            }, 3000);
         });
     </script>
 </body>

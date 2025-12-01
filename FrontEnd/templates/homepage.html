@@ -318,54 +318,15 @@
             color: #6b7280;
         }
 
-        /* Quick Access */
+        /* Quick Access - ĐÃ ẨN */
+        .quick-access-section {
+            display: none;
+        }
+
         .device-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-bottom: 24px;
+            display: none;
         }
 
-        .device-item {
-            background: white;
-            border-radius: 16px;
-            padding: 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .device-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .device-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .device-icon.yellow { background: #fef3c7; color: #d97706; }
-        .device-icon.blue { background: #dbeafe; color: #2563eb; }
-
-        .device-text h4 {
-            font-size: 14px;
-            font-weight: 600;
-            color: #1f2937;
-        }
-
-        .device-text p {
-            font-size: 12px;
-            color: #6b7280;
-        }
-
-        /* Toggle Switch */
         .toggle-switch {
             width: 48px;
             height: 28px;
@@ -531,44 +492,46 @@
                 </a>
             </div>
 
-            <!-- Quick Access -->
-            <div class="section-header">
-                <h2>Quick Access</h2>
-                <a class="see-all" href="devicescontrol.html">See all</a>
-            </div>
-            <div class="device-list">
-                <div class="device-item">
-                    <div class="device-info">
-                        <div class="device-icon yellow">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="9" y1="18" x2="15" y2="18"></line>
-                                <line x1="10" y1="22" x2="14" y2="22"></line>
-                                <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path>
-                            </svg>
-                        </div>
-                        <div class="device-text">
-                            <h4>Living Room</h4>
-                            <p>2 lights on</p>
-                        </div>
-                    </div>
-                    <div class="toggle-switch" onclick="toggleDevice(this)">
-                        <div class="toggle-knob"></div>
-                    </div>
+            <!-- Quick Access - ĐÃ ẨN -->
+            <div class="quick-access-section">
+                <div class="section-header">
+                    <h2>Quick Access</h2>
+                    <a class="see-all" href="devicescontrol.html">See all</a>
                 </div>
-                <div class="device-item">
-                    <div class="device-info">
-                        <div class="device-icon blue">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"></path>
-                            </svg>
+                <div class="device-list">
+                    <div class="device-item">
+                        <div class="device-info">
+                            <div class="device-icon yellow">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="9" y1="18" x2="15" y2="18"></line>
+                                    <line x1="10" y1="22" x2="14" y2="22"></line>
+                                    <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path>
+                                </svg>
+                            </div>
+                            <div class="device-text">
+                                <h4>Living Room</h4>
+                                <p>2 lights on</p>
+                            </div>
                         </div>
-                        <div class="device-text">
-                            <h4>Air Conditioner</h4>
-                            <p>24°C</p>
+                        <div class="toggle-switch" onclick="toggleDevice(this)">
+                            <div class="toggle-knob"></div>
                         </div>
                     </div>
-                    <div class="toggle-switch" onclick="toggleDevice(this)">
-                        <div class="toggle-knob"></div>
+                    <div class="device-item">
+                        <div class="device-info">
+                            <div class="device-icon blue">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"></path>
+                                </svg>
+                            </div>
+                            <div class="device-text">
+                                <h4>Air Conditioner</h4>
+                                <p>24°C</p>
+                            </div>
+                        </div>
+                        <div class="toggle-switch" onclick="toggleDevice(this)">
+                            <div class="toggle-knob"></div>
+                        </div>
                     </div>
                 </div>
             </div>

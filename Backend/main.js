@@ -78,7 +78,7 @@ const dialogRoute = require('./routes/DialogRoute');
 const homeRoute = require('./routes/HomeRoute');
 const roomRoute = require('./routes/RoomRoute');
 const userRoute = require('./routes/UserRoute');
-
+const analyticsRoute = require('./routes/AnalyticsRoute');
 // ==================== ROOT ROUTE ====================
 app.get('/', (req, res) => {
   res.json({
@@ -104,6 +104,7 @@ app.use('/api/dialogs', dialogRoute);
 app.use('/api/homes', homeRoute);
 app.use('/api/rooms', roomRoute);
 app.use('/api/users', userRoute);
+app.use('/api/analytics', analyticsRoute);
 
 // ==================== HEALTH CHECK ====================
 app.get('/health', (req, res) => {
