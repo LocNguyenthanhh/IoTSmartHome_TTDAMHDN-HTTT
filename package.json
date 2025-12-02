@@ -17,7 +17,13 @@
     "type": "git",
     "url": "git+https://github.com/LocNguyenthanhh/IoTSmartHome_TTDAMHDN-HTTT.git"
   },
-  "keywords": ["iot", "smart-home", "nodejs", "mongodb", "adafruit"],
+  "keywords": [
+    "iot",
+    "smart-home",
+    "nodejs",
+    "mongodb",
+    "adafruit"
+  ],
   "author": "Group 1",
   "license": "ISC",
   "bugs": {
@@ -26,11 +32,14 @@
   "homepage": "https://github.com/LocNguyenthanhh/IoTSmartHome_TTDAMHDN-HTTT#readme",
   "dependencies": {
     "axios": "^1.12.2",
+    "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
-    "express": "^5.1.0",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.5",
     "mqtt": "^5.14.1",
+    "mysql2": "^3.15.3",
     "uuid": "^13.0.0"
   },
   "devDependencies": {

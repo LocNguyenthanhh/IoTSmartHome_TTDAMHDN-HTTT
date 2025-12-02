@@ -1,20 +1,24 @@
-from flask import Flask, render_template, request, jsonify
-import requests
+from flask import Flask, render_template, request, jsonify, redirect, url_for, send_from_directory
 from flask_socketio import SocketIO, emit
+import requests
 import json
 import time
 import threading
 import random
+import os
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates', static_folder='static')
 socketio = SocketIO(app, cors_allowed_origins="*")
+
+# ==================== CONFIGURATION ====================
+BACKEND_URL = "http://localhost:3000/api"
 
 # ==================== ANALYTICS FUNCTIONS ====================
 
 def fetch_analytics_dashboard():
     """Lấy dashboard analytics từ Node.js backend"""
     try:
-        res = requests.get("http://localhost:3000/api/analytics/dashboard", timeout=5)
+        res = requests.get(f"{BACKEND_URL}/analytics/dashboard", timeout=5)
         if res.status_code == 200:
             data = res.json()
             if data.get('success'):
@@ -33,7 +37,7 @@ def fetch_analytics_dashboard():
 def fetch_activity_data(period="day"):
     """Lấy dữ liệu activity theo period"""
     try:
-        res = requests.get(f"http://localhost:3000/api/analytics/activity?period={period}", timeout=5)
+        res = requests.get(f"{BACKEND_URL}/analytics/activity?period={period}", timeout=5)
         if res.status_code == 200:
             data = res.json()
             if data.get('success'):
@@ -52,7 +56,7 @@ def fetch_activity_data(period="day"):
 def fetch_device_usage():
     """Lấy dữ liệu device usage"""
     try:
-        res = requests.get("http://localhost:3000/api/analytics/device-usage", timeout=5)
+        res = requests.get(f"{BACKEND_URL}/analytics/device-usage", timeout=5)
         if res.status_code == 200:
             data = res.json()
             if data.get('success'):
@@ -71,7 +75,7 @@ def fetch_device_usage():
 def fetch_real_time_data():
     """Lấy dữ liệu real-time từ backend"""
     try:
-        res = requests.get("http://localhost:3000/api/analytics/real-time", timeout=5)
+        res = requests.get(f"{BACKEND_URL}/analytics/real-time", timeout=5)
         if res.status_code == 200:
             data = res.json()
             if data.get('success'):
@@ -90,7 +94,7 @@ def fetch_real_time_data():
 def fetch_devices_from_backend():
     """Lấy devices từ Node.js backend"""
     try:
-        res = requests.get("http://localhost:3000/api/devices", timeout=5)
+        res = requests.get(f"{BACKEND_URL}/devices", timeout=5)
         if res.status_code == 200:
             data = res.json()
             print(f"📡 [FLASK] Backend returned: {type(data)}")
@@ -99,6 +103,9 @@ def fetch_devices_from_backend():
             if isinstance(data, list):
                 print(f"✅ [FLASK] Received {len(data)} devices")
                 return data
+            elif isinstance(data, dict) and 'data' in data:
+                print(f"✅ [FLASK] Received {len(data['data'])} devices from data field")
+                return data['data']
             else:
                 print("⚠️ [FLASK] Using empty list")
                 return []
@@ -159,45 +166,85 @@ def push_real_time_data_periodically():
             print(f"❌ [REAL-TIME] Push error: {e}")
             time.sleep(10)
 
-# ==================== ROUTES ====================
+# ==================== MAIN ROUTES ====================
 
 @app.route('/')
+def index():
+    """Trang chủ index"""
+    print(f"🏠 Rendering index page...")
+    return render_template('index.html')
+
+@app.route('/homepage')
+@app.route('/home')
 def homepage():
-    """Trang chủ"""
+    """Trang chủ Smart Home"""
     print(f"🏠 Rendering homepage...")
     return render_template('homepage.html')
 
-@app.route('/homepage.html')
-def homepage_direct():
-    """Trang chủ - hỗ trợ truy cập trực tiếp"""
-    print(f"🏠 Rendering homepage directly...")
-    return render_template('homepage.html')
+@app.route('/login')
+def login():
+    """Trang đăng nhập"""
+    print(f"🔐 Rendering login page...")
+    return render_template('login.html')
 
-@app.route('/devicescontrol.html')
-def device_control_page():
-    """Trang điều khiển devices - hỗ trợ truy cập trực tiếp"""
-    devices = fetch_devices_from_backend()
-    print(f"🏠 Rendering devices page with {len(devices)} devices")
-    return render_template('devicescontrol.html', devices=devices)
+@app.route('/account')
+def account():
+    """Trang tài khoản"""
+    print(f"👤 Rendering account page...")
+    return render_template('account.html')
+
+@app.route('/createaccount')
+def createaccount():
+    """Trang tạo tài khoản"""
+    print(f"📝 Rendering create account page...")
+    return render_template('createaccount.html')
 
 @app.route('/devices')
-def device_control():
+@app.route('/devicescontrol')
+def devices():
     """Trang điều khiển devices"""
-    devices = fetch_devices_from_backend()
-    print(f"🏠 Rendering devices page with {len(devices)} devices")
-    return render_template('devicescontrol.html', devices=devices)
-
-@app.route('/analytics.html')
-def analytics_page_direct():
-    """Trang analytics - hỗ trợ truy cập trực tiếp"""
-    print(f"📊 Loading analytics page...")
-    return render_template('analytics.html')
+    devices_list = fetch_devices_from_backend()
+    print(f"🏠 Rendering devices page with {len(devices_list)} devices")
+    return render_template('devicescontrol.html', devices=devices_list)
 
 @app.route('/analytics')
-def analytics_page():
+def analytics():
     """Trang analytics dashboard"""
     print(f"📊 Loading analytics page...")
     return render_template('analytics.html')
+
+@app.route('/schedules')
+def schedules():
+    """Trang lịch trình"""
+    print(f"📅 Rendering schedules page...")
+    return render_template('schedules.html')
+
+@app.route('/history')
+def history():
+    """Trang lịch sử"""
+    print(f"📜 Rendering history page...")
+    return render_template('history.html')
+
+# ==================== HTML FILE ROUTES (direct access) ====================
+
+@app.route('/<page>.html')
+def serve_html_page(page):
+    """Phục vụ các file HTML trực tiếp"""
+    allowed_pages = ['homepage', 'login', 'account', 'createaccount', 
+                     'devicescontrol', 'analytics', 'schedules', 'history', 'index']
+    
+    if page in allowed_pages:
+        print(f"📄 Serving {page}.html directly...")
+        return render_template(f'{page}.html')
+    else:
+        return "Page not found", 404
+
+# ==================== STATIC FILES ====================
+
+@app.route('/static/<path:filename>')
+def serve_static(filename):
+    """Phục vụ static files"""
+    return send_from_directory('static', filename)
 
 # ==================== ANALYTICS API ROUTES ====================
 
@@ -261,7 +308,7 @@ def get_activity_data():
         
         # Nếu không có dữ liệu từ backend, tạo mock data
         if not activity_data:
-            if period == "today":
+            if period == "today" or period == "day":
                 activity_data = {
                     "period": period,
                     "totalActivity": 156,
@@ -425,7 +472,7 @@ def get_real_time_data():
             'error': str(e)
         }), 500
 
-# ==================== EXISTING ROUTES ====================
+# ==================== DEVICE API ROUTES ====================
 
 @app.route('/api/devices')
 def get_devices_api():
@@ -469,11 +516,9 @@ def toggle_device():
         
         print(f"✅ [FLASK] UI updated instantly for device {device_id}")
         
-        import threading
-        
         def send_to_backend():
             try:
-                endpoint = "http://localhost:3000/api/devices/toggle"
+                endpoint = f"{BACKEND_URL}/devices/toggle"
                 print(f"🔧 Sending to backend: {endpoint}")
                 res = requests.post(
                     endpoint,
@@ -506,6 +551,8 @@ def toggle_device():
         print(f"❌ [FLASK] Toggle error: {e}")
         return jsonify({"success": False, "message": str(e)}), 500
 
+# ==================== HEALTH & TEST ROUTES ====================
+
 @app.route('/health')
 def health_check():
     """Health check endpoint"""
@@ -514,7 +561,9 @@ def health_check():
         return jsonify({
             'status': 'healthy',
             'service': 'Flask Frontend',
-            'devices_count': len(devices)
+            'devices_count': len(devices),
+            'backend_url': BACKEND_URL,
+            'timestamp': time.strftime("%Y-%m-%dT%H:%M:%SZ")
         })
     except:
         return jsonify({
@@ -526,16 +575,17 @@ def health_check():
 def test_backend():
     """Test backend connection và endpoints"""
     try:
-        devices_res = requests.get("http://localhost:3000/api/devices", timeout=5)
+        devices_res = requests.get(f"{BACKEND_URL}/devices", timeout=5)
         
         toggle_res = requests.post(
-            "http://localhost:3000/api/devices/toggle",
+            f"{BACKEND_URL}/devices/toggle",
             json={"deviceId": "test", "state": True},
             timeout=5
         )
         
         return jsonify({
             "backend_status": "connected",
+            "backend_url": BACKEND_URL,
             "devices_endpoint": {
                 "status": devices_res.status_code,
                 "devices_count": len(devices_res.json()) if devices_res.status_code == 200 else 0
@@ -548,6 +598,7 @@ def test_backend():
     except Exception as e:
         return jsonify({
             "backend_status": "disconnected",
+            "backend_url": BACKEND_URL,
             "error": str(e)
         })
 
@@ -609,17 +660,22 @@ def handle_real_time_request():
     except Exception as e:
         print(f"❌ [SOCKET.IO] Real-time error: {e}")
 
+# ==================== MAIN ENTRY POINT ====================
+
 if __name__ == '__main__':
     print('''
 ============================================================
 🚀 Flask Frontend Server Starting...
 ============================================================
 🏠 Homepage:     http://localhost:5000/
-                 http://localhost:5000/homepage.html
+                 http://localhost:5000/homepage
+🔐 Login:        http://localhost:5000/login
+👤 Account:      http://localhost:5000/account
+📝 Create Acc:   http://localhost:5000/createaccount
 📱 Devices:      http://localhost:5000/devices
-                 http://localhost:5000/devicescontrol.html
 📊 Analytics:    http://localhost:5000/analytics
-                 http://localhost:5000/analytics.html
+📅 Schedules:    http://localhost:5000/schedules
+📜 History:      http://localhost:5000/history
 🔗 Backend:      http://localhost:3000/api
 💚 Health:       http://localhost:5000/health
 🔧 Test:         http://localhost:5000/test-backend

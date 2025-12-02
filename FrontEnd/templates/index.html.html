@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Home - Welcome</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e3f2fd 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            background: white;
+            border-radius: 24px;
+            padding: 50px 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        body.dark-mode .container {
+            background: #1f2937;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            margin-bottom: 30px;
+        }
+
+        .logo-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+        }
+
+        .logo h1 {
+            font-size: 36px;
+            font-weight: 700;
+            color: #2563eb;
+            margin-bottom: 10px;
+        }
+
+        body.dark-mode .logo h1 {
+            color: #60a5fa;
+        }
+
+        .logo p {
+            color: #6b7280;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        body.dark-mode .logo p {
+            color: #9ca3af;
+        }
+
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin: 40px 0;
+        }
+
+        .button {
+            display: block;
+            padding: 18px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .button-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .button-secondary {
+            background: white;
+            color: #374151;
+            border: 2px solid #e5e7eb;
+        }
+
+        body.dark-mode .button-secondary {
+            background: #374151;
+            color: #f3f4f6;
+            border-color: #4b5563;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .button:active {
+            transform: translateY(0);
+        }
+
+        .status {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 12px;
+            background: #f9fafb;
+            text-align: left;
+        }
+
+        body.dark-mode .status {
+            background: #374151;
+        }
+
+        .status h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 10px;
+        }
+
+        body.dark-mode .status h3 {
+            color: #f3f4f6;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        body.dark-mode .status-item {
+            color: #9ca3af;
+        }
+
+        .status-value {
+            font-weight: 500;
+            color: #10b981;
+        }
+
+        .status-value.error {
+            color: #ef4444;
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            vertical-align: middle;
+            margin-left: 8px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <div class="logo-icon">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+            </div>
+            <h1>Smart Home</h1>
+            <p>Control your IoT devices from anywhere</p>
+        </div>
+
+        <div class="buttons">
+            <a href="/homepage" class="button button-primary">🏠 Go to Dashboard</a>
+            <a href="/login" class="button button-secondary">🔐 Sign In</a>
+            <a href="/createaccount" class="button button-secondary">📝 Create Account</a>
+            <a href="/devices" class="button button-secondary">📱 Device Control</a>
+            <a href="/analytics" class="button button-secondary">📊 Analytics</a>
+        </div>
+
+        <div class="status">
+            <h3>System Status</h3>
+            <div class="status-item">
+                <span>Frontend Server:</span>
+                <span class="status-value">✅ Running</span>
+            </div>
+            <div class="status-item">
+                <span>Backend API:</span>
+                <span class="status-value" id="backendStatus">Checking...</span>
+            </div>
+            <div class="status-item">
+                <span>Real-time Updates:</span>
+                <span class="status-value">✅ Active</span>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Smart Home System v1.0 | Powered by Flask & Node.js</p>
+        </div>
+    </div>
+
+    <script>
+        // Check backend status
+        async function checkBackendStatus() {
+            try {
+                const response = await fetch('/health');
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('backendStatus').textContent = '✅ Connected';
+                    document.getElementById('backendStatus').className = 'status-value';
+                    
+                    // Show additional info if available
+                    if (data.devices_count !== undefined) {
+                        document.getElementById('backendStatus').textContent += ` (${data.devices_count} devices)`;
+                    }
+                } else {
+                    document.getElementById('backendStatus').textContent = '❌ Disconnected';
+                    document.getElementById('backendStatus').className = 'status-value error';
+                }
+            } catch (error) {
+                document.getElementById('backendStatus').textContent = '❌ Error';
+                document.getElementById('backendStatus').className = 'status-value error';
+            }
+        }
+
+        // Check for dark mode
+        function checkDarkMode() {
+            const stored = localStorage.getItem('userData');
+            if (stored) {
+                try {
+                    const userData = JSON.parse(stored);
+                    if (userData.settings && userData.settings.darkMode) {
+                        document.body.classList.add('dark-mode');
+                    }
+                } catch (error) {
+                    console.error('Error loading settings:', error);
+                }
+            }
+        }
+
+        // Initialize
+        window.addEventListener('load', () => {
+            checkBackendStatus();
+            checkDarkMode();
+            
+            // Check backend every 30 seconds
+            setInterval(checkBackendStatus, 30000);
+        });
+    </script>
+</body>
+</html>

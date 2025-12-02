@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Account</title>
+    <title>Smart Home - Account</title>
     <style>
         * {
             margin: 0;
@@ -12,7 +12,7 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: linear-gradient(135deg, #f5f7fa 0%, #e3f2fd 100%);
             min-height: 100vh;
             transition: all 0.3s;
@@ -23,56 +23,31 @@
         }
 
         body.dark-mode .header,
-        body.dark-mode .profile-section,
-        body.dark-mode .menu-list,
-        body.dark-mode .logout-btn,
-        body.dark-mode .modal-content {
+        body.dark-mode .account-section,
+        body.dark-mode .settings-section,
+        body.dark-mode .action-button,
+        body.dark-mode .logout-button {
             background: #1f2937;
+            box-shadow: 0 1px 3px rgba(255, 255, 255, 0.1);
         }
 
-        body.dark-mode .header-title,
-        body.dark-mode .profile-name,
-        body.dark-mode .menu-label,
-        body.dark-mode .modal-title,
-        body.dark-mode .form-group label {
+        body.dark-mode .account-name,
+        body.dark-mode .section-title,
+        body.dark-mode .setting-label h3,
+        body.dark-mode .logout-button {
             color: #f3f4f6;
         }
 
-        body.dark-mode .profile-email,
-        body.dark-mode .menu-description,
-        body.dark-mode .menu-title,
-        body.dark-mode .stat-label {
+        body.dark-mode .account-email,
+        body.dark-mode .setting-label p,
+        body.dark-mode .logout-button p {
             color: #9ca3af;
-        }
-
-        body.dark-mode .menu-item {
-            border-bottom-color: #374151;
-        }
-
-        body.dark-mode .menu-item:hover {
-            background: #374151;
-        }
-
-        body.dark-mode .menu-icon,
-        body.dark-mode .back-btn,
-        body.dark-mode .btn-secondary {
-            background: #374151;
-        }
-
-        body.dark-mode .form-group input {
-            background: #374151;
-            border-color: #4b5563;
-            color: #f3f4f6;
-        }
-
-        body.dark-mode .profile-stats {
-            border-top-color: #374151;
         }
 
         .container {
             max-width: 480px;
             margin: 0 auto;
-            padding-bottom: 80px;
+            background: transparent;
         }
 
         /* Header */
@@ -83,9 +58,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
         }
 
         .header-left {
@@ -94,391 +66,238 @@
             gap: 16px;
         }
 
-        .back-btn, .edit-btn {
+        .back-button {
             width: 40px;
             height: 40px;
-            background: #f3f4f6;
-            border: none;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
+            background: #f3f4f6;
             cursor: pointer;
             transition: all 0.2s;
-            color: #1f2937;
         }
 
-        .edit-btn {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            color: white;
+        .back-button:hover {
+            background: #e5e7eb;
         }
 
-        .back-btn:hover, .edit-btn:hover {
-            transform: scale(1.05);
-        }
-
-        .back-btn:active, .edit-btn:active {
-            transform: scale(0.95);
-        }
-
-        .header-title {
-            font-size: 20px;
+        .header-title h1 {
+            font-size: 18px;
             font-weight: 700;
             color: #1f2937;
         }
 
-        /* Profile Section */
-        .profile-section {
-            background: white;
-            margin: 24px;
-            border-radius: 16px;
+        /* Account Content */
+        .account-content {
             padding: 24px;
+        }
+
+        /* Account Section */
+        .account-section {
+            background: white;
+            border-radius: 24px;
+            padding: 32px;
+            margin-bottom: 24px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             text-align: center;
         }
 
-        .avatar-wrapper {
-            position: relative;
-            display: inline-block;
-            margin-bottom: 16px;
-            cursor: pointer;
-        }
-
-        .avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
+        .account-avatar {
+            width: 80px;
+            height: 80px;
             background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 40px;
             color: white;
-            font-weight: 700;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-            transition: all 0.3s;
-            overflow: hidden;
+            margin: 0 auto 16px;
         }
 
-        .avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .avatar-wrapper:hover .avatar {
-            transform: scale(1.05);
-        }
-
-        .avatar-edit {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 32px;
-            height: 32px;
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            border: 3px solid white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .avatar-edit:hover {
-            transform: scale(1.1);
-        }
-
-        #avatarInput {
-            display: none;
-        }
-
-        .profile-name {
+        .account-name {
             font-size: 24px;
             font-weight: 700;
             color: #1f2937;
             margin-bottom: 4px;
         }
 
-        .profile-email {
+        .account-email {
             font-size: 14px;
             color: #6b7280;
-            margin-bottom: 16px;
+            margin-bottom: 24px;
         }
 
-        .profile-stats {
-            display: flex;
-            justify-content: space-around;
-            padding-top: 16px;
-            border-top: 1px solid #e5e7eb;
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 20px;
-            font-weight: 700;
-            color: #3b82f6;
-            display: block;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: #6b7280;
-            margin-top: 4px;
-        }
-
-        /* Menu Section */
-        .menu-section {
-            margin: 0 24px 24px;
-        }
-
-        .menu-title {
+        .edit-button {
+            background: #f3f4f6;
+            color: #374151;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 12px;
             font-size: 14px;
-            font-weight: 600;
-            color: #6b7280;
-            margin-bottom: 12px;
-            padding: 0 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
-        .menu-list {
+        .edit-button:hover {
+            background: #e5e7eb;
+        }
+
+        /* Settings Section */
+        .settings-section {
             background: white;
-            border-radius: 16px;
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 24px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            overflow: hidden;
         }
 
-        .menu-item {
-            display: flex;
-            align-items: center;
-            padding: 16px 20px;
-            cursor: pointer;
-            transition: all 0.2s;
-            border-bottom: 1px solid #f3f4f6;
-        }
-
-        .menu-item:last-child {
-            border-bottom: none;
-        }
-
-        .menu-item:hover {
-            background: #f9fafb;
-        }
-
-        .menu-item:active {
-            background: #f3f4f6;
-        }
-
-        .menu-icon {
-            width: 40px;
-            height: 40px;
-            background: #f3f4f6;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            margin-right: 16px;
-        }
-
-        .menu-content {
-            flex: 1;
-        }
-
-        .menu-label {
-            font-size: 15px;
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 2px;
-        }
-
-        .menu-description {
-            font-size: 12px;
-            color: #6b7280;
-        }
-
-        .menu-arrow {
-            color: #9ca3af;
-            font-size: 20px;
-        }
-
-        .menu-toggle {
-            position: relative;
-            width: 51px;
-            height: 31px;
-        }
-
-        .menu-toggle input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .toggle-slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #e5e7eb;
-            transition: 0.3s;
-            border-radius: 16px;
-        }
-
-        .toggle-slider:before {
-            position: absolute;
-            content: "";
-            height: 25px;
-            width: 25px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: 0.3s;
-            border-radius: 50%;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        input:checked + .toggle-slider {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-        }
-
-        input:checked + .toggle-slider:before {
-            transform: translateX(20px);
-        }
-
-        /* Logout Button */
-        .logout-section {
-            margin: 0 24px 24px;
-        }
-
-        .logout-btn {
-            width: 100%;
-            padding: 16px;
-            background: white;
-            border: 2px solid #fee2e2;
-            border-radius: 12px;
-            color: #dc2626;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .logout-btn:hover {
-            background: #fef2f2;
-            border-color: #fecaca;
-        }
-
-        .logout-btn:active {
-            transform: scale(0.98);
-        }
-
-        /* Edit Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            padding: 24px;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            max-width: 400px;
-            width: 100%;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        }
-
-        .modal-title {
-            font-size: 20px;
+        .section-title {
+            font-size: 18px;
             font-weight: 700;
             color: #1f2937;
             margin-bottom: 20px;
         }
 
-        .form-group {
-            margin-bottom: 16px;
+        .settings-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
-        .form-group label {
-            display: block;
-            font-size: 14px;
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-label h3 {
+            font-size: 16px;
             font-weight: 600;
             color: #1f2937;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
         }
 
-        .form-group input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: all 0.2s;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 12px;
-            margin-top: 24px;
-        }
-
-        .btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            opacity: 0.9;
-        }
-
-        .btn-secondary {
-            background: #f3f4f6;
+        .setting-label p {
+            font-size: 12px;
             color: #6b7280;
         }
 
-        .btn-secondary:hover {
+        /* Toggle Switch */
+        .toggle-switch {
+            width: 48px;
+            height: 28px;
+            background: #22c55e;
+            border-radius: 14px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle-switch.off {
             background: #e5e7eb;
+        }
+
+        .toggle-knob {
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            transition: all 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .toggle-switch.off .toggle-knob {
+            right: 24px;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .action-button {
+            background: white;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 16px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #1f2937;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .action-button:hover {
+            background: #f9fafb;
+            transform: translateY(-1px);
+        }
+
+        .action-icon {
+            width: 24px;
+            height: 24px;
+            color: #6b7280;
+        }
+
+        /* Logout Button */
+        .logout-button {
+            background: white;
+            border: none;
+            padding: 20px 24px;
+            border-radius: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .logout-button:hover {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .logout-button:hover .logout-icon {
+            color: #dc2626;
+        }
+
+        .logout-button h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #dc2626;
+        }
+
+        .logout-button p {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .logout-icon {
+            width: 24px;
+            height: 24px;
+            color: #9ca3af;
         }
     </style>
 </head>
@@ -487,427 +306,212 @@
         <!-- Header -->
         <div class="header">
             <div class="header-left">
-                <button class="back-btn" onclick="goBack()">
+                <div class="back-button" onclick="goBack()">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        <polyline points="15 18 9 12 15 6"></polyline>
                     </svg>
+                </div>
+                <div class="header-title">
+                    <h1>Account</h1>
+                </div>
+            </div>
+        </div>
+
+        <!-- Account Content -->
+        <div class="account-content">
+            <!-- Account Info -->
+            <div class="account-section">
+                <div class="account-avatar">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </div>
+                <h2 class="account-name" id="accountName">User Name</h2>
+                <p class="account-email" id="accountEmail">user@example.com</p>
+                <button class="edit-button" onclick="editProfile()">Edit Profile</button>
+            </div>
+
+            <!-- Settings -->
+            <div class="settings-section">
+                <h2 class="section-title">Settings</h2>
+                <div class="settings-list">
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <h3>Dark Mode</h3>
+                            <p>Switch between light and dark theme</p>
+                        </div>
+                        <div class="toggle-switch off" onclick="toggleDarkMode(this)" id="darkModeToggle">
+                            <div class="toggle-knob"></div>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <h3>Notifications</h3>
+                            <p>Receive alerts for your devices</p>
+                        </div>
+                        <div class="toggle-switch" onclick="toggleSetting(this)">
+                            <div class="toggle-knob"></div>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <h3>Energy Saving</h3>
+                            <p>Automatically optimize energy usage</p>
+                        </div>
+                        <div class="toggle-switch" onclick="toggleSetting(this)">
+                            <div class="toggle-knob"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="action-button" onclick="goToSecurity()">
+                    <svg class="action-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                    Security & Privacy
                 </button>
-                <h1 class="header-title">Account</h1>
+                <button class="action-button" onclick="goToHelp()">
+                    <svg class="action-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                    Help & Support
+                </button>
+                <button class="action-button" onclick="goToAbout()">
+                    <svg class="action-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    About Smart Home
+                </button>
             </div>
-            <button class="edit-btn" onclick="showEditModal()">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+
+            <!-- Logout Button -->
+            <button class="logout-button" onclick="logout()">
+                <svg class="logout-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
                 </svg>
+                <h3>Log Out</h3>
+                <p>Sign out of your account</p>
             </button>
-        </div>
-
-        <!-- Profile Section -->
-        <div class="profile-section">
-            <div class="avatar-wrapper" onclick="changeAvatar()">
-                <div class="avatar" id="avatarDisplay">JD</div>
-                <div class="avatar-edit">✏️</div>
-                <input type="file" id="avatarInput" accept="image/*" onchange="handleAvatarChange(event)">
-            </div>
-            <div class="profile-name" id="displayName">John Doe</div>
-            <div class="profile-email" id="displayEmail">john.doe@example.com</div>
-            
-            <div class="profile-stats">
-                <div class="stat-item">
-                    <span class="stat-value" id="deviceCount">12</span>
-                    <span class="stat-label">Devices</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-value" id="scheduleCount">8</span>
-                    <span class="stat-label">Schedules</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-value" id="roomCount">5</span>
-                    <span class="stat-label">Rooms</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Settings Section -->
-        <div class="menu-section">
-            <div class="menu-title">Settings</div>
-            <div class="menu-list">
-                <div class="menu-item" onclick="navigateTo('notifications')">
-                    <div class="menu-icon">🔔</div>
-                    <div class="menu-content">
-                        <div class="menu-label">Notifications</div>
-                        <div class="menu-description">Manage alerts and sounds</div>
-                    </div>
-                    <span class="menu-arrow">›</span>
-                </div>
-
-                <div class="menu-item">
-                    <div class="menu-icon">🌙</div>
-                    <div class="menu-content">
-                        <div class="menu-label">Dark Mode</div>
-                        <div class="menu-description">Toggle dark theme</div>
-                    </div>
-                    <label class="menu-toggle">
-                        <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode(this.checked)">
-                        <span class="toggle-slider"></span>
-                    </label>
-                </div>
-
-                <div class="menu-item" onclick="navigateTo('language')">
-                    <div class="menu-icon">🌐</div>
-                    <div class="menu-content">
-                        <div class="menu-label">Language</div>
-                        <div class="menu-description">English</div>
-                    </div>
-                    <span class="menu-arrow">›</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Security Section -->
-        <div class="menu-section">
-            <div class="menu-title">Security</div>
-            <div class="menu-list">
-                <div class="menu-item" onclick="showChangePasswordModal()">
-                    <div class="menu-icon">🔑</div>
-                    <div class="menu-content">
-                        <div class="menu-label">Change Password</div>
-                        <div class="menu-description">Update your password</div>
-                    </div>
-                    <span class="menu-arrow">›</span>
-                </div>
-
-                <div class="menu-item">
-                    <div class="menu-icon">👆</div>
-                    <div class="menu-content">
-                        <div class="menu-label">Biometric Lock</div>
-                        <div class="menu-description">Fingerprint/Face ID</div>
-                    </div>
-                    <label class="menu-toggle">
-                        <input type="checkbox" id="biometricToggle" onchange="toggleBiometric(this.checked)">
-                        <span class="toggle-slider"></span>
-                    </label>
-                </div>
-            </div>
-        </div>
-
-        <!-- Logout -->
-        <div class="logout-section">
-            <button class="logout-btn" onclick="handleLogout()">
-                <span>🚪</span>
-                <span>Logout</span>
-            </button>
-        </div>
-    </div>
-
-    <!-- Edit Profile Modal -->
-    <div class="modal" id="editModal">
-        <div class="modal-content">
-            <div class="modal-title">Edit Profile</div>
-            
-            <div class="form-group">
-                <label for="editName">Full Name</label>
-                <input type="text" id="editName" placeholder="Enter your name">
-            </div>
-
-            <div class="form-group">
-                <label for="editEmail">Email</label>
-                <input type="email" id="editEmail" placeholder="Enter your email">
-            </div>
-
-            <div class="form-group">
-                <label for="editPhone">Phone Number</label>
-                <input type="tel" id="editPhone" placeholder="Enter your phone">
-            </div>
-
-            <div class="modal-buttons">
-                <button class="btn btn-primary" onclick="saveProfile()">Save Changes</button>
-                <button class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Change Password Modal -->
-    <div class="modal" id="passwordModal">
-        <div class="modal-content">
-            <div class="modal-title">Change Password</div>
-            
-            <div class="form-group">
-                <label for="currentPassword">Current Password</label>
-                <input type="password" id="currentPassword" placeholder="Enter current password">
-            </div>
-
-            <div class="form-group">
-                <label for="newPassword">New Password</label>
-                <input type="password" id="newPassword" placeholder="Enter new password">
-            </div>
-
-            <div class="form-group">
-                <label for="confirmPassword">Confirm Password</label>
-                <input type="password" id="confirmPassword" placeholder="Confirm new password">
-            </div>
-
-            <div class="modal-buttons">
-                <button class="btn btn-primary" onclick="changePassword()">Update Password</button>
-                <button class="btn btn-secondary" onclick="closePasswordModal()">Cancel</button>
-            </div>
         </div>
     </div>
 
     <script>
-        // State management
-        let userData = {
-            name: 'John Doe',
-            email: 'john.doe@example.com',
-            phone: '+84 123 456 789',
-            avatar: 'JD',
-            avatarImage: null,
-            stats: {
-                devices: 12,
-                schedules: 8,
-                rooms: 5
-            },
-            settings: {
-                darkMode: false,
-                biometric: false
-            }
-        };
-
-        // Avatar Change
-        function changeAvatar() {
-            document.getElementById('avatarInput').click();
-        }
-
-        function handleAvatarChange(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    userData.avatarImage = e.target.result;
-                    const avatarDiv = document.getElementById('avatarDisplay');
-                    avatarDiv.innerHTML = `<img src="${e.target.result}" alt="Avatar">`;
-                    saveUserData();
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        // Dark Mode
-        function toggleDarkMode(enabled) {
-            userData.settings.darkMode = enabled;
-            if (enabled) {
-                document.body.classList.add('dark-mode');
-            } else {
-                document.body.classList.remove('dark-mode');
-            }
-            saveUserData();
-        }
-
-        // Biometric Lock
-        function toggleBiometric(enabled) {
-            userData.settings.biometric = enabled;
-            
-            if (enabled) {
-                // Simulate biometric authentication
-                if (confirm('Enable biometric authentication?\n\nYou will need to use fingerprint/Face ID to unlock the app.')) {
-                    alert('✓ Biometric lock enabled successfully!');
-                    saveUserData();
-                } else {
-                    // Reset toggle if user cancels
-                    document.getElementById('biometricToggle').checked = false;
-                    userData.settings.biometric = false;
+        // Load user data
+        function loadUserData() {
+            const stored = localStorage.getItem('userData');
+            if (stored) {
+                try {
+                    const userData = JSON.parse(stored);
+                    
+                    // Update account info
+                    document.getElementById('accountName').textContent = userData.name || 'User Name';
+                    document.getElementById('accountEmail').textContent = userData.email || 'user@example.com';
+                    
+                    // Set dark mode toggle
+                    if (userData.settings && userData.settings.darkMode) {
+                        document.body.classList.add('dark-mode');
+                        document.getElementById('darkModeToggle').classList.remove('off');
+                    }
+                    
+                    // Set other settings
+                    if (userData.settings) {
+                        if (userData.settings.notifications) {
+                            document.querySelectorAll('.toggle-switch')[1].classList.remove('off');
+                        }
+                        if (userData.settings.energySaving) {
+                            document.querySelectorAll('.toggle-switch')[2].classList.remove('off');
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading user data:', error);
                 }
-            } else {
-                alert('Biometric lock disabled');
-                saveUserData();
             }
         }
 
-        // Change Password Modal
-        function showChangePasswordModal() {
-            document.getElementById('passwordModal').classList.add('active');
+        // Toggle dark mode
+        function toggleDarkMode(element) {
+            element.classList.toggle('off');
+            document.body.classList.toggle('dark-mode');
+            
+            // Save to localStorage
+            const stored = localStorage.getItem('userData');
+            if (stored) {
+                const userData = JSON.parse(stored);
+                userData.settings = userData.settings || {};
+                userData.settings.darkMode = !element.classList.contains('off');
+                localStorage.setItem('userData', JSON.stringify(userData));
+            }
         }
 
-        function closePasswordModal() {
-            document.getElementById('passwordModal').classList.remove('active');
-            // Clear inputs
-            document.getElementById('currentPassword').value = '';
-            document.getElementById('newPassword').value = '';
-            document.getElementById('confirmPassword').value = '';
+        // Toggle other settings
+        function toggleSetting(element) {
+            element.classList.toggle('off');
+            
+            // Save to localStorage
+            const stored = localStorage.getItem('userData');
+            if (stored) {
+                const userData = JSON.parse(stored);
+                userData.settings = userData.settings || {};
+                
+                // Determine which setting was toggled
+                const settingIndex = Array.from(document.querySelectorAll('.toggle-switch')).indexOf(element);
+                if (settingIndex === 1) {
+                    userData.settings.notifications = !element.classList.contains('off');
+                } else if (settingIndex === 2) {
+                    userData.settings.energySaving = !element.classList.contains('off');
+                }
+                
+                localStorage.setItem('userData', JSON.stringify(userData));
+            }
         }
 
-        function changePassword() {
-            const current = document.getElementById('currentPassword').value;
-            const newPass = document.getElementById('newPassword').value;
-            const confirm = document.getElementById('confirmPassword').value;
-
-            if (!current || !newPass || !confirm) {
-                alert('Please fill in all fields!');
-                return;
-            }
-
-            if (newPass !== confirm) {
-                alert('New passwords do not match!');
-                return;
-            }
-
-            if (newPass.length < 6) {
-                alert('Password must be at least 6 characters!');
-                return;
-            }
-
-            // TODO: Implement actual password change API call
-            alert('✓ Password changed successfully!');
-            closePasswordModal();
+        // Edit profile
+        function editProfile() {
+            window.location.href = 'createaccount.html?edit=true';
         }
 
-        // Navigation
+        // Navigation functions
         function goBack() {
             window.history.back();
         }
 
-        function navigateTo(page) {
-            console.log('Navigate to:', page);
-            // TODO: Implement navigation
-            alert(`Navigating to ${page} page...`);
+        function goToSecurity() {
+            alert('Security & Privacy page would open here');
         }
 
-        // Edit Profile Modal
-        function showEditModal() {
-            document.getElementById('editName').value = userData.name;
-            document.getElementById('editEmail').value = userData.email;
-            document.getElementById('editPhone').value = userData.phone;
-            document.getElementById('editModal').classList.add('active');
+        function goToHelp() {
+            alert('Help & Support page would open here');
         }
 
-        function closeEditModal() {
-            document.getElementById('editModal').classList.remove('active');
+        function goToAbout() {
+            alert('About page would open here');
         }
 
-        function saveProfile() {
-            const name = document.getElementById('editName').value.trim();
-            const email = document.getElementById('editEmail').value.trim();
-            const phone = document.getElementById('editPhone').value.trim();
-
-            if (!name || !email) {
-                alert('Name and email are required!');
-                return;
-            }
-
-            // Update user data
-            userData.name = name;
-            userData.email = email;
-            userData.phone = phone;
-            userData.avatar = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-
-            // Update display
-            updateProfileDisplay();
-            
-            // Save to storage
-            saveUserData();
-            
-            closeEditModal();
-            alert('Profile updated successfully!');
-        }
-
-        function updateProfileDisplay() {
-            document.getElementById('displayName').textContent = userData.name;
-            document.getElementById('displayEmail').textContent = userData.email;
-            
-            // Update avatar
-            const avatarDiv = document.getElementById('avatarDisplay');
-            if (userData.avatarImage) {
-                avatarDiv.innerHTML = `<img src="${userData.avatarImage}" alt="Avatar">`;
-            } else {
-                avatarDiv.textContent = userData.avatar;
-            }
-        }
-
-        // Toggle Settings
-        function toggleDarkMode(enabled) {
-            userData.settings.darkMode = enabled;
-            if (enabled) {
-                document.body.classList.add('dark-mode');
-            } else {
-                document.body.classList.remove('dark-mode');
-            }
-            saveUserData();
-        }
-
-        function toggleBiometric(enabled) {
-            userData.settings.biometric = enabled;
-            
-            if (enabled) {
-                // Simulate biometric authentication
-                if (confirm('Enable biometric authentication?\n\nYou will need to use fingerprint/Face ID to unlock the app.')) {
-                    alert('✓ Biometric lock enabled successfully!');
-                    saveUserData();
-                } else {
-                    // Reset toggle if user cancels
-                    document.getElementById('biometricToggle').checked = false;
-                    userData.settings.biometric = false;
-                }
-            } else {
-                alert('Biometric lock disabled');
-                saveUserData();
-            }
-        }
-
-        // Logout
-        function handleLogout() {
-            if (confirm('Are you sure you want to logout?')) {
-                console.log('Logging out...');
-                // TODO: Clear session and redirect to login
-                alert('Logged out successfully!');
-                window.location.href = 'login.html';
-            }
-        }
-
-        // Data persistence
-        function loadUserData() {
-            const stored = localStorage.getItem('userData');
-            if (stored) {
-                userData = JSON.parse(stored);
-                updateProfileDisplay();
-                updateStats();
+        // Logout function
+        function logout() {
+            if (confirm('Are you sure you want to log out?')) {
+                // Clear user data from localStorage (optional)
+                // localStorage.removeItem('userData');
                 
-                // Apply saved settings
-                if (userData.settings.darkMode) {
-                    document.body.classList.add('dark-mode');
-                    document.getElementById('darkModeToggle').checked = true;
-                }
-                if (userData.settings.biometric) {
-                    document.getElementById('biometricToggle').checked = true;
-                }
+                // Redirect to homepage
+                window.location.href = 'homepage.html';
             }
-        }
-
-        function saveUserData() {
-            localStorage.setItem('userData', JSON.stringify(userData));
-        }
-
-        function updateStats() {
-            document.getElementById('deviceCount').textContent = userData.stats.devices;
-            document.getElementById('scheduleCount').textContent = userData.stats.schedules;
-            document.getElementById('roomCount').textContent = userData.stats.rooms;
         }
 
         // Initialize
         window.addEventListener('load', () => {
             loadUserData();
-            
-            // Close modals when clicking outside
-            document.getElementById('editModal').addEventListener('click', (e) => {
-                if (e.target.id === 'editModal') {
-                    closeEditModal();
-                }
-            });
-            
-            document.getElementById('passwordModal').addEventListener('click', (e) => {
-                if (e.target.id === 'passwordModal') {
-                    closePasswordModal();
-                }
-            });
         });
     </script>
 </body>

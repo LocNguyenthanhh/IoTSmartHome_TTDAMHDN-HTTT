@@ -1,8 +1,18 @@
-// Author: NTLoc
-const mongoose = require("mongoose");
+// Author: HinHin
+const mongoose = require('mongoose');
 
 const homeSchema = new mongoose.Schema({
-  Address: String
+    address: {
+        type: String,
+        required: true,
+        default: "My Home"
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    }
+}, {
+    timestamps: true
 });
 
 module.exports = mongoose.model('Home', homeSchema);
