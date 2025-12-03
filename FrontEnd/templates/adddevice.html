@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -267,6 +266,32 @@
             background: #f5f5f5;
         }
 
+        /* Thêm CSS cho các nhóm trường mới */
+        .field-group {
+            margin-top: 10px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .slider-container input[type="range"] {
+            flex: 1;
+        }
+
+        .slider-value {
+            min-width: 50px;
+            text-align: center;
+            font-weight: 500;
+            color: #667eea;
+        }
+
         @media (max-width: 480px) {
             .container {
                 padding: 30px 25px;
@@ -347,9 +372,10 @@
 
             <div class="form-group">
                 <label class="form-label" for="deviceType">Device Type</label>
-                <select id="deviceType" class="form-select" required>
+                <select id="deviceType" class="form-select" required onchange="handleTypeChange(this.value)">
                     <option value="">Select device type</option>
                     <option value="Light">💡 Light</option>
+                    <option value="Sensor">📡 Sensor</option>
                     <option value="AC">❄️ Air Conditioner</option>
                     <option value="TV">📺 Television</option>
                     <option value="Fan">🌀 Fan</option>
@@ -359,6 +385,30 @@
                     <option value="Oven">🔥 Oven</option>
                     <option value="Washer">🌀 Washing Machine</option>
                     <option value="Dryer">🌬️ Dryer</option>
+                </select>
+            </div>
+
+            <!-- Light Subtype Group -->
+            <div class="form-group field-group" id="lightSubtypeGroup" style="display: none;">
+                <label class="form-label" for="lightSubtype">Light Type</label>
+                <select id="lightSubtype" class="form-select">
+                    <option value="LED">LED Light</option>
+                    <option value="Smart Bulb">Smart Bulb</option>
+                    <option value="Strip Light">Strip Light</option>
+                    <option value="Ceiling Light">Ceiling Light</option>
+                    <option value="Lamp">Lamp</option>
+                </select>
+            </div>
+
+            <!-- Sensor Subtype Group -->
+            <div class="form-group field-group" id="sensorSubtypeGroup" style="display: none;">
+                <label class="form-label" for="sensorSubtype">Sensor Type</label>
+                <select id="sensorSubtype" class="form-select">
+                    <option value="Motion">Motion Sensor</option>
+                    <option value="Temperature">Temperature Sensor</option>
+                    <option value="Humidity">Humidity Sensor</option>
+                    <option value="Light">Light Sensor</option>
+                    <option value="Door">Door Sensor</option>
                 </select>
             </div>
 
@@ -395,6 +445,35 @@
                         <option value="On">On</option>
                     </select>
                 </div>
+            </div>
+
+            <!-- Light Mode Group -->
+            <div class="form-group field-group" id="lightModeGroup" style="display: none;">
+                <label class="form-label" for="lightMode">Light Mode</label>
+                <select id="lightMode" class="form-select">
+                    <option value="Manual">Manual Control</option>
+                    <option value="Auto">Auto (Based on Time)</option>
+                    <option value="Sensor">Sensor Triggered</option>
+                    <option value="Schedule">Scheduled</option>
+                </select>
+            </div>
+
+            <!-- Brightness Group -->
+            <div class="form-group field-group" id="brightnessGroup" style="display: none;">
+                <label class="form-label" for="brightness">Brightness</label>
+                <div class="slider-container">
+                    <input type="range" id="brightness" class="form-input" min="0" max="100" value="50">
+                    <span class="slider-value" id="brightnessValue">50%</span>
+                </div>
+            </div>
+
+            <!-- Sensor Link Group -->
+            <div class="form-group field-group" id="sensorLinkGroup" style="display: none;">
+                <label class="form-label" for="sensorLink">Link to Sensor (Optional)</label>
+                <select id="sensorLink" class="form-select">
+                    <option value="">No sensor link</option>
+                    <!-- Options will be loaded dynamically -->
+                </select>
             </div>
 
             <div class="button-group">
@@ -441,6 +520,56 @@
             document.getElementById('loading').style.display = isLoading ? 'block' : 'none';
             document.getElementById('submitButton').disabled = isLoading;
         }
+
+        // Xử lý thay đổi loại thiết bị
+        function handleTypeChange(type) {
+            // Ẩn tất cả các nhóm trường
+            document.getElementById('lightSubtypeGroup').style.display = 'none';
+            document.getElementById('sensorSubtypeGroup').style.display = 'none';
+            document.getElementById('lightModeGroup').style.display = 'none';
+            document.getElementById('brightnessGroup').style.display = 'none';
+            document.getElementById('sensorLinkGroup').style.display = 'none';
+            
+            // Hiển thị các trường tương ứng
+            if (type === 'Light') {
+                document.getElementById('lightSubtypeGroup').style.display = 'block';
+                document.getElementById('lightModeGroup').style.display = 'block';
+                document.getElementById('brightnessGroup').style.display = 'block';
+                document.getElementById('sensorLinkGroup').style.display = 'block';
+                loadSensorsForLink();
+            } else if (type === 'Sensor') {
+                document.getElementById('sensorSubtypeGroup').style.display = 'block';
+            }
+        }
+
+        // Tải danh sách cảm biến để liên kết
+        async function loadSensorsForLink() {
+            try {
+                const response = await fetch('/api/sensors');
+                const data = await response.json();
+                
+                const select = document.getElementById('sensorLink');
+                select.innerHTML = '<option value="">Không liên kết</option>';
+                
+                if (data.success && data.sensors) {
+                    data.sensors.forEach(sensor => {
+                        if (sensor.subtype === 'Light') {
+                            const option = document.createElement('option');
+                            option.value = sensor.id;
+                            option.textContent = `${sensor.name} (${sensor.room})`;
+                            select.appendChild(option);
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading sensors:', error);
+            }
+        }
+
+        // Xử lý brightness slider
+        document.getElementById('brightness')?.addEventListener('input', function(e) {
+            document.getElementById('brightnessValue').textContent = `${e.target.value}%`;
+        });
 
         // Preview device
         function previewDevice() {
@@ -529,6 +658,16 @@
                 status: status
             };
             
+            // Add additional fields based on device type
+            if (type === 'Light') {
+                deviceData.subtype = document.getElementById('lightSubtype').value;
+                deviceData.mode = document.getElementById('lightMode').value;
+                deviceData.brightness = parseInt(document.getElementById('brightness').value) || 50;
+                deviceData.sensorLink = document.getElementById('sensorLink').value || null;
+            } else if (type === 'Sensor') {
+                deviceData.subtype = document.getElementById('sensorSubtype').value;
+            }
+            
             try {
                 console.log('➕ Sending device data:', deviceData);
                 
@@ -587,6 +726,14 @@
                     goBack();
                 }
             });
+            
+            // Initialize brightness display
+            const brightnessSlider = document.getElementById('brightness');
+            if (brightnessSlider) {
+                brightnessSlider.addEventListener('input', function(e) {
+                    document.getElementById('brightnessValue').textContent = `${e.target.value}%`;
+                });
+            }
         });
     </script>
 </body>

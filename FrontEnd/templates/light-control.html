@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Light Control - Smart Home</title>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .back-btn {
+            width: 44px;
+            height: 44px;
+            background: #f3f4f6;
+            color: #1f2937;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background: #e5e7eb;
+            transform: scale(1.05);
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .light-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 12px;
+        }
+
+        .light-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: white;
+        }
+
+        .light-icon.off {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            opacity: 0.7;
+        }
+
+        .light-details h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 5px;
+        }
+
+        .light-details p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .control-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .power-control {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .toggle-switch {
+            width: 64px;
+            height: 36px;
+            background: #e5e7eb;
+            border-radius: 18px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle-switch.on {
+            background: #22c55e;
+        }
+
+        .toggle-knob {
+            width: 28px;
+            height: 28px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            transition: all 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .toggle-switch.on .toggle-knob {
+            left: 32px;
+        }
+
+        .brightness-control {
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .slider-container input[type="range"] {
+            flex: 1;
+            height: 8px;
+            border-radius: 4px;
+            background: #e5e7eb;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #f59e0b;
+            cursor: pointer;
+        }
+
+        .brightness-value {
+            min-width: 50px;
+            text-align: center;
+            font-weight: 600;
+            color: #f59e0b;
+            font-size: 18px;
+        }
+
+        .mode-control {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .mode-btn {
+            padding: 12px;
+            background: #f3f4f6;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .mode-btn:hover {
+            background: #e5e7eb;
+        }
+
+        .mode-btn.active {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .sensor-section {
+            padding: 20px;
+            background: #f0f9ff;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        .sensor-info-box {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .sensor-data {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .sensor-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #3b82f6;
+        }
+
+        .sensor-unit {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .sensor-status {
+            padding: 6px 12px;
+            background: #dbeafe;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #1e40af;
+        }
+
+        .description-box {
+            background: #fef3c7;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .description-box h4 {
+            color: #92400e;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .description-box p {
+            color: #92400e;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e5e7eb;
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #22c55e;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.error {
+            background: #ef4444;
+        }
+
+        .toast.warning {
+            background: #f59e0b;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .status-on {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-off {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="back-btn" onclick="goBack()">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h1 class="title">
+                <i class="fas fa-lightbulb"></i>
+                Light Control
+            </h1>
+        </div>
+
+        <div id="errorContainer"></div>
+        
+        <div id="loading" class="loading">
+            <div class="loading-spinner"></div>
+            <div>Loading light information...</div>
+        </div>
+
+        <div id="lightContent" style="display: none;">
+            <!-- Light Information -->
+            <div class="light-info">
+                <div class="light-icon" id="lightIcon">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <div class="light-details">
+                    <h2 id="lightName">-</h2>
+                    <p>📍 <span id="lightRoom">-</span> | ⚡ <span id="lightPower">-</span>W</p>
+                    <div class="status-indicator" id="lightStatusIndicator">
+                        <span class="status-dot"></span>
+                        <span id="lightStatusText">Loading...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Power Control -->
+            <div class="control-section">
+                <h3 class="section-title">
+                    <i class="fas fa-power-off"></i>
+                    Power Control
+                </h3>
+                <div class="power-control">
+                    <span>Turn Light ON/OFF</span>
+                    <div class="toggle-switch" id="toggleSwitch" onclick="toggleLight()">
+                        <div class="toggle-knob"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Brightness Control -->
+            <div class="control-section">
+                <h3 class="section-title">
+                    <i class="fas fa-sun"></i>
+                    Brightness Control
+                </h3>
+                <div class="brightness-control">
+                    <div class="slider-container">
+                        <input type="range" id="brightnessSlider" min="0" max="100" value="50">
+                        <span class="brightness-value" id="brightnessValue">50%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Light Mode -->
+            <div class="control-section">
+                <h3 class="section-title">
+                    <i class="fas fa-cog"></i>
+                    Light Mode
+                </h3>
+                <div class="mode-control">
+                    <button class="mode-btn" onclick="setMode('manual')">Manual</button>
+                    <button class="mode-btn" onclick="setMode('auto')">Auto</button>
+                    <button class="mode-btn" onclick="setMode('schedule')">Schedule</button>
+                </div>
+            </div>
+
+            <!-- Light Sensor Section -->
+            <div class="sensor-section">
+                <h3 class="section-title">
+                    <i class="fas fa-sun"></i>
+                    Light Sensor Information
+                </h3>
+                
+                <div class="sensor-data">
+                    <div class="sensor-value" id="luxValue">-</div>
+                    <div class="sensor-unit">LUX</div>
+                    <div class="sensor-status" id="sensorStatus">Active</div>
+                </div>
+
+                <!-- Sensor Description Box -->
+                <div class="description-box">
+                    <h4><i class="fas fa-info-circle"></i> About Light Sensor</h4>
+                    <p>Cảm biến Ánh sáng là Thiết bị được sử dụng để đo cường độ ánh sáng trong phòng, từ đó xác định trạng thái của đèn (bật/tắt). Dữ liệu cảm biến ánh sáng giúp hệ thống biết khi nào cần can thiệp để điều chỉnh, ví dụ như tắt đèn khi không cần thiết nhằm tiết kiệm điện năng.</p>
+                </div>
+
+                <!-- Sensor Info Box -->
+                <div class="sensor-info-box" id="sensorInfoBox">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: 600; color: #1f2937; margin-bottom: 4px;" id="sensorName">-</div>
+                            <div style="font-size: 12px; color: #6b7280;">Threshold: <span id="sensorThreshold">-</span> LUX</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 12px; color: #6b7280; margin-bottom: 4px;">Last Update</div>
+                            <div style="font-size: 11px; color: #9ca3af;" id="sensorLastUpdate">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Notification -->
+        <div id="toast" class="toast"></div>
+    </div>
+
+    <script>
+        console.log('💡 Light Control Page Loaded');
+        
+        // Get device ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const deviceId = urlParams.get('deviceId') || '1';
+        
+        let lightData = null;
+        let socket = null;
+        let isLightOn = false;
+        let currentBrightness = 50;
+        let currentMode = 'manual';
+
+        // Initialize Socket.IO
+        function initializeSocket() {
+            try {
+                socket = io();
+                
+                socket.on('connect', () => {
+                    console.log('✅ Socket.IO connected');
+                    showToast('Connected to server', 'success');
+                });
+                
+                socket.on('deviceUpdated', (data) => {
+                    if (data.id === deviceId) {
+                        console.log('📡 Light updated via Socket.IO:', data);
+                        
+                        if (data.state !== undefined) {
+                            isLightOn = data.state;
+                            updateLightUI();
+                        }
+                        
+                        if (data.brightness !== undefined) {
+                            currentBrightness = data.brightness;
+                            updateBrightnessUI();
+                        }
+                        
+                        if (data.mode !== undefined) {
+                            currentMode = data.mode;
+                            updateModeUI();
+                        }
+                    }
+                });
+                
+                socket.on('sensorDataUpdate', (data) => {
+                    console.log('📊 Sensor data update:', data);
+                    if (lightData && lightData.sensorId === data.sensorId) {
+                        document.getElementById('luxValue').textContent = data.luxValue;
+                        document.getElementById('sensorLastUpdate').textContent = 
+                            new Date(data.timestamp).toLocaleTimeString();
+                    }
+                });
+                
+            } catch (error) {
+                console.error('❌ Socket.IO initialization failed:', error);
+            }
+        }
+
+        // Toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Show error
+        function showError(message) {
+            const errorContainer = document.getElementById('errorContainer');
+            errorContainer.innerHTML = `
+                <div class="error-message">
+                    ⚠️ ${message}
+                    <br>
+                    <button onclick="loadLightData()" style="margin-top: 10px; padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                        🔄 Retry
+                    </button>
+                </div>
+            `;
+        }
+
+        // Go back to devices page
+        function goBack() {
+            window.location.href = '/devices';
+        }
+
+        // Load light data
+        async function loadLightData() {
+            try {
+                console.log(`📡 Loading light data for device: ${deviceId}`);
+                
+                const response = await fetch('/api/devices');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const devices = await response.json();
+                
+                // Find the specific light device
+                const light = devices.find(d => d.id === deviceId);
+                
+                if (!light) {
+                    throw new Error(`Light device ${deviceId} not found`);
+                }
+                
+                lightData = light;
+                
+                // Update UI with light data
+                updateLightUI();
+                
+                // Load sensor data
+                if (light.sensorId) {
+                    loadSensorData(light.sensorId);
+                }
+                
+                // Hide loading, show content
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('lightContent').style.display = 'block';
+                
+                console.log('✅ Light data loaded:', light);
+                
+            } catch (error) {
+                console.error('❌ Error loading light data:', error);
+                showError(`Failed to load light data: ${error.message}`);
+                
+                // Fallback to mock data
+                useMockData();
+            }
+        }
+
+        // Load sensor data
+        async function loadSensorData(sensorId) {
+            try {
+                console.log(`📊 Loading sensor data: ${sensorId}`);
+                
+                const response = await fetch(`/api/lights/${deviceId}/sensor-data`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data.success && data.sensor) {
+                        const sensor = data.sensor;
+                        document.getElementById('luxValue').textContent = sensor.currentLux || '350';
+                        document.getElementById('sensorThreshold').textContent = sensor.threshold || '200';
+                        document.getElementById('sensorName').textContent = sensor.name || 'Light Sensor';
+                        document.getElementById('sensorLastUpdate').textContent = 
+                            new Date(sensor.lastUpdate).toLocaleTimeString();
+                    }
+                }
+            } catch (error) {
+                console.error('❌ Error loading sensor data:', error);
+                // Use default values
+                document.getElementById('luxValue').textContent = '350';
+                document.getElementById('sensorThreshold').textContent = '200';
+                document.getElementById('sensorName').textContent = 'Light Sensor';
+                document.getElementById('sensorLastUpdate').textContent = new Date().toLocaleTimeString();
+            }
+        }
+
+        // Use mock data as fallback
+        function useMockData() {
+            console.log('🔄 Using mock data');
+            
+            lightData = {
+                id: deviceId,
+                name: 'Living Room Light',
+                type: 'Light',
+                status: 'On',
+                room: 'Living Room',
+                power: 45,
+                brightness: 75,
+                mode: 'auto',
+                sensorId: 'sensor_light_1'
+            };
+            
+            updateLightUI();
+            
+            // Set mock sensor data
+            document.getElementById('luxValue').textContent = '350';
+            document.getElementById('sensorThreshold').textContent = '200';
+            document.getElementById('sensorName').textContent = 'Light Sensor (Mock)';
+            document.getElementById('sensorLastUpdate').textContent = new Date().toLocaleTimeString();
+            
+            // Hide loading, show content
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('lightContent').style.display = 'block';
+            
+            showToast('Using demo data', 'warning');
+        }
+
+        // Update light UI
+        function updateLightUI() {
+            if (!lightData) return;
+            
+            // Update basic info
+            document.getElementById('lightName').textContent = lightData.name || 'Light';
+            document.getElementById('lightRoom').textContent = lightData.room || 'Unknown';
+            document.getElementById('lightPower').textContent = lightData.power || '0';
+            
+            // Update status
+            isLightOn = (lightData.status === 'On' || lightData.status === 'ON' || lightData.status === true);
+            
+            const statusIndicator = document.getElementById('lightStatusIndicator');
+            const statusText = document.getElementById('lightStatusText');
+            const toggleSwitch = document.getElementById('toggleSwitch');
+            const lightIcon = document.getElementById('lightIcon');
+            
+            if (isLightOn) {
+                statusIndicator.className = 'status-indicator status-on';
+                statusText.textContent = 'ON';
+                toggleSwitch.classList.add('on');
+                lightIcon.classList.remove('off');
+                lightIcon.style.background = 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)';
+            } else {
+                statusIndicator.className = 'status-indicator status-off';
+                statusText.textContent = 'OFF';
+                toggleSwitch.classList.remove('on');
+                lightIcon.classList.add('off');
+            }
+            
+            // Update brightness
+            currentBrightness = lightData.brightness || 50;
+            updateBrightnessUI();
+            
+            // Update mode
+            currentMode = lightData.mode || 'manual';
+            updateModeUI();
+        }
+
+        // Update brightness UI
+        function updateBrightnessUI() {
+            const slider = document.getElementById('brightnessSlider');
+            const valueDisplay = document.getElementById('brightnessValue');
+            
+            slider.value = currentBrightness;
+            valueDisplay.textContent = `${currentBrightness}%`;
+            
+            // Update light icon brightness effect
+            const lightIcon = document.getElementById('lightIcon');
+            if (isLightOn) {
+                const opacity = 0.3 + (currentBrightness / 100) * 0.7;
+                lightIcon.style.opacity = opacity;
+            }
+        }
+
+        // Update mode UI
+        function updateModeUI() {
+            const modeButtons = document.querySelectorAll('.mode-btn');
+            modeButtons.forEach(btn => btn.classList.remove('active'));
+            
+            const activeBtn = Array.from(modeButtons).find(btn => 
+                btn.textContent.toLowerCase().includes(currentMode.toLowerCase())
+            );
+            
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+            } else {
+                // Default to manual if not found
+                modeButtons[0].classList.add('active');
+            }
+        }
+
+        // Toggle light on/off
+        async function toggleLight() {
+            const newState = !isLightOn;
+            console.log(`🎮 Toggle light to ${newState ? 'ON' : 'OFF'}`);
+            
+            try {
+                const response = await fetch('/toggle_device', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id: deviceId,
+                        state: newState
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    isLightOn = newState;
+                    updateLightUI();
+                    showToast(`Light turned ${newState ? 'ON' : 'OFF'}`, 'success');
+                } else {
+                    showToast(`Failed: ${result.message}`, 'error');
+                }
+                
+            } catch (error) {
+                console.error('❌ Toggle error:', error);
+                // Update UI anyway for better UX
+                isLightOn = newState;
+                updateLightUI();
+                showToast('Toggle simulated', 'warning');
+            }
+        }
+
+        // Set brightness
+        function setBrightness(value) {
+            console.log(`💡 Set brightness to ${value}%`);
+            
+            currentBrightness = parseInt(value);
+            updateBrightnessUI();
+            
+            // Send update via socket
+            if (socket) {
+                socket.emit('updateLightBrightness', {
+                    deviceId: deviceId,
+                    brightness: currentBrightness
+                });
+            }
+            
+            // Send to backend
+            fetch(`/api/lights/${deviceId}/brightness`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    brightness: currentBrightness
+                })
+            }).catch(err => console.error('Brightness update failed:', err));
+            
+            showToast(`Brightness set to ${value}%`, 'success');
+        }
+
+        // Set mode
+        function setMode(mode) {
+            console.log(`⚙️ Set mode to ${mode}`);
+            
+            currentMode = mode;
+            updateModeUI();
+            
+            // Send update via socket
+            if (socket) {
+                socket.emit('changeLightMode', {
+                    deviceId: deviceId,
+                    mode: mode
+                });
+            }
+            
+            // Send to backend
+            fetch(`/api/lights/${deviceId}/mode`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    mode: mode
+                })
+            }).catch(err => console.error('Mode update failed:', err));
+            
+            showToast(`Mode set to ${mode}`, 'success');
+        }
+
+        // Initialize
+        window.addEventListener('load', () => {
+            console.log('🔄 Initializing Light Control...');
+            
+            // Initialize Socket.IO
+            initializeSocket();
+            
+            // Load light data
+            loadLightData();
+            
+            // Setup brightness slider
+            const brightnessSlider = document.getElementById('brightnessSlider');
+            brightnessSlider.addEventListener('input', function(e) {
+                setBrightness(e.target.value);
+            });
+            
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    goBack();
+                }
+                if (e.key === ' ') {
+                    toggleLight();
+                    e.preventDefault();
+                }
+            });
+        });
+
+        // Auto-refresh sensor data every 10 seconds
+        setInterval(() => {
+            if (lightData && lightData.sensorId) {
+                loadSensorData(lightData.sensorId);
+            }
+        }, 10000);
+    </script>
+</body>
+</html>

@@ -15,132 +15,795 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 # Configuration
 BACKEND_URL = "http://localhost:3000"
 
-# ==================== PROXY ROUTES FOR AUTH ====================
+# ==================== PROXY ROUTES FOR SENSORS AND AUTOMATION ====================
 
-@app.route('/api/auth/register', methods=['POST'])
-def register_proxy():
-    """Proxy register request to backend"""
+@app.route('/api/sensors', methods=['GET'])
+def sensors_get_proxy():
+    """Proxy get sensors request to backend"""
     try:
-        data = request.get_json()
-        print(f"📝 [FLASK-AUTH] Register proxy: {data.get('email', 'No email')}")
+        print("📡 [FLASK-SENSORS] GET sensors request")
         
-        # Forward to backend
-        response = requests.post(
-            f"{BACKEND_URL}/api/auth/register",
-            json=data,
-            headers={'Content-Type': 'application/json'},
-            timeout=10
-        )
-        
-        print(f"✅ [FLASK-AUTH] Backend response: {response.status_code}")
-        return jsonify(response.json()), response.status_code
-        
-    except requests.exceptions.ConnectionError:
-        print("❌ [FLASK-AUTH] Backend connection failed")
-        return jsonify({
-            'success': False,
-            'message': 'Backend server is not running. Please start Node.js backend on port 3000.'
-        }), 503
-    except Exception as e:
-        print(f"❌ [FLASK-AUTH] Error: {e}")
-        return jsonify({
-            'success': False,
-            'message': f'Proxy error: {str(e)}'
-        }), 500
-
-@app.route('/api/auth/login', methods=['POST'])
-def login_proxy():
-    """Proxy login request to backend"""
-    try:
-        data = request.get_json()
-        print(f"🔐 [FLASK-AUTH] Login proxy: {data.get('email', 'No email')}")
-        
-        # Forward to backend
-        response = requests.post(
-            f"{BACKEND_URL}/api/auth/login",
-            json=data,
-            headers={'Content-Type': 'application/json'},
-            timeout=10
-        )
-        
-        print(f"✅ [FLASK-AUTH] Backend response: {response.status_code}")
-        return jsonify(response.json()), response.status_code
-        
-    except requests.exceptions.ConnectionError:
-        print("❌ [FLASK-AUTH] Backend connection failed")
-        return jsonify({
-            'success': False,
-            'message': 'Backend server is not running'
-        }), 503
-    except Exception as e:
-        print(f"❌ [FLASK-AUTH] Error: {e}")
-        return jsonify({
-            'success': False,
-            'message': f'Proxy error: {str(e)}'
-        }), 500
-
-@app.route('/api/auth/profile', methods=['GET'])
-def profile_proxy():
-    """Proxy profile request to backend"""
-    try:
-        # Get token from headers
-        token = request.headers.get('Authorization', '')
-        print(f"👤 [FLASK-AUTH] Profile proxy request")
-        
-        # Forward to backend
-        headers = {'Content-Type': 'application/json'}
-        if token:
-            headers['Authorization'] = token
-            
         response = requests.get(
-            f"{BACKEND_URL}/api/auth/profile",
-            headers=headers,
-            timeout=10
+            f"{BACKEND_URL}/api/sensors",
+            timeout=5
         )
         
+        print(f"✅ [FLASK-SENSORS] Backend response: {response.status_code}")
         return jsonify(response.json()), response.status_code
-        
+            
     except requests.exceptions.ConnectionError:
-        print("❌ [FLASK-AUTH] Backend connection failed")
+        print("❌ [FLASK-SENSORS] Backend connection failed")
+        # Return mock sensor data
         return jsonify({
-            'success': False,
-            'message': 'Backend server is not running'
-        }), 503
+            'success': True,
+            'count': 1,
+            'sensors': [
+                {
+                    'id': 'sensor_light_1',
+                    'name': 'Living Room Light Sensor (Mock)',
+                    'type': 'Sensor',
+                    'subtype': 'Light',
+                    'status': 'Active',
+                    'room': 'Living Room',
+                    'luxValue': 350,
+                    'threshold': 200,
+                    'updateInterval': 10,
+                    'linkedDevice': '1',
+                    'lastUpdate': time.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                    'linkedDeviceInfo': {
+                        'id': '1',
+                        'name': 'Living Room Light',
+                        'type': 'Light',
+                        'status': 'On'
+                    }
+                }
+            ]
+        })
+            
     except Exception as e:
-        print(f"❌ [FLASK-AUTH] Error: {e}")
+        print(f"❌ [FLASK-SENSORS] Error: {e}")
         return jsonify({
             'success': False,
             'message': f'Proxy error: {str(e)}'
         }), 500
 
-# ==================== DEVICE PROXY ROUTES ====================
+@app.route('/api/sensors/<sensor_id>/logs', methods=['GET'])
+def sensor_logs_proxy(sensor_id):
+    """Proxy get sensor logs request"""
+    try:
+        print(f"📊 [FLASK-SENSORS] GET logs for sensor: {sensor_id}")
+        
+        limit = request.args.get('limit', 50)
+        
+        response = requests.get(
+            f"{BACKEND_URL}/api/sensors/{sensor_id}/logs?limit={limit}",
+            timeout=5
+        )
+        
+        return jsonify(response.json()), response.status_code
+        
+    except requests.exceptions.ConnectionError:
+        print("❌ [FLASK-SENSORS] Backend connection failed")
+        # Return mock logs
+        return jsonify({
+            'success': True,
+            'count': 5,
+            'logs': [
+                {
+                    'id': 'log_1',
+                    'sensorId': sensor_id,
+                    'luxValue': 350,
+                    'timestamp': time.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                    'action': 'none',
+                    'deviceState': 'On'
+                },
+                {
+                    'id': 'log_2',
+                    'sensorId': sensor_id,
+                    'luxValue': 180,
+                    'timestamp': time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.time() - 10)),
+                    'action': 'turn_on',
+                    'deviceState': 'On'
+                },
+                {
+                    'id': 'log_3',
+                    'sensorId': sensor_id,
+                    'luxValue': 520,
+                    'timestamp': time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.time() - 20)),
+                    'action': 'turn_off',
+                    'deviceState': 'Off'
+                }
+            ]
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/api/sensors/<sensor_id>', methods=['PUT'])
+def update_sensor_proxy(sensor_id):
+    """Proxy update sensor request"""
+    try:
+        data = request.get_json()
+        print(f"⚙️ [FLASK-SENSORS] Update sensor: {sensor_id}")
+        
+        response = requests.put(
+            f"{BACKEND_URL}/api/sensors/{sensor_id}",
+            json=data,
+            headers={'Content-Type': 'application/json'},
+            timeout=5
+        )
+        
+        return jsonify(response.json()), response.status_code
+        
+    except requests.exceptions.ConnectionError:
+        print("❌ [FLASK-SENSORS] Backend connection failed")
+        return jsonify({
+            'success': False,
+            'message': 'Backend server is not running'
+        }), 503
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/api/sensors/data', methods=['POST'])
+def sensor_data_proxy():
+    """Proxy submit sensor data request"""
+    try:
+        data = request.get_json()
+        print(f"📊 [FLASK-SENSORS] Submit sensor data: {data.get('sensorId')}")
+        
+        response = requests.post(
+            f"{BACKEND_URL}/api/sensors/data",
+            json=data,
+            headers={'Content-Type': 'application/json'},
+            timeout=5
+        )
+        
+        return jsonify(response.json()), response.status_code
+        
+    except requests.exceptions.ConnectionError:
+        print("❌ [FLASK-SENSORS] Backend connection failed")
+        return jsonify({
+            'success': False,
+            'message': 'Backend server is not running'
+        }), 503
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+# ==================== AUTOMATION PROXY ROUTES ====================
+
+@app.route('/api/automation/rules', methods=['GET'])
+def automation_rules_proxy():
+    """Proxy get automation rules request"""
+    try:
+        print("🤖 [FLASK-AUTOMATION] GET automation rules")
+        
+        response = requests.get(
+            f"{BACKEND_URL}/api/automation/rules",
+            timeout=5
+        )
+        
+        return jsonify(response.json()), response.status_code
+        
+    except requests.exceptions.ConnectionError:
+        print("❌ [FLASK-AUTOMATION] Backend connection failed")
+        # Return mock automation rules
+        return jsonify({
+            'success': True,
+            'count': 2,
+            'rules': [
+                {
+                    'id': 'rule_1',
+                    'name': 'Tự động bật/tắt đèn theo ánh sáng (Mock)',
+                    'description': 'Tự động điều chỉnh đèn dựa trên cảm biến ánh sáng',
+                    'sensorId': 'sensor_light_1',
+                    'deviceId': '1',
+                    'conditions': [
+                        {
+                            'type': 'lux',
+                            'operator': '<',
+                            'value': 200,
+                            'action': 'turn_on',
+                            'brightness': 80
+                        },
+                        {
+                            'type': 'lux',
+                            'operator': '>',
+                            'value': 500,
+                            'action': 'turn_off'
+                        }
+                    ],
+                    'isActive': True,
+                    'createdAt': time.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                    'updatedAt': time.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                    'sensorInfo': {
+                        'id': 'sensor_light_1',
+                        'name': 'Living Room Light Sensor',
+                        'room': 'Living Room',
+                        'currentLux': 350
+                    },
+                    'deviceInfo': {
+                        'id': '1',
+                        'name': 'Living Room Light',
+                        'type': 'Light',
+                        'status': 'On',
+                        'mode': 'auto'
+                    }
+                }
+            ]
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/api/automation/rules', methods=['POST'])
+def create_automation_rule_proxy():
+    """Proxy create automation rule request"""
+    try:
+        data = request.get_json()
+        print(f"🤖 [FLASK-AUTOMATION] Create automation rule: {data.get('name')}")
+        
+        response = requests.post(
+            f"{BACKEND_URL}/api/automation/rules",
+            json=data,
+            headers={'Content-Type': 'application/json'},
+            timeout=5
+        )
+        
+        return jsonify(response.json()), response.status_code
+        
+    except requests.exceptions.ConnectionError:
+        print("❌ [FLASK-AUTOMATION] Backend connection failed")
+        return jsonify({
+            'success': False,
+            'message': 'Backend server is not running'
+        }), 503
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/api/automation/rules/<rule_id>', methods=['PUT'])
+def update_automation_rule_proxy(rule_id):
+    """Proxy update automation rule request"""
+    try:
+        data = request.get_json()
+        print(f"🤖 [FLASK-AUTOMATION] Update automation rule: {rule_id}")
+        
+        response = requests.put(
+            f"{BACKEND_URL}/api/automation/rules/{rule_id}",
+            json=data,
+            headers={'Content-Type': 'application/json'},
+            timeout=5
+        )
+        
+        return jsonify(response.json()), response.status_code
+        
+    except requests.exceptions.ConnectionError:
+        print("❌ [FLASK-AUTOMATION] Backend connection failed")
+        return jsonify({
+            'success': False,
+            'message': 'Backend server is not running'
+        }), 503
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/api/automation/rules/<rule_id>', methods=['DELETE'])
+def delete_automation_rule_proxy(rule_id):
+    """Proxy delete automation rule request"""
+    try:
+        print(f"🤖 [FLASK-AUTOMATION] Delete automation rule: {rule_id}")
+        
+        response = requests.delete(
+            f"{BACKEND_URL}/api/automation/rules/{rule_id}",
+            timeout=5
+        )
+        
+        return jsonify(response.json()), response.status_code
+        
+    except requests.exceptions.ConnectionError:
+        print("❌ [FLASK-AUTOMATION] Backend connection failed")
+        return jsonify({
+            'success': False,
+            'message': 'Backend server is not running'
+        }), 503
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/api/automation/rules/<rule_id>/toggle', methods=['POST'])
+def toggle_automation_rule_proxy(rule_id):
+    """Proxy toggle automation rule request"""
+    try:
+        data = request.get_json()
+        print(f"🤖 [FLASK-AUTOMATION] Toggle automation rule: {rule_id}")
+        
+        response = requests.post(
+            f"{BACKEND_URL}/api/automation/rules/{rule_id}/toggle",
+            json=data,
+            headers={'Content-Type': 'application/json'},
+            timeout=5
+        )
+        
+        return jsonify(response.json()), response.status_code
+        
+    except requests.exceptions.ConnectionError:
+        print("❌ [FLASK-AUTOMATION] Backend connection failed")
+        return jsonify({
+            'success': False,
+            'message': 'Backend server is not running'
+        }), 503
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/api/automation/logs', methods=['GET'])
+def automation_logs_proxy():
+    """Proxy get automation logs request"""
+    try:
+        print("📝 [FLASK-AUTOMATION] GET automation logs")
+        
+        limit = request.args.get('limit', 100)
+        
+        response = requests.get(
+            f"{BACKEND_URL}/api/automation/logs?limit={limit}",
+            timeout=5
+        )
+        
+        return jsonify(response.json()), response.status_code
+        
+    except requests.exceptions.ConnectionError:
+        print("❌ [FLASK-AUTOMATION] Backend connection failed")
+        # Return mock logs
+        return jsonify({
+            'success': True,
+            'count': 3,
+            'logs': [
+                {
+                    'id': 'auto_log_1',
+                    'ruleId': 'rule_1',
+                    'deviceId': '1',
+                    'deviceName': 'Living Room Light',
+                    'action': 'turn_on',
+                    'luxValue': 180,
+                    'timestamp': time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.time() - 300))
+                },
+                {
+                    'id': 'auto_log_2',
+                    'ruleId': 'rule_1',
+                    'deviceId': '1',
+                    'deviceName': 'Living Room Light',
+                    'action': 'turn_off',
+                    'luxValue': 520,
+                    'timestamp': time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.time() - 600))
+                },
+                {
+                    'id': 'auto_log_3',
+                    'ruleId': 'rule_2',
+                    'deviceId': '1',
+                    'deviceName': 'Living Room Light',
+                    'action': 'adjust_brightness',
+                    'luxValue': 350,
+                    'timestamp': time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.time() - 900))
+                }
+            ]
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+# ==================== LIGHT CONTROL PROXY ROUTES ====================
+
+@app.route('/api/lights/<light_id>/brightness', methods=['POST'])
+def light_brightness_proxy(light_id):
+    """Proxy update light brightness request"""
+    try:
+        data = request.get_json()
+        print(f"💡 [FLASK-LIGHTS] Update brightness for light: {light_id}")
+        
+        response = requests.post(
+            f"{BACKEND_URL}/api/lights/{light_id}/brightness",
+            json=data,
+            headers={'Content-Type': 'application/json'},
+            timeout=5
+        )
+        
+        return jsonify(response.json()), response.status_code
+        
+    except requests.exceptions.ConnectionError:
+        print("❌ [FLASK-LIGHTS] Backend connection failed")
+        return jsonify({
+            'success': False,
+            'message': 'Backend server is not running'
+        }), 503
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/api/lights/<light_id>/mode', methods=['POST'])
+def light_mode_proxy(light_id):
+    """Proxy change light mode request"""
+    try:
+        data = request.get_json()
+        print(f"💡 [FLASK-LIGHTS] Change mode for light: {light_id}")
+        
+        response = requests.post(
+            f"{BACKEND_URL}/api/lights/{light_id}/mode",
+            json=data,
+            headers={'Content-Type': 'application/json'},
+            timeout=5
+        )
+        
+        return jsonify(response.json()), response.status_code
+        
+    except requests.exceptions.ConnectionError:
+        print("❌ [FLASK-LIGHTS] Backend connection failed")
+        return jsonify({
+            'success': False,
+            'message': 'Backend server is not running'
+        }), 503
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/api/lights/<light_id>/sensor-data', methods=['GET'])
+def light_sensor_data_proxy(light_id):
+    """Proxy get light sensor data request"""
+    try:
+        print(f"💡📊 [FLASK-LIGHTS] Get sensor data for light: {light_id}")
+        
+        limit = request.args.get('limit', 50)
+        
+        response = requests.get(
+            f"{BACKEND_URL}/api/lights/{light_id}/sensor-data?limit={limit}",
+            timeout=5
+        )
+        
+        return jsonify(response.json()), response.status_code
+        
+    except requests.exceptions.ConnectionError:
+        print("❌ [FLASK-LIGHTS] Backend connection failed")
+        # Return mock sensor data
+        return jsonify({
+            'success': True,
+            'lightId': light_id,
+            'sensor': {
+                'id': 'sensor_light_1',
+                'name': 'Living Room Light Sensor',
+                'currentLux': 350,
+                'threshold': 200,
+                'lastUpdate': time.strftime("%Y-%m-%dT%H:%M:%SZ")
+            },
+            'logs': [
+                {
+                    'id': 'log_1',
+                    'sensorId': 'sensor_light_1',
+                    'luxValue': 350,
+                    'timestamp': time.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                    'action': 'none',
+                    'deviceState': 'On'
+                },
+                {
+                    'id': 'log_2',
+                    'sensorId': 'sensor_light_1',
+                    'luxValue': 180,
+                    'timestamp': time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.time() - 10)),
+                    'action': 'turn_on',
+                    'deviceState': 'On'
+                }
+            ],
+            'automationRules': [
+                {
+                    'id': 'rule_1',
+                    'name': 'Tự động bật/tắt đèn',
+                    'isActive': True
+                }
+            ],
+            'currentBrightness': 75
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+# ==================== ANALYTICS PROXY ROUTES ====================
+
+@app.route('/api/analytics', methods=['GET'])
+def analytics_proxy():
+    """Proxy get analytics data"""
+    try:
+        print("📊 [FLASK-ANALYTICS] GET analytics data")
+        
+        response = requests.get(
+            f"{BACKEND_URL}/api/analytics",
+            timeout=5
+        )
+        
+        return jsonify(response.json()), response.status_code
+        
+    except requests.exceptions.ConnectionError:
+        print("❌ [FLASK-ANALYTICS] Backend connection failed, returning mock data")
+        
+        # Return mock analytics data
+        current_time = time.strftime("%Y-%m-%dT%H:%M:%SZ")
+        one_day_ago = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.time() - 86400))
+        one_week_ago = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.time() - 604800))
+        
+        return jsonify({
+            'success': True,
+            'analytics': {
+                'powerConsumption': {
+                    'today': 15.6,
+                    'yesterday': 18.2,
+                    'thisWeek': 124.8,
+                    'lastWeek': 138.5,
+                    'trend': -10  # percentage change
+                },
+                'deviceUsage': [
+                    {'device': 'Living Room Light', 'usage': 12.5},
+                    {'device': 'Kitchen AC', 'usage': 8.3},
+                    {'device': 'Bedroom TV', 'usage': 4.7}
+                ],
+                'activeHours': {
+                    'morning': 4.2,
+                    'afternoon': 6.8,
+                    'evening': 8.5,
+                    'night': 2.1
+                },
+                'costSavings': {
+                    'monthly': 45.30,
+                    'quarterly': 135.90,
+                    'yearly': 543.60
+                },
+                'environmentalImpact': {
+                    'co2Saved': 125.6,  # kg
+                    'treesEquivalent': 2.8
+                },
+                'automationStats': {
+                    'rulesActive': 3,
+                    'rulesExecuted': 124,
+                    'energySaved': 28.5  # kWh
+                }
+            },
+            'charts': {
+                'dailyUsage': {
+                    'labels': ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    'data': [15.2, 16.8, 14.5, 17.2, 18.6, 20.1, 19.8]
+                },
+                'hourlyUsage': {
+                    'labels': ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+                    'data': [5.2, 4.8, 8.6, 12.4, 15.8, 14.2]
+                },
+                'deviceDistribution': {
+                    'labels': ['Lights', 'AC', 'TV', 'Other'],
+                    'data': [45, 25, 15, 15]
+                }
+            },
+            'timeRange': {
+                'start': one_week_ago,
+                'end': current_time
+            }
+        }), 200
+        
+    except Exception as e:
+        print(f"❌ [FLASK-ANALYTICS] Error: {e}")
+        return jsonify({
+            'success': False,
+            'message': f'Analytics error: {str(e)}'
+        }), 500
+
+@app.route('/api/analytics/power', methods=['GET'])
+def analytics_power_proxy():
+    """Proxy get power consumption analytics"""
+    try:
+        print("⚡ [FLASK-ANALYTICS] GET power consumption data")
+        
+        period = request.args.get('period', 'day')  # day, week, month, year
+        
+        response = requests.get(
+            f"{BACKEND_URL}/api/analytics/power?period={period}",
+            timeout=5
+        )
+        
+        return jsonify(response.json()), response.status_code
+        
+    except requests.exceptions.ConnectionError:
+        print("❌ [FLASK-ANALYTICS] Backend connection failed, returning mock power data")
+        
+        # Generate mock power data based on period
+        period = request.args.get('period', 'day')
+        now = time.time()
+        
+        if period == 'day':
+            labels = [f"{h:02d}:00" for h in range(0, 24, 2)]
+            data = [random.uniform(0.5, 2.5) for _ in range(12)]
+        elif period == 'week':
+            labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+            data = [random.uniform(10, 25) for _ in range(7)]
+        elif period == 'month':
+            labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4']
+            data = [random.uniform(40, 100) for _ in range(4)]
+        else:  # year
+            labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+            data = [random.uniform(120, 400) for _ in range(12)]
+        
+        return jsonify({
+            'success': True,
+            'period': period,
+            'totalConsumption': sum(data),
+            'averageConsumption': sum(data) / len(data),
+            'peakConsumption': max(data),
+            'offPeakConsumption': min(data),
+            'chartData': {
+                'labels': labels,
+                'data': data
+            }
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/api/analytics/devices', methods=['GET'])
+def analytics_devices_proxy():
+    """Proxy get device usage analytics"""
+    try:
+        print("📱 [FLASK-ANALYTICS] GET device usage data")
+        
+        device_id = request.args.get('deviceId')
+        
+        url = f"{BACKEND_URL}/api/analytics/devices"
+        if device_id:
+            url += f"?deviceId={device_id}"
+        
+        response = requests.get(url, timeout=5)
+        
+        return jsonify(response.json()), response.status_code
+        
+    except requests.exceptions.ConnectionError:
+        print("❌ [FLASK-ANALYTICS] Backend connection failed, returning mock device data")
+        
+        # Return mock device analytics
+        return jsonify({
+            'success': True,
+            'devices': [
+                {
+                    'id': '1',
+                    'name': 'Living Room Light',
+                    'type': 'Light',
+                    'totalUsage': 12.5,  # hours
+                    'powerConsumption': 56.25,  # kWh
+                    'avgDailyUsage': 1.8,  # hours
+                    'onCount': 42,
+                    'lastUsed': time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.time() - 3600))
+                },
+                {
+                    'id': '2',
+                    'name': 'Kitchen AC',
+                    'type': 'AC',
+                    'totalUsage': 8.3,
+                    'powerConsumption': 99.6,
+                    'avgDailyUsage': 1.2,
+                    'onCount': 28,
+                    'lastUsed': time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.time() - 7200))
+                },
+                {
+                    'id': '3',
+                    'name': 'Bedroom TV',
+                    'type': 'TV',
+                    'totalUsage': 4.7,
+                    'powerConsumption': 14.1,
+                    'avgDailyUsage': 0.7,
+                    'onCount': 15,
+                    'lastUsed': time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.time() - 14400))
+                }
+            ],
+            'summary': {
+                'totalDevices': 3,
+                'totalUsage': 25.5,
+                'totalPower': 169.95,
+                'avgUsagePerDevice': 8.5
+            }
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+# ==================== UPDATED DEVICE ROUTES ====================
 
 @app.route('/api/devices', methods=['GET'])
 def devices_get_proxy():
-    """Proxy get devices request to backend"""
+    """Proxy get devices request to backend (updated for light sensors)"""
     try:
         print("📡 [FLASK-DEVICES] GET devices request")
         
-        # Forward to backend
         response = requests.get(
             f"{BACKEND_URL}/api/devices",
             timeout=5
         )
         
         print(f"✅ [FLASK-DEVICES] Backend response: {response.status_code}")
-        return jsonify(response.json()), response.status_code
+        
+        # If backend returns data, return it
+        if response.status_code == 200:
+            devices_data = response.json()
+            return jsonify(devices_data), response.status_code
+        
+        # Fallback to mock data with light sensors
+        return jsonify([
+            {
+                'id': '1',
+                'name': 'Living Room Light',
+                'type': 'Light',
+                'subtype': 'LED',
+                'status': 'On',
+                'room': 'Living Room',
+                'power': 45,
+                'brightness': 75,
+                'mode': 'auto',
+                'sensorId': 'sensor_light_1',
+                'sensorInfo': {
+                    'id': 'sensor_light_1',
+                    'name': 'Living Room Light Sensor',
+                    'luxValue': 350,
+                    'threshold': 200
+                },
+                'lastActivity': time.strftime("%Y-%m-%dT%H:%M:%SZ")
+            },
+            {
+                'id': '2',
+                'name': 'Kitchen AC',
+                'type': 'AC',
+                'status': 'On',
+                'room': 'Kitchen',
+                'power': 120,
+                'temperature': 24,
+                'lastActivity': time.strftime("%Y-%m-%dT%H:%M:%SZ")
+            },
+            {
+                'id': '3',
+                'name': 'Bedroom TV',
+                'type': 'TV',
+                'status': 'Off',
+                'room': 'Bedroom',
+                'power': 0,
+                'lastActivity': time.strftime("%Y-%m-%dT%H:%M:%SZ")
+            },
+            {
+                'id': 'sensor_light_1',
+                'name': 'Living Room Light Sensor',
+                'type': 'Sensor',
+                'subtype': 'Light',
+                'status': 'Active',
+                'room': 'Living Room',
+                'luxValue': 350,
+                'threshold': 200,
+                'updateInterval': 10,
+                'linkedDevice': '1',
+                'lastUpdate': time.strftime("%Y-%m-%dT%H:%M:%SZ")
+            }
+        ])
             
     except requests.exceptions.ConnectionError:
         print("❌ [FLASK-DEVICES] Backend connection failed")
-        # Return mock data if backend is down
+        # Return mock data with light sensors
         return jsonify([
             {
                 'id': '1',
                 'name': 'Living Room Light (Mock)',
                 'type': 'Light',
+                'subtype': 'LED',
                 'status': 'On',
                 'room': 'Living Room',
                 'power': 45,
+                'brightness': 75,
+                'mode': 'auto',
+                'sensorId': 'sensor_light_1',
+                'sensorInfo': {
+                    'id': 'sensor_light_1',
+                    'name': 'Living Room Light Sensor',
+                    'luxValue': 350,
+                    'threshold': 200
+                },
                 'lastActivity': time.strftime("%Y-%m-%dT%H:%M:%SZ")
             },
             {
@@ -161,6 +824,19 @@ def devices_get_proxy():
                 'room': 'Bedroom',
                 'power': 0,
                 'lastActivity': time.strftime("%Y-%m-%dT%H:%M:%SZ")
+            },
+            {
+                'id': 'sensor_light_1',
+                'name': 'Living Room Light Sensor (Mock)',
+                'type': 'Sensor',
+                'subtype': 'Light',
+                'status': 'Active',
+                'room': 'Living Room',
+                'luxValue': 350,
+                'threshold': 200,
+                'updateInterval': 10,
+                'linkedDevice': '1',
+                'lastUpdate': time.strftime("%Y-%m-%dT%H:%M:%SZ")
             }
         ])
             
@@ -171,638 +847,36 @@ def devices_get_proxy():
             'message': f'Proxy error: {str(e)}'
         }), 500
 
-@app.route('/api/devices', methods=['POST'])
-def devices_post_proxy():
-    """Proxy post devices request to backend"""
-    try:
-        data = request.get_json()
-        print(f"➕ [FLASK-DEVICES] POST device request: {data.get('name', 'No name')}")
-        
-        # Forward to backend
-        response = requests.post(
-            f"{BACKEND_URL}/api/devices",
-            json=data,
-            headers={'Content-Type': 'application/json'},
-            timeout=5
-        )
-        
-        print(f"✅ [FLASK-DEVICES] Backend response: {response.status_code}")
-        return jsonify(response.json()), response.status_code
-            
-    except requests.exceptions.ConnectionError:
-        print("❌ [FLASK-DEVICES] Backend connection failed")
-        return jsonify({
-            'success': False,
-            'message': 'Backend server is not running'
-        }), 503
-            
-    except Exception as e:
-        print(f"❌ [FLASK-DEVICES] Error: {e}")
-        return jsonify({
-            'success': False,
-            'message': f'Proxy error: {str(e)}'
-        }), 500
-
-@app.route('/api/devices/<device_id>', methods=['DELETE'])
-def delete_device_proxy(device_id):
-    """Proxy delete device request"""
-    try:
-        print(f"🗑️ [FLASK-DEVICES] DELETE device request: {device_id}")
-        
-        response = requests.delete(
-            f"{BACKEND_URL}/api/devices/{device_id}",
-            timeout=5
-        )
-        
-        print(f"✅ [FLASK-DEVICES] Backend response: {response.status_code}")
-        return jsonify(response.json()), response.status_code
-        
-    except requests.exceptions.ConnectionError:
-        print("❌ [FLASK-DEVICES] Backend connection failed")
-        return jsonify({
-            'success': True,
-            'message': 'Device deleted (simulated - backend offline)',
-            'simulated': True
-        })
-    except Exception as e:
-        print(f"❌ [FLASK-DEVICES] Error: {e}")
-        return jsonify({
-            'success': False,
-            'message': f'Proxy error: {str(e)}'
-        }), 500
-
-# ==================== SCHEDULES PROXY ROUTES ====================
-
-@app.route('/api/schedules', methods=['GET'])
-def schedules_get_proxy():
-    """Proxy get schedules request to backend"""
-    try:
-        print("📅 [FLASK-SCHEDULES] GET schedules request")
-        
-        response = requests.get(f"{BACKEND_URL}/api/schedules", timeout=5)
-        print(f"✅ [FLASK-SCHEDULES] Backend response: {response.status_code}")
-        return jsonify(response.json()), response.status_code
-        
-    except requests.exceptions.ConnectionError:
-        print("❌ [FLASK-SCHEDULES] Backend connection failed")
-        # Return mock data if backend is down
-        return jsonify({
-            'success': True,
-            'count': 2,
-            'schedules': [
-                {
-                    'id': '1',
-                    'deviceId': '1',
-                    'deviceName': 'Living Room Light',
-                    'deviceType': 'Light',
-                    'location': 'Living Room',
-                    'timeOn': '08:00',
-                    'timeOff': '23:00',
-                    'note': 'Auto turn on/off lights',
-                    'isActive': True,
-                    'createdAt': time.strftime("%Y-%m-%dT%H:%M:%SZ"),
-                    'updatedAt': time.strftime("%Y-%m-%dT%H:%M:%SZ")
-                },
-                {
-                    'id': '2',
-                    'deviceId': '2',
-                    'deviceName': 'Kitchen AC',
-                    'deviceType': 'AC',
-                    'location': 'Bedroom',
-                    'timeOn': '22:00',
-                    'timeOff': None,
-                    'note': 'Turn on before sleep',
-                    'isActive': True,
-                    'createdAt': time.strftime("%Y-%m-%dT%H:%M:%SZ"),
-                    'updatedAt': time.strftime("%Y-%m-%dT%H:%M:%SZ")
-                }
-            ]
-        })
-    except Exception as e:
-        print(f"❌ [FLASK-SCHEDULES] Error: {e}")
-        return jsonify({
-            'success': False,
-            'message': f'Proxy error: {str(e)}'
-        }), 500
-
-@app.route('/api/schedules', methods=['POST'])
-def schedules_post_proxy():
-    """Proxy create schedule request"""
-    try:
-        data = request.get_json()
-        print(f"📅 [FLASK-SCHEDULES] POST schedule request: {data.get('deviceName', 'No device')}")
-        
-        response = requests.post(
-            f"{BACKEND_URL}/api/schedules",
-            json=data,
-            headers={'Content-Type': 'application/json'},
-            timeout=5
-        )
-        
-        print(f"✅ [FLASK-SCHEDULES] Backend response: {response.status_code}")
-        return jsonify(response.json()), response.status_code
-        
-    except requests.exceptions.ConnectionError:
-        print("❌ [FLASK-SCHEDULES] Backend connection failed")
-        return jsonify({
-            'success': False,
-            'message': 'Backend server is not running'
-        }), 503
-    except Exception as e:
-        print(f"❌ [FLASK-SCHEDULES] Error: {e}")
-        return jsonify({
-            'success': False,
-            'message': f'Proxy error: {str(e)}'
-        }), 500
-
-@app.route('/api/schedules/<schedule_id>', methods=['PUT'])
-def schedules_put_proxy(schedule_id):
-    """Proxy update schedule request"""
-    try:
-        data = request.get_json()
-        print(f"📅 [FLASK-SCHEDULES] PUT schedule request: {schedule_id}")
-        
-        response = requests.put(
-            f"{BACKEND_URL}/api/schedules/{schedule_id}",
-            json=data,
-            headers={'Content-Type': 'application/json'},
-            timeout=5
-        )
-        
-        print(f"✅ [FLASK-SCHEDULES] Backend response: {response.status_code}")
-        return jsonify(response.json()), response.status_code
-        
-    except requests.exceptions.ConnectionError:
-        print("❌ [FLASK-SCHEDULES] Backend connection failed")
-        return jsonify({
-            'success': False,
-            'message': 'Backend server is not running'
-        }), 503
-    except Exception as e:
-        print(f"❌ [FLASK-SCHEDULES] Error: {e}")
-        return jsonify({
-            'success': False,
-            'message': f'Proxy error: {str(e)}'
-        }), 500
-
-@app.route('/api/schedules/<schedule_id>', methods=['DELETE'])
-def schedules_delete_proxy(schedule_id):
-    """Proxy delete schedule request"""
-    try:
-        print(f"📅 [FLASK-SCHEDULES] DELETE schedule request: {schedule_id}")
-        
-        response = requests.delete(
-            f"{BACKEND_URL}/api/schedules/{schedule_id}",
-            timeout=5
-        )
-        
-        print(f"✅ [FLASK-SCHEDULES] Backend response: {response.status_code}")
-        return jsonify(response.json()), response.status_code
-        
-    except requests.exceptions.ConnectionError:
-        print("❌ [FLASK-SCHEDULES] Backend connection failed")
-        return jsonify({
-            'success': False,
-            'message': 'Backend server is not running'
-        }), 503
-    except Exception as e:
-        print(f"❌ [FLASK-SCHEDULES] Error: {e}")
-        return jsonify({
-            'success': False,
-            'message': f'Proxy error: {str(e)}'
-        }), 500
-
-@app.route('/api/schedules/<schedule_id>/toggle', methods=['POST'])
-def toggle_schedule_proxy(schedule_id):
-    """Proxy toggle schedule request"""
-    try:
-        data = request.get_json()
-        print(f"📅 [FLASK-SCHEDULES] POST toggle schedule: {schedule_id} to {data.get('isActive')}")
-        
-        response = requests.post(
-            f"{BACKEND_URL}/api/schedules/{schedule_id}/toggle",
-            json=data,
-            headers={'Content-Type': 'application/json'},
-            timeout=5
-        )
-        
-        print(f"✅ [FLASK-SCHEDULES] Backend response: {response.status_code}")
-        return jsonify(response.json()), response.status_code
-    except requests.exceptions.ConnectionError:
-        print("❌ [FLASK-SCHEDULES] Backend connection failed")
-        return jsonify({
-            'success': False,
-            'message': 'Backend server is not running'
-        }), 503
-    except Exception as e:
-        return jsonify({
-            'success': False,
-            'message': f'Proxy error: {str(e)}'
-        }), 500
-
-# ==================== SCHEDULE EXECUTION ====================
-
-def check_and_execute_schedules():
-    """Kiểm tra và thực thi schedules định kỳ"""
-    while True:
-        try:
-            current_time = time.strftime("%H:%M")
-            current_day = time.strftime("%A")
-            print(f"⏰ [SCHEDULER] Checking schedules at {current_time}")
-            
-            # Lấy tất cả schedules từ backend
-            try:
-                response = requests.get(f"{BACKEND_URL}/api/schedules", timeout=3)
-                if response.status_code == 200:
-                    data = response.json()
-                    schedules = data.get('schedules', [])
-                else:
-                    schedules = []
-                    print(f"❌ [SCHEDULER] Failed to fetch schedules: {response.status_code}")
-            except:
-                schedules = []
-                print("❌ [SCHEDULER] Backend connection failed")
-            
-            # Kiểm tra từng schedule
-            for schedule in schedules:
-                if not schedule.get('isActive', True):
-                    continue
-                
-                schedule_id = schedule.get('id')
-                device_id = schedule.get('deviceId')
-                time_on = schedule.get('timeOn')
-                time_off = schedule.get('timeOff')
-                repeat_days = schedule.get('repeatDays', ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'])
-                
-                # Kiểm tra nếu hôm nay trong repeat days
-                if current_day not in repeat_days:
-                    continue
-                
-                # Kiểm tra time_on
-                if time_on and current_time == time_on:
-                    print(f"⏰ [SCHEDULER] Executing ON schedule: {schedule_id} for device {device_id}")
-                    
-                    # Toggle device ON
-                    try:
-                        # Gửi request đến backend để toggle device
-                        toggle_response = requests.post(
-                            f"{BACKEND_URL}/api/devices/toggle",
-                            json={'deviceId': device_id, 'state': True},
-                            timeout=2
-                        )
-                        
-                        if toggle_response.status_code == 200:
-                            # Broadcast qua socket
-                            socketio.emit('deviceUpdated', {
-                                'id': device_id,
-                                'state': True
-                            })
-                            socketio.emit('scheduleExecuted', {
-                                'scheduleId': schedule_id,
-                                'deviceId': device_id,
-                                'action': 'ON',
-                                'time': current_time
-                            })
-                            print(f"✅ [SCHEDULER] Device {device_id} turned ON via schedule")
-                    except Exception as e:
-                        print(f"❌ [SCHEDULER] Error executing ON schedule: {e}")
-                
-                # Kiểm tra time_off
-                if time_off and current_time == time_off:
-                    print(f"⏰ [SCHEDULER] Executing OFF schedule: {schedule_id} for device {device_id}")
-                    
-                    # Toggle device OFF
-                    try:
-                        toggle_response = requests.post(
-                            f"{BACKEND_URL}/api/devices/toggle",
-                            json={'deviceId': device_id, 'state': False},
-                            timeout=2
-                        )
-                        
-                        if toggle_response.status_code == 200:
-                            # Broadcast qua socket
-                            socketio.emit('deviceUpdated', {
-                                'id': device_id,
-                                'state': False
-                            })
-                            socketio.emit('scheduleExecuted', {
-                                'scheduleId': schedule_id,
-                                'deviceId': device_id,
-                                'action': 'OFF',
-                                'time': current_time
-                            })
-                            print(f"✅ [SCHEDULER] Device {device_id} turned OFF via schedule")
-                    except Exception as e:
-                        print(f"❌ [SCHEDULER] Error executing OFF schedule: {e}")
-            
-            time.sleep(60)  # Kiểm tra mỗi phút
-            
-        except Exception as e:
-            print(f"❌ [SCHEDULER] Critical error: {e}")
-            time.sleep(60)
-
-# ==================== UTILITY FUNCTIONS FOR SCHEDULES ====================
-
-def is_time_upcoming(target_time, minutes_ahead=5):
-    """Kiểm tra nếu thời gian sắp diễn ra (trong vòng X phút)"""
-    if not target_time:
-        return False
-    
-    try:
-        current_hour = int(time.strftime("%H"))
-        current_minute = int(time.strftime("%M"))
-        
-        target_hour = int(target_time.split(':')[0])
-        target_minute = int(target_time.split(':')[1])
-        
-        # Tính số phút từ hiện tại đến target
-        current_total = current_hour * 60 + current_minute
-        target_total = target_hour * 60 + target_minute
-        
-        # Tính khoảng cách (xử lý qua ngày)
-        if target_total < current_total:
-            target_total += 24 * 60  # Thêm 1 ngày
-        
-        return 0 <= (target_total - current_total) <= minutes_ahead
-    except:
-        return False
-
-def format_time_display(time_str):
-    """Format 24h time to 12h display"""
-    if not time_str:
-        return ""
-    
-    try:
-        hour = int(time_str.split(':')[0])
-        minute = time_str.split(':')[1]
-        
-        if hour == 0:
-            return f"12:{minute} AM"
-        elif hour < 12:
-            return f"{hour}:{minute} AM"
-        elif hour == 12:
-            return f"12:{minute} PM"
-        else:
-            return f"{hour-12}:{minute} PM"
-    except:
-        return time_str
-
-# ==================== SCHEDULE MANAGEMENT ROUTES ====================
-
-@app.route('/api/schedules/execute', methods=['POST'])
-def execute_schedule():
-    """Execute a schedule manually"""
-    try:
-        data = request.get_json()
-        schedule_id = data.get('scheduleId')
-        
-        print(f"⏰ [FLASK] Manually executing schedule: {schedule_id}")
-        
-        # Lấy schedule info từ backend
-        response = requests.get(f"{BACKEND_URL}/api/schedules/{schedule_id}", timeout=3)
-        if response.status_code != 200:
-            return jsonify({'success': False, 'message': 'Schedule not found'})
-        
-        schedule = response.json().get('schedule', {})
-        device_id = schedule.get('deviceId')
-        action = data.get('action', 'ON')  # 'ON' or 'OFF'
-        
-        # Toggle device
-        new_state = action.upper() == 'ON'
-        
-        try:
-            toggle_response = requests.post(
-                f"{BACKEND_URL}/api/devices/toggle",
-                json={'deviceId': device_id, 'state': new_state},
-                timeout=2
-            )
-            
-            if toggle_response.status_code == 200:
-                # Broadcast qua socket
-                socketio.emit('deviceUpdated', {
-                    'id': device_id,
-                    'state': new_state
-                })
-                
-                return jsonify({
-                    'success': True,
-                    'message': f'Device turned {action} via schedule',
-                    'deviceId': device_id,
-                    'scheduleId': schedule_id
-                })
-            else:
-                return jsonify({'success': False, 'message': 'Failed to toggle device'})
-                
-        except:
-            return jsonify({'success': False, 'message': 'Backend connection failed'})
-            
-    except Exception as e:
-        return jsonify({'success': False, 'message': str(e)}), 500
-
-@app.route('/api/schedules/check', methods=['GET'])
-def check_schedules():
-    """Check and return upcoming schedules"""
-    try:
-        current_time = time.strftime("%H:%M")
-        upcoming_schedules = []
-        
-        # Lấy schedules từ backend
-        response = requests.get(f"{BACKEND_URL}/api/schedules", timeout=3)
-        if response.status_code == 200:
-            data = response.json()
-            schedules = data.get('schedules', [])
-            
-            # Lọc schedules active
-            for schedule in schedules:
-                if schedule.get('isActive', True):
-                    time_on = schedule.get('timeOn')
-                    time_off = schedule.get('timeOff')
-                    
-                    # Kiểm tra nếu schedule sắp diễn ra (trong vòng 5 phút)
-                    if time_on and is_time_upcoming(time_on, 5):
-                        upcoming_schedules.append({
-                            'id': schedule.get('id'),
-                            'deviceId': schedule.get('deviceId'),
-                            'deviceName': schedule.get('deviceName'),
-                            'action': 'ON',
-                            'time': time_on,
-                            'timeFormatted': format_time_display(time_on)
-                        })
-                    
-                    if time_off and is_time_upcoming(time_off, 5):
-                        upcoming_schedules.append({
-                            'id': schedule.get('id'),
-                            'deviceId': schedule.get('deviceId'),
-                            'deviceName': schedule.get('deviceName'),
-                            'action': 'OFF',
-                            'time': time_off,
-                            'timeFormatted': format_time_display(time_off)
-                        })
-        
-        return jsonify({
-            'success': True,
-            'currentTime': current_time,
-            'upcomingSchedules': upcoming_schedules,
-            'count': len(upcoming_schedules)
-        })
-        
-    except Exception as e:
-        return jsonify({'success': False, 'message': str(e)}), 500
-
-# ==================== OTHER PROXY ROUTES ====================
-
-def fetch_from_backend(endpoint):
-    """Generic function to fetch from backend"""
-    try:
-        response = requests.get(f"{BACKEND_URL}{endpoint}", timeout=5)
-        if response.status_code == 200:
-            return response.json()
-        return None
-    except:
-        return None
-
-@app.route('/api/analytics/dashboard')
-def analytics_dashboard_proxy():
-    """Proxy analytics dashboard request"""
-    try:
-        data = fetch_from_backend('/api/analytics/dashboard')
-        if data:
-            return jsonify(data)
-        
-        # Fallback mock data
-        return jsonify({
-            'success': True,
-            'data': {
-                'summary': {'totalDevices': 12, 'activeDevices': 8},
-                'activity': {'total': 156, 'comparison': -23},
-                'timestamp': time.strftime("%Y-%m-%dT%H:%M:%SZ")
-            }
-        })
-    except Exception as e:
-        print(f"❌ [FLASK] Analytics proxy error: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@app.route('/api/analytics/real-time')
-def analytics_realtime_proxy():
-    """Proxy real-time analytics request"""
-    try:
-        response = requests.get(f"{BACKEND_URL}/api/analytics/real-time", timeout=5)
-        if response.status_code == 200:
-            return jsonify(response.json())
-        
-        # Fallback mock data
-        return jsonify({
-            'success': True,
-            'data': {
-                'timestamp': time.strftime("%Y-%m-%dT%H:%M:%SZ"),
-                'currentActivity': random.randint(10, 25),
-                'totalActivity': 234,
-                'activeDevices': random.randint(3, 8),
-                'energySaved': round(random.uniform(18.0, 23.0), 2)
-            }
-        })
-    except:
-        return jsonify({
-            'success': True,
-            'data': {
-                'timestamp': time.strftime("%Y-%m-%dT%H:%M:%SZ"),
-                'currentActivity': random.randint(10, 25),
-                'totalActivity': 234,
-                'activeDevices': random.randint(3, 8),
-                'energySaved': round(random.uniform(18.0, 23.0), 2)
-            }
-        })
-
-# ==================== FRONTEND ROUTES ====================
-
-@app.route('/')
-def index():
-    """Serve homepage directly at root"""
-    return render_template('homepage.html')
-
-@app.route('/homepage')
-def homepage():
-    """Also serve homepage for direct access"""
-    return render_template('homepage.html')
-
-@app.route('/login')
-def login():
-    return render_template('login.html')
-
-@app.route('/account')
-def account():
-    return render_template('account.html')
-
-@app.route('/createaccount')
-def createaccount():
-    return render_template('createaccount.html')
-
-@app.route('/devices')
-def devices():
-    return render_template('devicescontrol.html')
-
-@app.route('/adddevice')
-def adddevice():
-    return render_template('adddevice.html')
-
-@app.route('/analytics')
-def analytics():
-    return render_template('analytics.html')
-
-@app.route('/schedules')
-def schedules():
-    return render_template('schedules.html')
-
-@app.route('/history')
-def history():
-    return render_template('history.html')
-
-# Direct HTML access
-@app.route('/<page>.html')
-def serve_html(page):
-    allowed = ['homepage', 'login', 'account', 'createaccount', 
-               'devicescontrol', 'adddevice', 'analytics', 'schedules', 'history', 'index']
-    if page in allowed:
-        try:
-            return render_template(f'{page}.html')
-        except:
-            # If template not found, return simple page
-            return f"""
-            <!DOCTYPE html>
-            <html>
-            <head><title>IoT Smart Home - {page.capitalize()}</title></head>
-            <body>
-                <h1>IoT Smart Home - {page.capitalize()}</h1>
-                <p>Page is under construction</p>
-                <p><a href="/">← Back to Home</a></p>
-            </body>
-            </html>
-            """
-    return "Page not found", 404
-
-# ==================== DEVICE CONTROL ====================
+# ==================== UPDATED DEVICE CONTROL ====================
 
 @app.route('/toggle_device', methods=['POST'])
 def toggle_device():
-    """Handle device toggle"""
+    """Handle device toggle (updated for light brightness)"""
     try:
         data = request.get_json()
         device_id = data.get('id')
         new_state = data.get('state')
+        brightness = data.get('brightness')
         
-        print(f"🔄 [FLASK] Toggle device {device_id} to {new_state}")
+        print(f"🔄 [FLASK] Toggle device {device_id} to {new_state}" + 
+              (f", brightness: {brightness}%" if brightness is not None else ""))
         
         # Send socket update
         socketio.emit('deviceUpdated', {
             'id': device_id,
-            'state': new_state
+            'state': new_state,
+            'brightness': brightness
         })
         
         # Try to send to backend
         try:
+            toggle_data = {'deviceId': device_id, 'state': new_state}
+            if brightness is not None:
+                toggle_data['brightness'] = brightness
+                
             response = requests.post(
                 f"{BACKEND_URL}/api/devices/toggle",
-                json={'deviceId': device_id, 'state': new_state},
+                json=toggle_data,
                 timeout=2
             )
             return jsonify(response.json())
@@ -817,18 +891,507 @@ def toggle_device():
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
 
+# ==================== SOCKET.IO UPDATES ====================
+
+@socketio.on('updateLightBrightness')
+def handle_update_light_brightness(data):
+    print(f'💡 [SOCKET.IO] Update light brightness: {data}')
+    
+    # Broadcast to all clients
+    emit('deviceUpdated', {
+        'id': data.get('deviceId'),
+        'brightness': data.get('brightness'),
+        'timestamp': time.strftime("%Y-%m-%dT%H:%M:%SZ")
+    }, broadcast=True)
+    
+    # Try to update backend
+    try:
+        requests.post(
+            f"{BACKEND_URL}/api/lights/{data.get('deviceId')}/brightness",
+            json={'brightness': data.get('brightness')},
+            timeout=2
+        )
+    except:
+        pass
+
+@socketio.on('changeLightMode')
+def handle_change_light_mode(data):
+    print(f'💡 [SOCKET.IO] Change light mode: {data}')
+    
+    # Broadcast to all clients
+    emit('deviceUpdated', {
+        'id': data.get('deviceId'),
+        'mode': data.get('mode'),
+        'timestamp': time.strftime("%Y-%m-%dT%H:%M:%SZ")
+    }, broadcast=True)
+    
+    # Try to update backend
+    try:
+        requests.post(
+            f"{BACKEND_URL}/api/lights/{data.get('deviceId')}/mode",
+            json={'mode': data.get('mode')},
+            timeout=2
+        )
+    except:
+        pass
+
+@socketio.on('sensorData')
+def handle_sensor_data(data):
+    print(f'📊 [SOCKET.IO] Sensor data: {data}')
+    
+    # Broadcast to all clients
+    emit('sensorDataUpdate', {
+        'sensorId': data.get('sensorId'),
+        'luxValue': data.get('luxValue'),
+        'timestamp': time.strftime("%Y-%m-%dT%H:%M:%SZ")
+    }, broadcast=True)
+    
+    # Try to update backend
+    try:
+        requests.post(
+            f"{BACKEND_URL}/api/sensors/data",
+            json=data,
+            timeout=2
+        )
+    except:
+        pass
+
+@socketio.on('updateSensor')
+def handle_update_sensor(data):
+    print(f'⚙️ [SOCKET.IO] Update sensor: {data}')
+    
+    # Broadcast to all clients
+    emit('sensorUpdated', data, broadcast=True)
+    
+    # Try to update backend
+    try:
+        requests.put(
+            f"{BACKEND_URL}/api/sensors/{data.get('sensorId')}",
+            json={'updates': data.get('updates')},
+            timeout=2
+        )
+    except:
+        pass
+
+@socketio.on('createAutomationRule')
+def handle_create_automation_rule(data):
+    print(f'🤖 [SOCKET.IO] Create automation rule: {data}')
+    
+    # Broadcast to all clients
+    emit('automationRuleCreated', data, broadcast=True)
+    
+    # Try to update backend
+    try:
+        requests.post(
+            f"{BACKEND_URL}/api/automation/rules",
+            json=data,
+            timeout=2
+        )
+    except:
+        pass
+
+@socketio.on('updateAutomationRule')
+def handle_update_automation_rule(data):
+    print(f'🤖 [SOCKET.IO] Update automation rule: {data}')
+    
+    # Broadcast to all clients
+    emit('automationRuleUpdated', data, broadcast=True)
+    
+    # Try to update backend
+    try:
+        requests.put(
+            f"{BACKEND_URL}/api/automation/rules/{data.get('id')}",
+            json={'updates': data.get('updates')},
+            timeout=2
+        )
+    except:
+        pass
+
+@socketio.on('deleteAutomationRule')
+def handle_delete_automation_rule(data):
+    print(f'🤖 [SOCKET.IO] Delete automation rule: {data}')
+    
+    # Broadcast to all clients
+    emit('automationRuleDeleted', data, broadcast=True)
+    
+    # Try to update backend
+    try:
+        requests.delete(
+            f"{BACKEND_URL}/api/automation/rules/{data.get('ruleId')}",
+            timeout=2
+        )
+    except:
+        pass
+
+@socketio.on('toggleAutomationRule')
+def handle_toggle_automation_rule(data):
+    print(f'🤖 [SOCKET.IO] Toggle automation rule: {data}')
+    
+    # Broadcast to all clients
+    emit('automationRuleUpdated', data, broadcast=True)
+    
+    # Try to update backend
+    try:
+        requests.post(
+            f"{BACKEND_URL}/api/automation/rules/{data.get('ruleId')}/toggle",
+            json={'isActive': data.get('isActive')},
+            timeout=2
+        )
+    except:
+        pass
+
+@socketio.on('requestAnalytics')
+def handle_request_analytics(data):
+    """Handle real-time analytics requests"""
+    print(f'📊 [SOCKET.IO] Analytics request: {data}')
+    
+    period = data.get('period', 'day')
+    
+    try:
+        response = requests.get(f"{BACKEND_URL}/api/analytics/power?period={period}", timeout=2)
+        if response.status_code == 200:
+            analytics_data = response.json()
+            emit('analyticsData', analytics_data)
+    except:
+        # Return mock data if backend unavailable
+        mock_data = {
+            'success': True,
+            'period': period,
+            'totalConsumption': random.uniform(10, 50),
+            'timestamp': time.strftime("%Y-%m-%dT%H:%M:%SZ")
+        }
+        emit('analyticsData', mock_data)
+
+# ==================== NEW FRONTEND ROUTES ====================
+
+@app.route('/automation')
+def automation():
+    return render_template('automation.html')
+
+@app.route('/sensors')
+def sensors():
+    return render_template('sensors.html')
+
+@app.route('/light-control')
+def light_control():
+    return render_template('light-control.html')
+
+@app.route('/light-control.html')
+def light_control_html():
+    return render_template('light-control.html')
+
+@app.route('/analytics')
+def analytics():
+    return render_template('analytics.html')
+
+@app.route('/schedules')
+def schedules():
+    return render_template('schedules.html')
+
+# ==================== BASIC ROUTES ====================
+
+@app.route('/')
+def home():
+    return render_template('index.html')
+
+@app.route('/login')
+def login():
+    return render_template('login.html')
+
+@app.route('/createaccount')
+def createaccount():
+    return render_template('createaccount.html')
+
+@app.route('/account')
+def account():
+    return render_template('account.html')
+
+@app.route('/devices')
+def devices():
+    return render_template('devicescontrol.html')
+
+@app.route('/adddevice')
+def adddevice():
+    return render_template('adddevice.html')
+
+# ==================== SENSOR SIMULATION THREAD ====================
+
+def simulate_light_sensors():
+    """Mô phỏng dữ liệu cảm biến ánh sáng"""
+    while True:
+        try:
+            time.sleep(10)  # Cập nhật mỗi 10 giây
+            
+            # Lấy dữ liệu sensor từ backend (hoặc dùng mock)
+            try:
+                response = requests.get(f"{BACKEND_URL}/api/sensors", timeout=3)
+                if response.status_code == 200:
+                    sensors_data = response.json().get('sensors', [])
+                else:
+                    sensors_data = []
+            except:
+                sensors_data = []
+            
+            # Nếu không có sensor, tạo mock data
+            if not sensors_data:
+                sensors_data = [
+                    {
+                        'id': 'sensor_light_1',
+                        'name': 'Living Room Light Sensor',
+                        'room': 'Living Room',
+                        'luxValue': 350,
+                        'threshold': 200,
+                        'linkedDevice': '1'
+                    }
+                ]
+            
+            # Cập nhật giá trị ánh sáng
+            for sensor in sensors_data:
+                if sensor.get('subtype') == 'Light' or 'luxValue' in sensor:
+                    # Tính toán giá trị ánh sáng dựa trên thời gian
+                    hour = time.localtime().tm_hour
+                    base_lux = 300
+                    
+                    if hour >= 6 and hour < 18:
+                        base_lux = 300 + random.randint(0, 700)
+                    elif hour >= 18 and hour < 20:
+                        base_lux = 100 + random.randint(0, 200)
+                    else:
+                        base_lux = 10 + random.randint(0, 90)
+                    
+                    # Thêm nhiễu
+                    lux_value = max(0, base_lux + random.randint(-50, 50))
+                    
+                    # Gửi dữ liệu sensor
+                    sensor_data = {
+                        'sensorId': sensor['id'],
+                        'luxValue': lux_value
+                    }
+                    
+                    # Broadcast qua socket
+                    socketio.emit('sensorDataUpdate', {
+                        'sensorId': sensor['id'],
+                        'luxValue': lux_value,
+                        'timestamp': time.strftime("%Y-%m-%dT%H:%M:%SZ")
+                    })
+                    
+                    # Gửi đến backend
+                    try:
+                        requests.post(
+                            f"{BACKEND_URL}/api/sensors/data",
+                            json=sensor_data,
+                            timeout=2
+                        )
+                    except:
+                        pass
+                        
+        except Exception as e:
+            print(f"❌ [SENSOR SIM] Error: {e}")
+            time.sleep(30)
+
+# ==================== REAL-TIME DATA THREAD ====================
+
+def push_real_time_data():
+    """Đẩy dữ liệu real-time qua Socket.IO"""
+    while True:
+        try:
+            time.sleep(3)  # Cập nhật mỗi 3 giây
+            
+            # Cập nhật trạng thái thiết bị
+            try:
+                response = requests.get(f"{BACKEND_URL}/api/devices", timeout=3)
+                if response.status_code == 200:
+                    devices = response.json()
+                    
+                    # Gửi dữ liệu real-time cho từng thiết bị
+                    for device in devices:
+                        if isinstance(device, dict) and 'id' in device:
+                            # Thêm thời gian cập nhật
+                            device_data = {
+                                'id': device['id'],
+                                'status': device.get('status', 'Off'),
+                                'lastActivity': time.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                                'timestamp': time.time()
+                            }
+                            
+                            # Thêm dữ liệu đặc biệt cho đèn
+                            if device.get('type') == 'Light':
+                                device_data.update({
+                                    'brightness': device.get('brightness', 50),
+                                    'mode': device.get('mode', 'manual'),
+                                    'sensorData': device.get('sensorInfo', {})
+                                })
+                            
+                            socketio.emit('deviceDataUpdate', device_data)
+            except:
+                pass
+                
+        except Exception as e:
+            print(f"❌ [REAL-TIME] Error: {e}")
+            time.sleep(10)
+
+# ==================== SCHEDULE EXECUTION ====================
+
+def check_and_execute_schedules():
+    """Kiểm tra và thực thi lịch trình tự động"""
+    while True:
+        try:
+            time.sleep(60)  # Kiểm tra mỗi phút
+            
+            current_time = time.strftime("%H:%M")
+            current_hour = time.localtime().tm_hour
+            current_minute = time.localtime().tm_min
+            current_day = time.localtime().tm_wday  # 0=Monday, 6=Sunday
+            
+            print(f"⏰ [SCHEDULER] Checking schedules at {current_time}")
+            
+            # Lấy lịch trình từ backend
+            try:
+                response = requests.get(f"{BACKEND_URL}/api/schedules", timeout=3)
+                if response.status_code == 200:
+                    schedules = response.json()
+                    
+                    for schedule in schedules:
+                        if isinstance(schedule, dict) and schedule.get('isActive'):
+                            # Kiểm tra thời gian
+                            schedule_time = schedule.get('time', '00:00')
+                            days = schedule.get('days', [])
+                            action = schedule.get('action')
+                            device_id = schedule.get('deviceId')
+                            
+                            # Kiểm tra ngày
+                            if str(current_day) in days or days == [] or days == ['*']:
+                                # Kiểm tra thời gian (cho phép sai số 1 phút)
+                                if schedule_time[:5] == current_time[:5]:
+                                    print(f"⏰ [SCHEDULER] Executing schedule: {schedule.get('name')}")
+                                    
+                                    # Thực thi hành động
+                                    if action == 'turn_on':
+                                        try:
+                                            requests.post(
+                                                f"{BACKEND_URL}/api/devices/toggle",
+                                                json={'deviceId': device_id, 'state': True},
+                                                timeout=2
+                                            )
+                                            socketio.emit('deviceUpdated', {
+                                                'id': device_id,
+                                                'state': True,
+                                                'timestamp': time.strftime("%Y-%m-%dT%H:%M:%SZ")
+                                            })
+                                            print(f"✅ [SCHEDULER] Turned ON device {device_id}")
+                                        except:
+                                            pass
+                                            
+                                    elif action == 'turn_off':
+                                        try:
+                                            requests.post(
+                                                f"{BACKEND_URL}/api/devices/toggle",
+                                                json={'deviceId': device_id, 'state': False},
+                                                timeout=2
+                                            )
+                                            socketio.emit('deviceUpdated', {
+                                                'id': device_id,
+                                                'state': False,
+                                                'timestamp': time.strftime("%Y-%m-%dT%H:%M:%SZ")
+                                            })
+                                            print(f"✅ [SCHEDULER] Turned OFF device {device_id}")
+                                        except:
+                                            pass
+                                            
+                                    elif action == 'toggle':
+                                        try:
+                                            response = requests.get(f"{BACKEND_URL}/api/devices/{device_id}", timeout=2)
+                                            if response.status_code == 200:
+                                                device = response.json()
+                                                current_state = device.get('status') in ['On', 'ON', True]
+                                                new_state = not current_state
+                                                
+                                                requests.post(
+                                                    f"{BACKEND_URL}/api/devices/toggle",
+                                                    json={'deviceId': device_id, 'state': new_state},
+                                                    timeout=2
+                                                )
+                                                socketio.emit('deviceUpdated', {
+                                                    'id': device_id,
+                                                    'state': new_state,
+                                                    'timestamp': time.strftime("%Y-%m-%dT%H:%M:%SZ")
+                                                })
+                                                print(f"✅ [SCHEDULER] Toggled device {device_id} to {'ON' if new_state else 'OFF'}")
+                                        except:
+                                            pass
+            except:
+                # Nếu không kết nối được backend, sử dụng lịch trình mẫu
+                execute_sample_schedules(current_time, current_hour, current_minute, current_day)
+                
+        except Exception as e:
+            print(f"❌ [SCHEDULER] Error: {e}")
+            time.sleep(60)
+
+def execute_sample_schedules(current_time, current_hour, current_minute, current_day):
+    """Thực thi lịch trình mẫu khi backend không có sẵn"""
+    # Lịch trình mẫu cho đèn phòng khách
+    if current_hour == 18 and current_minute == 0:  # 6:00 PM
+        print(f"⏰ [SCHEDULER] Sample: Turning on Living Room Light")
+        socketio.emit('deviceUpdated', {
+            'id': '1',
+            'state': True,
+            'timestamp': time.strftime("%Y-%m-%dT%H:%M:%SZ")
+        })
+    
+    elif current_hour == 23 and current_minute == 0:  # 11:00 PM
+        print(f"⏰ [SCHEDULER] Sample: Turning off Living Room Light")
+        socketio.emit('deviceUpdated', {
+            'id': '1',
+            'state': False,
+            'timestamp': time.strftime("%Y-%m-%dT%H:%M:%SZ")
+        })
+    
+    elif current_hour == 7 and current_minute == 0 and current_day in [0, 1, 2, 3, 4]:  # 7:00 AM weekday
+        print(f"⏰ [SCHEDULER] Sample: Morning routine - Turn on all lights")
+        socketio.emit('deviceUpdated', {
+            'id': '1',
+            'state': True,
+            'timestamp': time.strftime("%Y-%m-%dT%H:%M:%SZ")
+        })
+
+# ==================== ADDITIONAL API ROUTES ====================
+
+@app.route('/test-backend')
+def test_backend():
+    """Test backend connection"""
+    try:
+        response = requests.get(f"{BACKEND_URL}/health", timeout=3)
+        if response.status_code == 200:
+            return jsonify({
+                'success': True,
+                'backend_status': 'connected',
+                'response': response.json()
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'backend_status': 'error',
+                'status_code': response.status_code
+            })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'backend_status': 'disconnected',
+            'error': str(e)
+        })
+
 @app.route('/delete_device', methods=['POST'])
 def delete_device():
-    """Handle device deletion"""
+    """Delete device route"""
     try:
         data = request.get_json()
         device_id = data.get('deviceId')
         
-        print(f"🗑️ [FLASK] Delete device request: {device_id}")
+        print(f"🗑️ [FLASK] Delete device {device_id}")
         
         # Send socket update
         socketio.emit('deviceDeleted', {
-            'deviceId': device_id
+            'id': device_id
         })
         
         # Try to send to backend
@@ -849,176 +1412,45 @@ def delete_device():
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
 
-# ==================== REAL-TIME FUNCTIONS ====================
-
-def push_real_time_data():
-    """Push real-time data periodically"""
-    while True:
-        try:
-            time.sleep(3)
-            
-            # Try to get data from backend
-            try:
-                response = requests.get(f"{BACKEND_URL}/api/analytics/real-time", timeout=2)
-                if response.status_code == 200:
-                    data = response.json().get('data', {})
-                else:
-                    data = {}
-            except:
-                data = {}
-            
-            # Prepare data
-            real_time_data = {
-                'timestamp': time.strftime("%Y-%m-%dT%H:%M:%SZ"),
-                'currentActivity': data.get('currentActivity', random.randint(10, 25)),
-                'totalActivity': data.get('totalActivity', 234),
-                'activeDevices': data.get('activeDevices', random.randint(3, 8)),
-                'energySaved': data.get('energySaved', round(random.uniform(18.0, 23.0), 2))
-            }
-            
-            # Emit via socket
-            socketio.emit('realTimeUpdate', real_time_data)
-            
-        except Exception as e:
-            print(f"❌ [FLASK] Real-time error: {e}")
-            time.sleep(5)
-
-# ==================== SOCKET.IO ====================
-
-@socketio.on('connect')
-def handle_connect():
-    print('✅ [SOCKET.IO] Client connected')
-    emit('connection_status', {'status': 'connected'})
-
-@socketio.on('disconnect')
-def handle_disconnect():
-    print('❌ [SOCKET.IO] Client disconnected')
-
-@socketio.on('deviceAdded')
-def handle_device_added(data):
-    print(f'➕ [SOCKET.IO] Device added event: {data}')
-    # Broadcast to all clients
-    emit('deviceAdded', data, broadcast=True)
-
-@socketio.on('deviceDeleted')
-def handle_device_deleted(data):
-    print(f'🗑️ [SOCKET.IO] Device deleted event: {data}')
-    # Broadcast to all clients
-    emit('deviceDeleted', data, broadcast=True)
-
-@socketio.on('deviceUpdated')
-def handle_device_updated(data):
-    print(f'🔄 [SOCKET.IO] Device updated event: {data}')
-    # Broadcast to all clients
-    emit('deviceUpdated', data, broadcast=True)
-
-@socketio.on('scheduleAdded')
-def handle_schedule_added(data):
-    print(f'📅 [SOCKET.IO] Schedule added event: {data}')
-    # Broadcast to all clients
-    emit('scheduleAdded', data, broadcast=True)
-
-@socketio.on('scheduleUpdated')
-def handle_schedule_updated(data):
-    print(f'📅 [SOCKET.IO] Schedule updated event: {data}')
-    # Broadcast to all clients
-    emit('scheduleUpdated', data, broadcast=True)
-
-@socketio.on('scheduleDeleted')
-def handle_schedule_deleted(data):
-    print(f'📅 [SOCKET.IO] Schedule deleted event: {data}')
-    # Broadcast to all clients
-    emit('scheduleDeleted', data, broadcast=True)
-
-@socketio.on('scheduleExecuted')
-def handle_schedule_executed(data):
-    print(f'⏰ [SOCKET.IO] Schedule executed event: {data}')
-    # Broadcast to all clients
-    emit('scheduleExecuted', data, broadcast=True)
-
-@socketio.on('requestRealTimeData')
-def handle_request_real_time_data():
-    print('📡 [SOCKET.IO] Real-time data requested')
-    # Send real-time data
-    real_time_data = {
-        'timestamp': time.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        'currentActivity': random.randint(10, 25),
-        'totalActivity': 234,
-        'activeDevices': random.randint(3, 8),
-        'energySaved': round(random.uniform(18.0, 23.0), 2)
-    }
-    emit('realTimeUpdate', real_time_data)
-
-# ==================== HEALTH CHECK ====================
-
 @app.route('/health')
-def health_check():
+def health():
+    """Health check endpoint"""
     try:
-        # Check backend
-        backend_status = "unknown"
-        try:
-            response = requests.get(f"{BACKEND_URL}/health", timeout=3)
-            backend_status = "connected" if response.status_code == 200 else "disconnected"
-        except:
-            backend_status = "disconnected"
-        
-        return jsonify({
-            'status': 'healthy',
-            'service': 'Flask Frontend',
-            'port': 5000,
-            'backend': backend_status,
-            'backend_url': BACKEND_URL,
-            'timestamp': time.strftime("%Y-%m-%dT%H:%M:%SZ")
-        })
+        # Test backend connection
+        backend_response = requests.get(f"{BACKEND_URL}/health", timeout=3)
+        backend_status = 'connected' if backend_response.status_code == 200 else 'error'
     except:
-        return jsonify({'status': 'degraded', 'service': 'Flask Frontend'}), 500
+        backend_status = 'disconnected'
+    
+    return jsonify({
+        'status': 'healthy',
+        'service': 'flask-frontend',
+        'timestamp': time.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        'backend_status': backend_status,
+        'services': {
+            'api': 'running',
+            'socketio': 'running',
+            'scheduler': 'active',
+            'sensor_sim': 'active',
+            'automation': 'active'
+        }
+    })
 
-@app.route('/test-backend')
-def test_backend():
-    """Test backend connection"""
-    try:
-        response = requests.get(f"{BACKEND_URL}/health", timeout=3)
-        return jsonify({
-            'backend_status': 'connected' if response.status_code == 200 else 'disconnected',
-            'status_code': response.status_code,
-            'response': response.json() if response.status_code == 200 else {}
-        })
-    except:
-        return jsonify({'backend_status': 'disconnected'})
-
-@app.route('/debug/users')
-def debug_users():
-    """Debug endpoint to check backend users"""
-    try:
-        response = requests.get(f"{BACKEND_URL}/api/auth/users", timeout=5)
-        return jsonify(response.json())
-    except:
-        return jsonify({'success': False, 'message': 'Backend not available'})
-
-@app.route('/debug/schedules')
-def debug_schedules():
-    """Debug endpoint to check backend schedules"""
-    try:
-        response = requests.get(f"{BACKEND_URL}/api/schedules", timeout=5)
-        return jsonify(response.json())
-    except:
-        return jsonify({'success': False, 'message': 'Backend not available'})
-
-@app.route('/debug/devices')
-def debug_devices():
-    """Debug endpoint to check backend devices"""
-    try:
-        response = requests.get(f"{BACKEND_URL}/api/devices", timeout=5)
-        return jsonify(response.json())
-    except:
-        return jsonify({'success': False, 'message': 'Backend not available'})
+@app.route('/api/schedules/check')
+def check_schedules():
+    """Check schedule status"""
+    return jsonify({
+        'status': 'active',
+        'last_check': time.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        'next_check': time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.time() + 60))
+    })
 
 # ==================== MAIN ====================
 
 if __name__ == '__main__':
     print('''
 ============================================================
-🚀 Flask Frontend Server Starting...
+🚀 Flask Frontend Server với Tự động hóa Ánh sáng
 ============================================================
 🏠 Homepage:     http://localhost:5000/
 🔐 Login:        http://localhost:5000/login
@@ -1026,16 +1458,17 @@ if __name__ == '__main__':
 👤 Account:      http://localhost:5000/account
 📱 Devices:      http://localhost:5000/devices
 ➕ Add Device:   http://localhost:5000/adddevice
+🤖 Automation:   http://localhost:5000/automation
+📡 Sensors:      http://localhost:5000/sensors
+💡 Light Control: http://localhost:5000/light-control
 📅 Schedules:    http://localhost:5000/schedules
 📊 Analytics:    http://localhost:5000/analytics
 🔗 Backend:      http://localhost:3000
 💚 Health:       http://localhost:5000/health
 ⏰ Scheduler:    http://localhost:5000/api/schedules/check
-🐞 Debug Users:  http://localhost:5000/debug/users
-🐞 Debug Schedules: http://localhost:5000/debug/schedules
-🐞 Debug Devices: http://localhost:5000/debug/devices
 📈 Real-time:    Active (3s interval)
-⏰ Auto-schedule: Active (1m interval)
+⏰ Sensor Sim:   Active (10s interval)
+🤖 Automation:   Active
 ============================================================
 ''')
     
@@ -1059,7 +1492,13 @@ if __name__ == '__main__':
     schedule_thread = threading.Thread(target=check_and_execute_schedules, daemon=True)
     schedule_thread.start()
     
+    # Start sensor simulation thread
+    sensor_thread = threading.Thread(target=simulate_light_sensors, daemon=True)
+    sensor_thread.start()
+    
     print("⏰ Schedule executor: ACTIVE (checking every minute)")
+    print("📡 Light sensor simulation: ACTIVE (updating every 10s)")
+    print("🤖 Automation system: ACTIVE")
     print("============================================================")
     
     socketio.run(app, debug=True, host='0.0.0.0', port=5000)

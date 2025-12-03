@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -195,6 +194,25 @@
         .device-actions {
             display: flex;
             gap: 8px;
+        }
+
+        .light-control-btn {
+            width: 32px;
+            height: 32px;
+            background: #fef3c7;
+            border: none;
+            border-radius: 8px;
+            color: #92400e;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .light-control-btn:hover {
+            background: #fde68a;
+            transform: scale(1.05);
         }
 
         .toggle-switch {
@@ -730,6 +748,14 @@
                         <div class="device-header">
                             <div class="device-icon">${icon}</div>
                             <div class="device-actions">
+                                <!-- Thêm nút điều khiển đèn nếu là loại Light -->
+                                ${deviceType === 'Light' ? `
+                                <button class="light-control-btn" onclick="window.location.href='light-control.html?deviceId=${deviceId}'" 
+                                        title="Điều khiển đèn">
+                                    <i class="fas fa-lightbulb"></i>
+                                </button>
+                                ` : ''}
+                                
                                 <div class="toggle-switch ${toggleClass}" onclick="handleToggleDevice('${deviceId}', ${!isOn})">
                                     <div class="toggle-knob"></div>
                                 </div>
