@@ -15,78 +15,36 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: linear-gradient(135deg, #f5f7fa 0%, #e3f2fd 100%);
             min-height: 100vh;
-            transition: all 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             padding: 20px;
         }
 
-        body.dark-mode {
-            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-        }
-
-        body.dark-mode .container {
-            background: #1f2937;
-            box-shadow: 0 1px 3px rgba(255, 255, 255, 0.1);
-        }
-
-        body.dark-mode .header-title h1,
-        body.dark-mode .form-title,
-        body.dark-mode .input-label {
-            color: #f3f4f6;
-        }
-
-        body.dark-mode .header-title p {
-            color: #9ca3af;
-        }
-
-        body.dark-mode .input-field {
-            background: #374151;
-            border-color: #4b5563;
-            color: #f3f4f6;
-        }
-
-        body.dark-mode .input-field:focus {
-            border-color: #60a5fa;
-            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
-        }
-
         .container {
-            max-width: 480px;
-            margin: 0 auto;
+            width: 100%;
+            max-width: 400px;
             background: white;
             border-radius: 24px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 40px 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
         }
 
-        /* Header */
-        .header {
-            padding: 32px 24px 24px;
+        .logo {
             text-align: center;
+            margin-bottom: 30px;
         }
 
-        .header-title h1 {
-            font-size: 28px;
+        .logo h1 {
+            font-size: 32px;
             font-weight: 700;
-            color: #1f2937;
+            color: #2563eb;
             margin-bottom: 8px;
         }
 
-        .header-title p {
-            font-size: 14px;
+        .logo p {
             color: #6b7280;
-        }
-
-        /* Form */
-        .form-container {
-            padding: 0 24px 32px;
-        }
-
-        .form-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 24px;
-            text-align: center;
+            font-size: 14px;
         }
 
         .form-group {
@@ -108,8 +66,6 @@
             border-radius: 12px;
             font-size: 16px;
             transition: all 0.2s;
-            background: white;
-            color: #1f2937;
         }
 
         .input-field:focus {
@@ -118,11 +74,13 @@
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
-        .input-field::placeholder {
-            color: #9ca3af;
+        .error-message {
+            color: #dc2626;
+            font-size: 14px;
+            margin-top: 8px;
+            display: none;
         }
 
-        /* Terms Checkbox */
         .terms-group {
             display: flex;
             align-items: flex-start;
@@ -140,7 +98,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s;
             flex-shrink: 0;
         }
 
@@ -168,11 +125,6 @@
             font-weight: 500;
         }
 
-        .terms-text a:hover {
-            text-decoration: underline;
-        }
-
-        /* Submit Button */
         .submit-button {
             width: 100%;
             background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
@@ -187,23 +139,16 @@
             margin-bottom: 20px;
         }
 
-        .submit-button:hover {
+        .submit-button:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
-        }
-
-        .submit-button:active {
-            transform: translateY(0);
         }
 
         .submit-button:disabled {
             background: #9ca3af;
             cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
         }
 
-        /* Login Link */
         .login-link {
             text-align: center;
             font-size: 14px;
@@ -216,19 +161,18 @@
             font-weight: 500;
         }
 
-        .login-link a:hover {
-            text-decoration: underline;
-        }
-
-        /* Error Message */
-        .error-message {
-            color: #dc2626;
+        .success-message {
+            color: #16a34a;
             font-size: 14px;
             margin-top: 8px;
             display: none;
+            padding: 12px;
+            background: #dcfce7;
+            border-radius: 8px;
+            border-left: 4px solid #16a34a;
+            margin-bottom: 20px;
         }
 
-        /* Back Button */
         .back-button {
             position: absolute;
             top: 20px;
@@ -245,16 +189,40 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
-        body.dark-mode .back-button {
-            background: #374151;
-        }
-
         .back-button:hover {
             background: #f3f4f6;
         }
 
-        body.dark-mode .back-button:hover {
-            background: #4b5563;
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .gmail-note {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        
+        .gmail-note::before {
+            content: "ℹ️ ";
         }
     </style>
 </head>
@@ -267,117 +235,75 @@
     </div>
 
     <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <div class="header-title">
-                <h1 id="pageTitle">Create Account</h1>
-                <p id="pageSubtitle">Join Smart Home and control your devices</p>
-            </div>
+        <div class="logo">
+            <h1>Create Account</h1>
+            <p>Join Smart Home and control your devices</p>
         </div>
 
-        <!-- Form -->
-        <div class="form-container">
-            <h2 class="form-title" id="formTitle">Your Information</h2>
-            
-            <form id="accountForm">
-                <div class="form-group">
-                    <label class="input-label" for="name">Full Name</label>
-                    <input type="text" id="name" class="input-field" placeholder="Enter your full name" required>
-                    <div class="error-message" id="nameError">Please enter a valid name</div>
-                </div>
+        <!-- Success Message -->
+        <div class="success-message" id="successMessage"></div>
 
-                <div class="form-group">
-                    <label class="input-label" for="email">Email Address</label>
-                    <input type="email" id="email" class="input-field" placeholder="Enter your email" required>
-                    <div class="error-message" id="emailError">Please enter a valid email address</div>
-                </div>
-
-                <div class="form-group">
-                    <label class="input-label" for="phone">Phone Number</label>
-                    <input type="tel" id="phone" class="input-field" placeholder="Enter your phone number" required>
-                    <div class="error-message" id="phoneError">Please enter a valid phone number</div>
-                </div>
-
-                <div class="form-group">
-                    <label class="input-label" for="password">Password</label>
-                    <input type="password" id="password" class="input-field" placeholder="Create a strong password" required>
-                    <div class="error-message" id="passwordError">Password must be at least 8 characters</div>
-                </div>
-
-                <div class="form-group">
-                    <label class="input-label" for="confirmPassword">Confirm Password</label>
-                    <input type="password" id="confirmPassword" class="input-field" placeholder="Confirm your password" required>
-                    <div class="error-message" id="confirmPasswordError">Passwords do not match</div>
-                </div>
-
-                <div class="terms-group">
-                    <div class="checkbox" id="termsCheckbox" onclick="toggleCheckbox()"></div>
-                    <div class="terms-text">
-                        I agree to the <a href="#" onclick="showTerms()">Terms of Service</a> and <a href="#" onclick="showPrivacy()">Privacy Policy</a>. I understand that my data will be used to improve my Smart Home experience.
-                    </div>
-                </div>
-
-                <button type="submit" class="submit-button" id="submitButton" disabled>Create Account</button>
-            </form>
-
-            <div class="login-link">
-                Already have an account? <a href="#" onclick="goToLogin()">Sign in here</a>
+        <form id="accountForm">
+            <div class="form-group">
+                <label class="input-label" for="name">Full Name</label>
+                <input type="text" id="name" class="input-field" placeholder="Enter your full name" required>
+                <div class="error-message" id="nameError"></div>
             </div>
+
+            <div class="form-group">
+                <label class="input-label" for="email">Email Address</label>
+                <input type="email" id="email" class="input-field" placeholder="example@gmail.com" required>
+                <div class="gmail-note">Only Gmail addresses are accepted</div>
+                <div class="error-message" id="emailError"></div>
+            </div>
+
+            <div class="form-group">
+                <label class="input-label" for="phone">Phone Number (Optional)</label>
+                <input type="tel" id="phone" class="input-field" placeholder="Enter your phone number">
+                <div class="error-message" id="phoneError"></div>
+            </div>
+
+            <div class="form-group">
+                <label class="input-label" for="password">Password</label>
+                <input type="password" id="password" class="input-field" placeholder="Create a strong password" required>
+                <div class="error-message" id="passwordError"></div>
+            </div>
+
+            <div class="form-group">
+                <label class="input-label" for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" class="input-field" placeholder="Confirm your password" required>
+                <div class="error-message" id="confirmPasswordError"></div>
+            </div>
+
+            <div class="terms-group">
+                <div class="checkbox" id="termsCheckbox" onclick="toggleCheckbox()"></div>
+                <div class="terms-text">
+                    I agree to the <a href="#" onclick="showTerms()">Terms of Service</a> and <a href="#" onclick="showPrivacy()">Privacy Policy</a>.
+                </div>
+            </div>
+
+            <!-- Loading -->
+            <div class="loading" id="loading">
+                <div class="loading-spinner"></div>
+                <p>Creating account...</p>
+            </div>
+
+            <button type="submit" class="submit-button" id="submitButton" disabled>Create Account</button>
+        </form>
+
+        <div class="login-link">
+            Already have an account? <a href="/login">Sign in here</a>
         </div>
     </div>
 
     <script>
-        // Check if we're in edit mode
-        const urlParams = new URLSearchParams(window.location.search);
-        const isEditMode = urlParams.get('edit') === 'true';
+        // IMPORTANT: Use relative URL so Flask can proxy to backend
+        const API_URL = '/api';
 
-        // Initialize page
-        function initializePage() {
-            if (isEditMode) {
-                document.getElementById('pageTitle').textContent = 'Edit Profile';
-                document.getElementById('pageSubtitle').textContent = 'Update your account information';
-                document.getElementById('formTitle').textContent = 'Edit Profile';
-                document.getElementById('submitButton').textContent = 'Save Changes';
-                document.getElementById('submitButton').disabled = false;
-                document.querySelector('.login-link').style.display = 'none';
-                
-                // Load existing user data
-                loadUserData();
-            } else {
-                // Check for dark mode setting
-                const stored = localStorage.getItem('userData');
-                if (stored) {
-                    const userData = JSON.parse(stored);
-                    if (userData.settings && userData.settings.darkMode) {
-                        document.body.classList.add('dark-mode');
-                    }
-                }
-            }
-        }
-
-        // Load user data for edit mode
-        function loadUserData() {
-            const stored = localStorage.getItem('userData');
-            if (stored) {
-                try {
-                    const userData = JSON.parse(stored);
-                    
-                    document.getElementById('name').value = userData.name || '';
-                    document.getElementById('email').value = userData.email || '';
-                    document.getElementById('phone').value = userData.phone || '';
-                    
-                    // Check terms checkbox for edit mode
-                    document.getElementById('termsCheckbox').classList.add('checked');
-                    document.getElementById('submitButton').disabled = false;
-                    
-                    // Load dark mode setting
-                    if (userData.settings && userData.settings.darkMode) {
-                        document.body.classList.add('dark-mode');
-                    }
-                } catch (error) {
-                    console.error('Error loading user data:', error);
-                }
-            }
+        // Validate email chỉ chấp nhận @gmail.com
+        function isValidGmail(email) {
+            const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+            return gmailRegex.test(email);
         }
 
         // Toggle checkbox
@@ -391,60 +317,48 @@
         function validateForm() {
             const name = document.getElementById('name').value.trim();
             const email = document.getElementById('email').value.trim();
-            const phone = document.getElementById('phone').value.trim();
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
             const termsAccepted = document.getElementById('termsCheckbox').classList.contains('checked');
             
             let isValid = true;
             
+            // Clear errors
+            document.getElementById('nameError').style.display = 'none';
+            document.getElementById('emailError').style.display = 'none';
+            document.getElementById('passwordError').style.display = 'none';
+            document.getElementById('confirmPasswordError').style.display = 'none';
+            
             // Validate name
             if (name.length < 2) {
+                document.getElementById('nameError').textContent = 'Name must be at least 2 characters';
                 document.getElementById('nameError').style.display = 'block';
                 isValid = false;
-            } else {
-                document.getElementById('nameError').style.display = 'none';
             }
             
-            // Validate email
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
+            // Validate email - CHỈ CHẤP NHẬN @gmail.com
+            if (!isValidGmail(email)) {
+                document.getElementById('emailError').textContent = 'Please enter a valid Gmail address (example@gmail.com)';
                 document.getElementById('emailError').style.display = 'block';
                 isValid = false;
-            } else {
-                document.getElementById('emailError').style.display = 'none';
             }
             
-            // Validate phone (for create mode only)
-            if (!isEditMode) {
-                const phoneRegex = /^[\d\s\-\+\(\)]{10,}$/;
-                if (!phoneRegex.test(phone)) {
-                    document.getElementById('phoneError').style.display = 'block';
-                    isValid = false;
-                } else {
-                    document.getElementById('phoneError').style.display = 'none';
-                }
+            // Validate password
+            if (password.length < 6) {
+                document.getElementById('passwordError').textContent = 'Password must be at least 6 characters';
+                document.getElementById('passwordError').style.display = 'block';
+                isValid = false;
             }
             
-            // Validate password (for create mode only)
-            if (!isEditMode) {
-                if (password.length < 8) {
-                    document.getElementById('passwordError').style.display = 'block';
-                    isValid = false;
-                } else {
-                    document.getElementById('passwordError').style.display = 'none';
-                }
-                
-                if (password !== confirmPassword) {
-                    document.getElementById('confirmPasswordError').style.display = 'block';
-                    isValid = false;
-                } else {
-                    document.getElementById('confirmPasswordError').style.display = 'none';
-                }
+            // Validate confirm password
+            if (password !== confirmPassword) {
+                document.getElementById('confirmPasswordError').textContent = 'Passwords do not match';
+                document.getElementById('confirmPasswordError').style.display = 'block';
+                isValid = false;
             }
             
-            // Check terms acceptance (for create mode only)
-            if (!isEditMode && !termsAccepted) {
+            // Check terms
+            if (!termsAccepted) {
                 isValid = false;
             }
             
@@ -454,91 +368,158 @@
             return isValid;
         }
 
+        // Real-time email validation
+        function validateEmailInRealTime() {
+            const email = document.getElementById('email').value.trim();
+            const errorElement = document.getElementById('emailError');
+            
+            if (!email) {
+                errorElement.style.display = 'none';
+                return;
+            }
+            
+            if (!isValidGmail(email)) {
+                errorElement.textContent = 'Please enter a valid Gmail address (example@gmail.com)';
+                errorElement.style.display = 'block';
+            } else {
+                errorElement.style.display = 'none';
+            }
+        }
+
+        // Show/hide loading
+        function setLoading(isLoading) {
+            document.getElementById('loading').style.display = isLoading ? 'block' : 'none';
+            document.getElementById('submitButton').disabled = isLoading;
+            document.getElementById('submitButton').style.display = isLoading ? 'none' : 'block';
+        }
+
+        // Show success message
+        function showSuccess(message) {
+            const element = document.getElementById('successMessage');
+            element.textContent = message;
+            element.style.display = 'block';
+        }
+
         // Handle form submission
-        function handleSubmit(event) {
+        async function handleSubmit(event) {
             event.preventDefault();
             
             if (!validateForm()) {
                 return;
             }
             
-            // Get form values
+            setLoading(true);
+            
             const userData = {
                 name: document.getElementById('name').value.trim(),
                 email: document.getElementById('email').value.trim(),
-                phone: document.getElementById('phone').value.trim(),
-                settings: {
-                    darkMode: false,
-                    notifications: true,
-                    energySaving: true
-                }
+                password: document.getElementById('password').value,
+                phone: document.getElementById('phone').value.trim()
             };
             
-            // Only save password in create mode
-            if (!isEditMode) {
-                userData.password = document.getElementById('password').value;
-            }
+            // Tạo username từ tên
+            const username = userData.name.toLowerCase().replace(/\s+/g, '');
+            userData.username = username;
             
-            // Load existing settings if editing
-            if (isEditMode) {
-                const stored = localStorage.getItem('userData');
-                if (stored) {
-                    const existingData = JSON.parse(stored);
-                    if (existingData.settings) {
-                        userData.settings = existingData.settings;
-                    }
+            try {
+                console.log('📝 Sending registration request to:', `${API_URL}/auth/register`);
+                console.log('📝 User data:', { ...userData, password: '***' });
+                
+                const response = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(userData)
+                });
+                
+                const data = await response.json();
+                console.log('📝 Backend response:', data);
+                
+                if (response.ok && data.success) {
+                    // Save username to history for auto-complete
+                    const usernameHistory = JSON.parse(localStorage.getItem('userHistory') || '[]');
+                    usernameHistory.unshift({
+                        username: username,
+                        timestamp: new Date().toISOString()
+                    });
+                    localStorage.setItem('userHistory', JSON.stringify(usernameHistory.slice(0, 10)));
+                    
+                    // Save token and user data
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('userData', JSON.stringify(data.user));
+                    
+                    showSuccess('✅ Account created successfully! Your username is: ' + username + '. Redirecting...');
+                    
+                    // Redirect to homepage after 2 seconds
+                    setTimeout(() => {
+                        window.location.href = '/homepage';
+                    }, 2000);
+                    
+                } else {
+                    // Show error
+                    const errorMsg = data.message || 'Registration failed';
+                    showSuccess(`❌ ${errorMsg}`);
+                    setLoading(false);
                 }
-            }
-            
-            // Save to localStorage
-            localStorage.setItem('userData', JSON.stringify(userData));
-            
-            // Show success message
-            alert(isEditMode ? 'Profile updated successfully!' : 'Account created successfully!');
-            
-            // Redirect
-            if (isEditMode) {
-                window.location.href = 'account.html';
-            } else {
-                window.location.href = 'homepage.html';
+                
+            } catch (error) {
+                console.error('Registration error:', error);
+                showSuccess('❌ Network error. Please check if backend server is running on port 3000.');
+                setLoading(false);
             }
         }
 
-        // Navigation functions
+        // Navigation
         function goBack() {
-            if (isEditMode) {
-                window.location.href = 'account.html';
-            } else {
-                window.location.href = 'homepage.html';
-            }
-        }
-
-        function goToLogin() {
-            alert('Login page would open here');
+            window.history.back();
         }
 
         function showTerms() {
-            alert('Terms of Service would display here');
-            return false;
+            alert('Terms of Service:\n\n1. You must use a valid Gmail address\n2. Keep your password secure\n3. Use the service responsibly\n4. Follow all applicable laws');
         }
 
         function showPrivacy() {
-            alert('Privacy Policy would display here');
-            return false;
+            alert('Privacy Policy:\n\n1. We collect only necessary information\n2. Your data is encrypted and secure\n3. We do not share your personal information\n4. You can delete your account anytime');
         }
 
-        // Initialize event listeners
+        // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-            initializePage();
+            // Auto-fill for testing (remove in production)
+            document.getElementById('name').value = 'Demo User';
+            document.getElementById('email').value = 'demo@gmail.com';
+            document.getElementById('password').value = 'password123';
+            document.getElementById('confirmPassword').value = 'password123';
+            document.getElementById('termsCheckbox').classList.add('checked');
+            validateForm();
             
-            // Add input validation on change
+            // Add input validation
             const inputs = document.querySelectorAll('.input-field');
             inputs.forEach(input => {
                 input.addEventListener('input', validateForm);
             });
             
+            // Special real-time validation for email
+            document.getElementById('email').addEventListener('input', function() {
+                validateEmailInRealTime();
+                validateForm();
+            });
+            
+            // Validate email on blur
+            document.getElementById('email').addEventListener('blur', validateEmailInRealTime);
+            
             // Handle form submission
             document.getElementById('accountForm').addEventListener('submit', handleSubmit);
+            
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !document.getElementById('submitButton').disabled) {
+                    handleSubmit(e);
+                }
+                if (e.key === 'Escape') {
+                    goBack();
+                }
+            });
         });
     </script>
 </body>

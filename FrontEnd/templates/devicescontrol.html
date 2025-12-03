@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -77,6 +78,28 @@
 
         .home-btn i {
             font-size: 20px;
+        }
+
+        /* Nút Add Device */
+        .add-device-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .add-device-btn:hover {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
 
         .status-indicator {
@@ -169,6 +192,11 @@
             background: rgba(255,255,255,0.2);
         }
 
+        .device-actions {
+            display: flex;
+            gap: 8px;
+        }
+
         .toggle-switch {
             width: 54px;
             height: 32px;
@@ -207,6 +235,25 @@
             left: 26px;
         }
 
+        .delete-btn {
+            width: 32px;
+            height: 32px;
+            background: #fee2e2;
+            border: none;
+            border-radius: 8px;
+            color: #dc2626;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .delete-btn:hover {
+            background: #fecaca;
+            transform: scale(1.1);
+        }
+
         .device-info h3 {
             font-size: 18px;
             font-weight: 700;
@@ -240,6 +287,27 @@
             color: rgba(255,255,255,0.7);
         }
 
+        .device-details {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .device-card.active .device-details {
+            border-top-color: rgba(255,255,255,0.2);
+        }
+
+        .device-power {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .device-card.active .device-power {
+            color: rgba(255,255,255,0.7);
+        }
+
         .device-status {
             font-size: 12px;
             padding: 4px 8px;
@@ -247,7 +315,6 @@
             background: #f3f4f6;
             color: #6b7280;
             display: inline-block;
-            margin-top: 8px;
         }
 
         .device-card.active .device-status {
@@ -352,6 +419,10 @@
             background: #ef4444;
         }
 
+        .toast.warning {
+            background: #f59e0b;
+        }
+
         .debug-info {
             background: #f8fafc;
             border: 1px solid #e2e8f0;
@@ -360,6 +431,33 @@
             margin-top: 16px;
             font-size: 12px;
             color: #64748b;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2563eb;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
         }
     </style>
 </head>
@@ -375,10 +473,33 @@
             </div>
             
             <div class="header-right">
-                <!-- Chỉ còn nút Home, đã bỏ nút Analytics -->
                 <a href="homepage.html" class="home-btn">
                     <i class="fas fa-home"></i>
                 </a>
+                <a href="/adddevice" class="add-device-btn">
+                    <i class="fas fa-plus"></i>
+                    Add Device
+                </a>
+            </div>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="stats-bar" id="statsBar">
+            <div class="stat-item">
+                <div class="stat-value" id="totalDevices">0</div>
+                <div class="stat-label">Total Devices</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="activeDevices">0</div>
+                <div class="stat-label">Active</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="inactiveDevices">0</div>
+                <div class="stat-label">Inactive</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="totalPower">0W</div>
+                <div class="stat-label">Total Power</div>
             </div>
         </div>
         
@@ -423,6 +544,26 @@
                     console.log('📡 Device updated via Socket.IO:', data);
                     updateDeviceUI(data.id, data.state);
                     showToast(`Device ${data.state ? 'turned ON' : 'turned OFF'}`, 'success');
+                    loadDevices(); // Refresh list
+                });
+                
+                socket.on('deviceAdded', (data) => {
+                    console.log('➕ Device added via Socket.IO:', data);
+                    showToast(`New device "${data.name}" added`, 'success');
+                    loadDevices(); // Refresh list
+                });
+                
+                socket.on('deviceDeleted', (data) => {
+                    console.log('🗑️ Device deleted via Socket.IO:', data);
+                    showToast('Device deleted', 'warning');
+                    loadDevices(); // Refresh list
+                });
+                
+                socket.on('deviceListUpdated', (data) => {
+                    console.log('🔄 Device list updated via Socket.IO');
+                    allDevices = data.devices || [];
+                    renderDevices(allDevices);
+                    updateStats();
                 });
                 
                 socket.on('connection_status', (data) => {
@@ -457,6 +598,18 @@
                 text.textContent = 'Offline';
             }
         }
+
+        function updateStats() {
+            const total = allDevices.length;
+            const active = allDevices.filter(d => d.status === 'On' || d.status === 'ON').length;
+            const inactive = total - active;
+            const totalPower = allDevices.reduce((sum, device) => sum + (device.power || 0), 0);
+            
+            document.getElementById('totalDevices').textContent = total;
+            document.getElementById('activeDevices').textContent = active;
+            document.getElementById('inactiveDevices').textContent = inactive;
+            document.getElementById('totalPower').textContent = totalPower + 'W';
+        }
         
         function showError(message) {
             const errorContainer = document.getElementById('errorContainer');
@@ -471,7 +624,7 @@
         
         async function loadDevices() {
             try {
-                console.log('📡 Fetching devices from Flask API...');
+                console.log('📡 Fetching devices...');
                 
                 const response = await fetch('/api/devices');
                 
@@ -485,11 +638,6 @@
                 // Parse devices từ response
                 let devices = [];
                 
-                if (data.success === false) {
-                    throw new Error(data.message || 'Failed to load devices');
-                }
-                
-                // Xử lý các format response khác nhau
                 if (Array.isArray(data)) {
                     devices = data;
                 } else if (data.devices && Array.isArray(data.devices)) {
@@ -508,6 +656,9 @@
                 
                 // Store devices globally
                 allDevices = devices;
+                
+                // Update stats
+                updateStats();
                 
                 // Render devices
                 renderDevices(devices);
@@ -535,6 +686,10 @@
                         <div class="empty-state-icon">📭</div>
                         <h3>No devices found</h3>
                         <p>Add your first device to get started</p>
+                        <a href="/adddevice" class="add-device-btn" style="margin-top: 20px; display: inline-flex;">
+                            <i class="fas fa-plus"></i>
+                            Add Your First Device
+                        </a>
                     </div>
                 `;
                 return;
@@ -543,7 +698,7 @@
             grid.innerHTML = devices.map(device => {
                 // Handle different device status formats
                 let isOn = false;
-                if (device.Device_status === 'On' || device.Device_status === 'ON' || 
+                if (device.status === 'On' || device.status === 'ON' || 
                     device.status === true || device.status === 'true' ||
                     device.state === true || device.state === 'true') {
                     isOn = true;
@@ -553,33 +708,44 @@
                 const toggleClass = isOn ? 'on' : '';
                 
                 // Get device name with fallbacks
-                const deviceName = device.Device_name || device.name || device.Type || 'Smart Device';
+                const deviceName = device.name || device.Device_name || device.Type || 'Smart Device';
                 
                 // Get device type/brand
-                const deviceType = device.Brand || device.Type || device.deviceType || 'Device';
+                const deviceType = device.type || device.Device_type || device.Brand || 'Device';
                 
                 // Get room name with better fallbacks
-                const roomName = device.RoomID?.Room_name || device.room || device.Room_name || 'Unknown Room';
+                const roomName = device.room || device.Room_name || device.RoomID?.Room_name || 'Unknown Room';
                 
                 // Get icon
-                const icon = getDeviceIcon(device.Type);
+                const icon = getDeviceIcon(device.type || device.Type);
                 
                 // Device ID với fallback
-                const deviceId = device._id || device.id || device.deviceId;
+                const deviceId = device.id || device._id || device.deviceId;
+                
+                // Power
+                const power = device.power || 0;
                 
                 return `
                     <div class="device-card ${activeClass}" data-id="${deviceId}">
                         <div class="device-header">
                             <div class="device-icon">${icon}</div>
-                            <div class="toggle-switch ${toggleClass}" onclick="handleToggleDevice('${deviceId}', ${!isOn})">
-                                <div class="toggle-knob"></div>
+                            <div class="device-actions">
+                                <div class="toggle-switch ${toggleClass}" onclick="handleToggleDevice('${deviceId}', ${!isOn})">
+                                    <div class="toggle-knob"></div>
+                                </div>
+                                <button class="delete-btn" onclick="handleDeleteDevice('${deviceId}', '${deviceName.replace(/'/g, "\\'")}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
                             </div>
                         </div>
                         <div class="device-info">
                             <h3>${deviceName}</h3>
                             <div class="device-type">${deviceType}</div>
                             <div class="device-room">📍 ${roomName}</div>
-                            <div class="device-status">${isOn ? 'ON' : 'OFF'}</div>
+                            <div class="device-details">
+                                <div class="device-power">⚡ ${power}W</div>
+                                <div class="device-status">${isOn ? 'ON' : 'OFF'}</div>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -600,7 +766,11 @@
                 'Speaker': '🔊',
                 'Sensor': '📡',
                 'Plug': '🔌',
-                'Thermostat': '🌡️'
+                'Thermostat': '🌡️',
+                'Refrigerator': '❄️',
+                'Oven': '🔥',
+                'Washer': '🌀',
+                'Dryer': '🌬️'
             };
             return icons[type] || '🔌';
         }
@@ -629,7 +799,6 @@
                 if (result.success) {
                     console.log('✅ Toggle successful');
                     if (result.simulated) {
-                        console.log('⚠️ Backend simulation mode - UI only');
                         showToast(`Device ${newState ? 'ON' : 'OFF'} (Simulation)`, 'success');
                     } else {
                         showToast(`Device turned ${newState ? 'ON' : 'OFF'}`, 'success');
@@ -645,6 +814,62 @@
                 console.error('❌ Toggle error:', error);
                 // Revert UI on error
                 updateDeviceUI(deviceId, !newState);
+                showToast(`Connection error: ${error.message}`, 'error');
+            }
+        }
+
+        async function handleDeleteDevice(deviceId, deviceName) {
+            if (!confirm(`Are you sure you want to delete "${deviceName}"? This action cannot be undone.`)) {
+                return;
+            }
+            
+            console.log(`🗑️ Delete device ${deviceId}`);
+            
+            try {
+                const response = await fetch('/delete_device', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        deviceId: deviceId
+                    })
+                });
+                
+                const result = await response.json();
+                console.log('Delete response:', result);
+                
+                if (result.success) {
+                    console.log('✅ Delete successful');
+                    
+                    // Remove from UI immediately
+                    const deviceCard = document.querySelector(`[data-id="${deviceId}"]`);
+                    if (deviceCard) {
+                        deviceCard.style.opacity = '0.5';
+                        deviceCard.style.transform = 'scale(0.95)';
+                        setTimeout(() => {
+                            deviceCard.remove();
+                            // Update stats
+                            const deviceIndex = allDevices.findIndex(d => d.id === deviceId);
+                            if (deviceIndex !== -1) {
+                                allDevices.splice(deviceIndex, 1);
+                                updateStats();
+                            }
+                        }, 300);
+                    }
+                    
+                    if (result.simulated) {
+                        showToast(`Device deleted (Simulation)`, 'warning');
+                    } else {
+                        showToast(`"${deviceName}" deleted`, 'warning');
+                    }
+                } else {
+                    console.error('❌ Delete failed:', result.message);
+                    showToast(`Delete failed: ${result.message}`, 'error');
+                }
+                
+            } catch (error) {
+                console.error('❌ Delete error:', error);
                 showToast(`Connection error: ${error.message}`, 'error');
             }
         }
@@ -670,6 +895,13 @@
             }
             
             console.log(`✅ UI updated for device ${deviceId}: ${state ? 'ON' : 'OFF'}`);
+            
+            // Update stats
+            const deviceIndex = allDevices.findIndex(d => d.id === deviceId);
+            if (deviceIndex !== -1) {
+                allDevices[deviceIndex].status = state ? 'On' : 'Off';
+                updateStats();
+            }
         }
 
         // Test backend connection

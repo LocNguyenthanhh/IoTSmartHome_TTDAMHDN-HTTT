@@ -665,7 +665,7 @@
                     <a href="/account">Account</a> • 
                     <a href="/login">Login</a>
                 </p>
-                <p style="margin-top: 8px;">Smart Home Dashboard v1.0 • Connected to Flask Server</p>
+                <p style="margin-top: 8px;">Smart Home Dashboard v1.0 • Connected to Node.js/Express Server</p>
             </div>
         </div>
     </div>
@@ -674,18 +674,20 @@
     <script>
         // Configuration
         const API_URL = '/api';
-        const FLASK_SERVER = window.location.origin;
+        const SERVER_URL = window.location.origin;
         
         // Socket.IO connection
-        const socket = io(FLASK_SERVER);
+        const socket = io(SERVER_URL);
         
         // Socket event handlers
         socket.on('connect', () => {
-            console.log('✅ Connected to Flask server via Socket.IO');
+            console.log('✅ Connected to Node.js/Express server via Socket.IO');
+            updateConnectionStatus(true);
         });
         
         socket.on('disconnect', () => {
-            console.log('❌ Disconnected from Flask server');
+            console.log('❌ Disconnected from server');
+            updateConnectionStatus(false);
         });
         
         socket.on('realTimeUpdate', (data) => {
@@ -695,8 +697,16 @@
         
         socket.on('deviceUpdated', (data) => {
             console.log('🔄 Device updated:', data);
-            // Update UI if needed
+            updateDeviceUI(data);
         });
+        
+        // Update connection status in UI
+        function updateConnectionStatus(connected) {
+            const footer = document.querySelector('.nav-footer p:last-child');
+            if (footer) {
+                footer.textContent = `Smart Home Dashboard v1.0 • ${connected ? 'Connected' : 'Disconnected'} to Node.js/Express Server`;
+            }
+        }
         
         // Load user data from localStorage
         function loadUserData() {
@@ -722,7 +732,7 @@
         
         // Update UI for logged in user
         function updateUIForLoggedInUser(user) {
-            document.getElementById('userName').textContent = user.name || 'User Name';
+            document.getElementById('userName').textContent = user.name || user.username || 'User Name';
             document.getElementById('welcomeText').textContent = 'Welcome back';
             document.getElementById('authButton').textContent = 'Sign Out';
             document.getElementById('authButton').classList.add('logout');
@@ -759,15 +769,16 @@
         // Update real-time data
         function updateRealTimeData(data) {
             // Update temperature card with random values
-            const temp = 20 + Math.floor(Math.random() * 10);
-            const humidity = 50 + Math.floor(Math.random() * 30);
-            const airQuality = ['Good', 'Fair', 'Excellent'][Math.floor(Math.random() * 3)];
+            const temp = data.temperature || (20 + Math.floor(Math.random() * 10));
+            const humidity = data.humidity || (50 + Math.floor(Math.random() * 30));
+            const airQuality = data.airQuality || ['Good', 'Fair', 'Excellent'][Math.floor(Math.random() * 3)];
+            const activeDevices = data.activeDevices || 5;
             
             document.getElementById('temperature').textContent = `${temp}°C`;
             document.getElementById('humidity').textContent = `${humidity}%`;
             document.getElementById('airQuality').textContent = airQuality;
-            document.getElementById('activeDevices').textContent = data.activeDevices || 5;
-            document.getElementById('activeCount').textContent = data.activeDevices || 5;
+            document.getElementById('activeDevices').textContent = activeDevices;
+            document.getElementById('activeCount').textContent = activeDevices;
             document.getElementById('energySaved').textContent = `${data.energySaved?.toFixed(0) || 23}%`;
             
             // Update schedule count randomly
@@ -775,18 +786,63 @@
             document.getElementById('scheduleCount').textContent = scheduleCount;
         }
         
+        // Update device UI after device update
+        function updateDeviceUI(data) {
+            if (data && data.status !== undefined) {
+                // Find the corresponding device in the UI and update its toggle state
+                const deviceElements = document.querySelectorAll('.device-item');
+                deviceElements.forEach(element => {
+                    const deviceText = element.querySelector('.device-text h4').textContent;
+                    if (deviceText.toLowerCase().includes(data.name?.toLowerCase() || '')) {
+                        const toggleSwitch = element.querySelector('.toggle-switch');
+                        const deviceId = data._id || data.id;
+                        
+                        if (data.status === true || data.status === 'On') {
+                            toggleSwitch.classList.remove('off');
+                        } else {
+                            toggleSwitch.classList.add('off');
+                        }
+                        
+                        // Update power consumption if available
+                        if (data.power) {
+                            const powerText = element.querySelector('.device-text p');
+                            powerText.textContent = `${data.status ? 'On' : 'Off'} • ${data.power}W`;
+                        }
+                    }
+                });
+            }
+        }
+        
         // Handle auth button click
         function handleAuthAction() {
-            const isLoggedIn = localStorage.getItem('token');
+            const token = localStorage.getItem('token');
             
-            if (isLoggedIn) {
+            if (token) {
                 // Sign Out
                 if (confirm('Are you sure you want to sign out?')) {
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('userData');
-                    updateUIForGuest();
-                    // Optional: Redirect to login page
-                    // window.location.href = '/login';
+                    // Call logout API
+                    fetch(`${API_URL}/auth/logout`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            localStorage.removeItem('token');
+                            localStorage.removeItem('userData');
+                            updateUIForGuest();
+                            alert('Logged out successfully');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Logout error:', error);
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('userData');
+                        updateUIForGuest();
+                    });
                 }
             } else {
                 // Sign In - Redirect to login page
@@ -796,9 +852,9 @@
         
         // Go to account page
         function goToAccount() {
-            const isLoggedIn = localStorage.getItem('token');
+            const token = localStorage.getItem('token');
             
-            if (isLoggedIn) {
+            if (token) {
                 window.location.href = '/account';
             } else {
                 window.location.href = '/login';
@@ -806,53 +862,116 @@
         }
         
         // Toggle quick access device
-        function toggleQuickDevice(element, deviceId) {
-            element.classList.toggle('off');
-            const isOn = !element.classList.contains('off');
+        async function toggleQuickDevice(element, deviceId) {
+            const isCurrentlyOn = !element.classList.contains('off');
+            const newStatus = !isCurrentlyOn;
             
-            // Update device status text
+            // Optimistically update UI
+            element.classList.toggle('off');
             const deviceText = element.closest('.device-item').querySelector('.device-text p');
+            
+            // Determine device type and update text
             if (deviceId.includes('light')) {
-                deviceText.textContent = isOn ? 'On • 45W' : 'Off • 0W';
+                deviceText.textContent = newStatus ? 'On • 45W' : 'Off • 0W';
             } else if (deviceId.includes('ac')) {
-                deviceText.textContent = isOn ? 'On • 24°C' : 'Off • 0W';
+                deviceText.textContent = newStatus ? 'On • 24°C' : 'Off • 0W';
             } else if (deviceId.includes('tv')) {
-                deviceText.textContent = isOn ? 'On • 80W' : 'Off • Standby';
+                deviceText.textContent = newStatus ? 'On • 80W' : 'Off • Standby';
             }
             
-            // Send toggle command to backend
-            fetch('/toggle_device', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    id: deviceId,
-                    state: isOn
-                })
-            }).then(response => response.json())
-              .then(data => {
-                  if (data.success) {
-                      console.log(`✅ Device ${deviceId} toggled to ${isOn ? 'ON' : 'OFF'}`);
-                  }
-              });
+            try {
+                // Get token for authentication
+                const token = localStorage.getItem('token');
+                
+                // In a real app, you'd need the actual device ID from your database
+                // For now, we'll use a mock API call
+                const response = await fetch(`${API_URL}/devices/${deviceId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(token && { 'Authorization': `Bearer ${token}` })
+                    },
+                    body: JSON.stringify({
+                        status: newStatus,
+                        lastUpdated: new Date().toISOString()
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        console.log(`✅ Device ${deviceId} toggled to ${newStatus ? 'ON' : 'OFF'}`);
+                        
+                        // Emit socket event for real-time update
+                        socket.emit('deviceToggle', {
+                            deviceId: deviceId,
+                            status: newStatus,
+                            timestamp: new Date().toISOString()
+                        });
+                    } else {
+                        // Revert UI if API failed
+                        element.classList.toggle('off');
+                        deviceText.textContent = isCurrentlyOn ? 'On • 45W' : 'Off • 0W';
+                        alert('Failed to update device: ' + (data.message || 'Unknown error'));
+                    }
+                } else {
+                    // Revert UI if request failed
+                    element.classList.toggle('off');
+                    deviceText.textContent = isCurrentlyOn ? 'On • 45W' : 'Off • 0W';
+                    alert('Failed to update device. Please try again.');
+                }
+            } catch (error) {
+                console.error('Toggle error:', error);
+                // Revert UI on error
+                element.classList.toggle('off');
+                deviceText.textContent = isCurrentlyOn ? 'On • 45W' : 'Off • 0W';
+                alert('Network error. Please check your connection.');
+            }
         }
         
-        // Fetch initial data
+        // Fetch initial data from API
         async function fetchInitialData() {
             try {
-                // Fetch devices count
-                const devicesResponse = await fetch('/api/devices');
+                const token = localStorage.getItem('token');
+                const headers = {
+                    'Content-Type': 'application/json'
+                };
+                
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+                
+                // Fetch devices
+                const devicesResponse = await fetch(`${API_URL}/devices`, { headers });
                 if (devicesResponse.ok) {
                     const devicesData = await devicesResponse.json();
                     if (devicesData.success) {
-                        const activeCount = devicesData.data.filter(d => d.status === 'On' || d.status === true).length;
+                        const activeCount = devicesData.data.filter(d => d.status === true || d.status === 'On').length;
                         document.getElementById('activeCount').textContent = activeCount;
                         document.getElementById('activeDevices').textContent = activeCount;
+                        
+                        // Update energy saved based on active devices
+                        const energySaved = Math.min(100, Math.floor(activeCount * 5));
+                        document.getElementById('energySaved').textContent = `${energySaved}%`;
                     }
                 }
+                
+                // Fetch analytics for more data
+                const analyticsResponse = await fetch(`${API_URL}/analytics`, { headers });
+                if (analyticsResponse.ok) {
+                    const analyticsData = await analyticsResponse.json();
+                    if (analyticsData.success && analyticsData.data) {
+                        updateRealTimeData(analyticsData.data);
+                    }
+                }
+                
             } catch (error) {
                 console.error('Error fetching initial data:', error);
+                // Fallback to random data
+                updateRealTimeData({
+                    activeDevices: 5,
+                    energySaved: 23.5
+                });
             }
         }
         
@@ -861,14 +980,23 @@
             loadUserData();
             fetchInitialData();
             
+            // Request real-time data from server
+            socket.emit('requestRealTimeData');
+            
             // Update data every 30 seconds
             setInterval(fetchInitialData, 30000);
             
-            // Initial random values
-            updateRealTimeData({
-                activeDevices: 5,
-                energySaved: 23.5
-            });
+            // Set up socket listeners for room joining
+            socket.emit('joinRoom', 'home-dashboard');
+        });
+        
+        // Handle page visibility change
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                // Page became visible, refresh data
+                fetchInitialData();
+                socket.emit('requestRealTimeData');
+            }
         });
     </script>
 </body>

@@ -165,7 +165,7 @@
             margin-bottom: 8px;
         }
 
-        .schedule-code {
+        .schedule-device {
             display: inline-block;
             background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
             color: white;
@@ -188,6 +188,41 @@
         .schedule-time::before {
             content: "🕐";
             font-size: 16px;
+        }
+
+        .schedule-repeat {
+            font-size: 13px;
+            color: #9ca3af;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .schedule-repeat::before {
+            content: "🔁";
+            font-size: 14px;
+        }
+
+        .schedule-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .status-active {
+            background: rgba(34, 197, 94, 0.1);
+            color: #16a34a;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .status-inactive {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+            border: 1px solid rgba(239, 68, 68, 0.3);
         }
 
         .schedule-note {
@@ -284,6 +319,62 @@
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
+        .form-group select[multiple] {
+            height: 120px;
+        }
+
+        .device-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            margin-top: 8px;
+            display: none;
+        }
+
+        .device-list.active {
+            display: block;
+        }
+
+        .device-option {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .device-option:hover {
+            background: #f3f4f6;
+        }
+
+        .device-option.selected {
+            background: #dbeafe;
+            border-left: 3px solid #3b82f6;
+        }
+
+        .device-name {
+            font-weight: 500;
+        }
+
+        .device-status {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+
+        .device-status.on {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .device-status.off {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
         .form-buttons {
             display: flex;
             gap: 12px;
@@ -352,7 +443,7 @@
             align-items: center;
         }
 
-        .edit-btn, .delete-btn {
+        .edit-btn, .delete-btn, .execute-btn {
             background: #f3f4f6;
             color: #6b7280;
             border: none;
@@ -374,6 +465,31 @@
         .delete-btn:hover {
             background: #fca5a5;
             color: #dc2626;
+        }
+
+        .execute-btn:hover {
+            background: #10b981;
+            color: white;
+        }
+
+        .upcoming-badge {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-left: 8px;
+            font-weight: 500;
+        }
+
+        .next-execution {
+            font-size: 12px;
+            color: #f59e0b;
+            font-weight: 500;
+            margin-top: 4px;
         }
     </style>
 </head>
@@ -398,11 +514,11 @@
         <!-- Icon Menu -->
         <div class="icon-menu">
             <span class="icon-item active" data-filter="all" onclick="filterSchedule('all')">📋</span>
-            <span class="icon-item" data-filter="light" onclick="filterSchedule('light')">💡</span>
-            <span class="icon-item" data-filter="tv" onclick="filterSchedule('tv')">📺</span>
-            <span class="icon-item" data-filter="wifi" onclick="filterSchedule('wifi')">📶</span>
-            <span class="icon-item" data-filter="ac" onclick="filterSchedule('ac')">❄️</span>
-            <span class="icon-item" data-filter="fan" onclick="filterSchedule('fan')">🌀</span>
+            <span class="icon-item" data-filter="Light" onclick="filterSchedule('Light')">💡</span>
+            <span class="icon-item" data-filter="TV" onclick="filterSchedule('TV')">📺</span>
+            <span class="icon-item" data-filter="AC" onclick="filterSchedule('AC')">❄️</span>
+            <span class="icon-item" data-filter="Fan" onclick="filterSchedule('Fan')">🌀</span>
+            <span class="icon-item" data-filter="Other" onclick="filterSchedule('Other')">🔌</span>
         </div>
 
         <!-- Content -->
@@ -419,16 +535,16 @@
                     <line x1="3" y1="10" x2="21" y2="10"></line>
                 </svg>
                 <h3>No schedules found</h3>
-                <p>Try selecting a different device type</p>
+                <p>Try selecting a different device type or create a new schedule</p>
             </div>
 
             <!-- Add Form -->
             <div class="add-form" id="addForm">
                 <div class="form-group">
-                    <label for="location">Location</label>
-                    <select id="location">
+                    <label for="room">Select Room</label>
+                    <select id="room" onchange="loadDevicesByRoom()">
                         <option value="">Select Room</option>
-                        <option value="Living room">🛋️ Living room</option>
+                        <option value="Living Room">🛋️ Living Room</option>
                         <option value="Bedroom">🛏️ Bedroom</option>
                         <option value="Kitchen">🍳 Kitchen</option>
                         <option value="Bathroom">🚿 Bathroom</option>
@@ -439,30 +555,43 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="deviceId">Device Code</label>
-                    <input type="text" id="deviceId" placeholder="e.g., LR01">
-                </div>
-
-                <div class="form-group">
-                    <label for="deviceType">Device Type</label>
-                    <select id="deviceType">
-                        <option value="">Select Device Type</option>
-                        <option value="light">💡 Light</option>
-                        <option value="tv">📺 TV</option>
-                        <option value="wifi">📶 WiFi</option>
-                        <option value="ac">❄️ Air Conditioner</option>
-                        <option value="fan">🌀 Fan</option>
-                    </select>
+                    <label for="deviceSelect">Select Device</label>
+                    <div id="deviceList" class="device-list"></div>
+                    <input type="hidden" id="selectedDeviceId">
+                    <input type="hidden" id="selectedDeviceName">
+                    <div id="selectedDeviceDisplay" style="display: none; padding: 12px; background: #f3f4f6; border-radius: 8px; margin-top: 8px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong id="selectedDeviceNameText"></strong>
+                                <div style="font-size: 12px; color: #6b7280;" id="selectedDeviceTypeText"></div>
+                            </div>
+                            <button type="button" onclick="clearDeviceSelection()" style="background: none; border: none; color: #ef4444; cursor: pointer;">✕</button>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label for="timeOn">Turn On Time</label>
-                    <input type="time" id="timeOn">
+                    <input type="time" id="timeOn" required>
                 </div>
 
                 <div class="form-group">
                     <label for="timeOff">Turn Off Time (Optional)</label>
                     <input type="time" id="timeOff">
+                </div>
+
+                <div class="form-group">
+                    <label for="repeatDays">Repeat Days</label>
+                    <select id="repeatDays" multiple>
+                        <option value="Monday" selected>Monday</option>
+                        <option value="Tuesday" selected>Tuesday</option>
+                        <option value="Wednesday" selected>Wednesday</option>
+                        <option value="Thursday" selected>Thursday</option>
+                        <option value="Friday" selected>Friday</option>
+                        <option value="Saturday" selected>Saturday</option>
+                        <option value="Sunday" selected>Sunday</option>
+                    </select>
+                    <small style="color: #6b7280; font-size: 12px;">Hold Ctrl/Cmd to select multiple days</small>
                 </div>
 
                 <div class="form-group">
@@ -503,118 +632,352 @@
             return onTime;
         }
 
-        // ============================================
-        // DATA LAYER - Thay thế bằng API calls sau này
-        // ============================================
-
-        // Mock initial data (sau này sẽ fetch từ database)
-        const INITIAL_SCHEDULES = [
-            {
-                id: 1,
-                location: 'Living room',
-                deviceId: 'LR01',
-                deviceType: 'light',
-                timeOn: '08:00',
-                timeOff: '23:00',
-                note: 'Auto turn on/off lights',
-                isActive: true
-            },
-            {
-                id: 2,
-                location: 'Bedroom',
-                deviceId: 'BR01',
-                deviceType: 'light',
-                timeOn: '22:00',
-                timeOff: null,
-                note: 'Turn off before sleep',
-                isActive: true
-            },
-            {
-                id: 3,
-                location: 'Bedroom',
-                deviceId: 'BR02',
-                deviceType: 'ac',
-                timeOn: '21:00',
-                timeOff: null,
-                note: 'Cool room before sleep',
-                isActive: true
+        // Format repeat days
+        function formatRepeatDays(days) {
+            if (!days || days.length === 0) return 'Never';
+            if (days.length === 7) return 'Every day';
+            if (days.length === 5 && 
+                days.includes('Monday') && 
+                days.includes('Tuesday') && 
+                days.includes('Wednesday') && 
+                days.includes('Thursday') && 
+                days.includes('Friday')) {
+                return 'Weekdays';
             }
-        ];
+            if (days.length === 2 && 
+                days.includes('Saturday') && 
+                days.includes('Sunday')) {
+                return 'Weekends';
+            }
+            return days.map(d => d.substring(0, 3)).join(', ');
+        }
+
+        // Check if time is upcoming
+        function isTimeUpcoming(targetTime, minutesAhead = 5) {
+            if (!targetTime) return false;
+            
+            const now = new Date();
+            const currentHour = now.getHours();
+            const currentMinute = now.getMinutes();
+            
+            const [targetHour, targetMinute] = targetTime.split(':').map(Number);
+            
+            const currentTotal = currentHour * 60 + currentMinute;
+            let targetTotal = targetHour * 60 + targetMinute;
+            
+            if (targetTotal < currentTotal) {
+                targetTotal += 24 * 60;
+            }
+            
+            return (targetTotal - currentTotal) <= minutesAhead;
+        }
+
+        // ============================================
+        // DATA LAYER
+        // ============================================
 
         // State management
         let schedules = [];
+        let devices = [];
         let currentFilter = 'all';
-        let editingScheduleId = null; // Track schedule đang edit
+        let editingScheduleId = null;
 
         // ============================================
-        // API FUNCTIONS - Thay thế bằng real API
+        // API FUNCTIONS
         // ============================================
 
-        // GET all schedules từ database
-        async function fetchSchedules() {
-            // TODO: Thay bằng API call
-            // const response = await fetch('/api/schedules');
-            // return await response.json();
-            
-            // Tạm thời dùng localStorage
-            const stored = localStorage.getItem('schedules');
-            if (stored) {
-                return JSON.parse(stored);
+        // GET all devices
+        async function fetchDevices() {
+            try {
+                const response = await fetch('/api/devices');
+                if (response.ok) {
+                    const data = await response.json();
+                    // Handle different response formats
+                    if (Array.isArray(data)) {
+                        devices = data;
+                    } else if (data.devices && Array.isArray(data.devices)) {
+                        devices = data.devices;
+                    } else if (data.data && Array.isArray(data.data)) {
+                        devices = data.data;
+                    } else {
+                        devices = [];
+                    }
+                    console.log('Devices loaded:', devices.length);
+                } else {
+                    console.error('Failed to fetch devices:', response.status);
+                    devices = [];
+                }
+            } catch (error) {
+                console.error('Network error fetching devices:', error);
+                devices = [];
             }
-            return INITIAL_SCHEDULES;
+        }
+
+        // GET all schedules
+        async function fetchSchedules() {
+            try {
+                const response = await fetch('/api/schedules');
+                const data = await response.json();
+                
+                if (data.success) {
+                    schedules = data.schedules || [];
+                    console.log('Schedules loaded:', schedules.length);
+                    return schedules;
+                } else {
+                    console.error('Failed to fetch schedules:', data.message);
+                    return [];
+                }
+            } catch (error) {
+                console.error('Network error:', error);
+                // Fallback to localStorage
+                const stored = localStorage.getItem('schedules');
+                schedules = stored ? JSON.parse(stored) : [];
+                return schedules;
+            }
         }
 
         // POST - Tạo schedule mới
         async function createSchedule(scheduleData) {
-            // TODO: Thay bằng API call
-            // const response = await fetch('/api/schedules', {
-            //     method: 'POST',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify(scheduleData)
-            // });
-            // return await response.json();
-            
-            const newSchedule = {
-                id: Date.now(),
-                ...scheduleData,
-                isActive: true
-            };
-            schedules.push(newSchedule);
-            saveToStorage();
-            return newSchedule;
+            try {
+                const response = await fetch('/api/schedules', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(scheduleData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    return data.schedule;
+                } else {
+                    throw new Error(data.message);
+                }
+            } catch (error) {
+                console.error('Create schedule error:', error);
+                // Fallback to localStorage
+                const newSchedule = {
+                    id: Date.now().toString(),
+                    ...scheduleData,
+                    isActive: true
+                };
+                schedules.push(newSchedule);
+                saveToStorage();
+                return newSchedule;
+            }
         }
 
         // PUT - Cập nhật schedule
         async function updateSchedule(id, updates) {
-            // TODO: Thay bằng API call
-            // const response = await fetch(`/api/schedules/${id}`, {
-            //     method: 'PUT',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify(updates)
-            // });
-            // return await response.json();
-            
-            const index = schedules.findIndex(s => s.id === id);
-            if (index !== -1) {
-                schedules[index] = { ...schedules[index], ...updates };
-                saveToStorage();
-                return schedules[index];
+            try {
+                const response = await fetch(`/api/schedules/${id}`, {
+                    method: 'PUT',
+                    headers: { 
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updates)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    return data.schedule;
+                } else {
+                    throw new Error(data.message);
+                }
+            } catch (error) {
+                console.error('Update schedule error:', error);
+                // Fallback to localStorage
+                const index = schedules.findIndex(s => s.id === id);
+                if (index !== -1) {
+                    schedules[index] = { ...schedules[index], ...updates };
+                    saveToStorage();
+                    return schedules[index];
+                }
+                return null;
             }
-            return null;
         }
 
         // DELETE - Xóa schedule
         async function deleteSchedule(id) {
-            // TODO: Thay bằng API call
-            // await fetch(`/api/schedules/${id}`, { method: 'DELETE' });
-            
-            schedules = schedules.filter(s => s.id !== id);
-            saveToStorage();
+            try {
+                const response = await fetch(`/api/schedules/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                const data = await response.json();
+                
+                if (!data.success) {
+                    throw new Error(data.message);
+                }
+            } catch (error) {
+                console.error('Delete schedule error:', error);
+                // Fallback to localStorage
+                schedules = schedules.filter(s => s.id !== id);
+                saveToStorage();
+            }
+        }
+
+        // POST - Toggle schedule status
+        async function toggleScheduleStatus(id, isActive) {
+            try {
+                const response = await fetch(`/api/schedules/${id}/toggle`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ isActive })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    return data.schedule;
+                } else {
+                    throw new Error(data.message);
+                }
+            } catch (error) {
+                console.error('Toggle schedule error:', error);
+                // Fallback to localStorage
+                const index = schedules.findIndex(s => s.id === id);
+                if (index !== -1) {
+                    schedules[index].isActive = isActive;
+                    saveToStorage();
+                    return schedules[index];
+                }
+                return null;
+            }
+        }
+
+        // Execute schedule manually
+        async function executeSchedule(id, action) {
+            try {
+                const response = await fetch('/api/schedules/execute', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        scheduleId: id,
+                        action: action
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert(`Schedule executed: Device turned ${action}`);
+                    return data;
+                } else {
+                    throw new Error(data.message);
+                }
+            } catch (error) {
+                console.error('Execute schedule error:', error);
+                alert(`Error: ${error.message}`);
+            }
         }
 
         // Lưu vào localStorage (tạm thời)
         function saveToStorage() {
             localStorage.setItem('schedules', JSON.stringify(schedules));
+        }
+
+        // ============================================
+        // DEVICE SELECTION FUNCTIONS
+        // ============================================
+
+        // Load devices by selected room
+        async function loadDevicesByRoom() {
+            const room = document.getElementById('room').value;
+            const deviceList = document.getElementById('deviceList');
+            const selectedDeviceDisplay = document.getElementById('selectedDeviceDisplay');
+            
+            deviceList.innerHTML = '';
+            selectedDeviceDisplay.style.display = 'none';
+            document.getElementById('selectedDeviceId').value = '';
+            document.getElementById('selectedDeviceName').value = '';
+            
+            if (!room) {
+                deviceList.classList.remove('active');
+                return;
+            }
+
+            // Filter devices by room
+            const roomDevices = devices.filter(device => {
+                const deviceRoom = device.room || device.Room_name || device.RoomID?.Room_name || 'Unknown';
+                return deviceRoom === room;
+            });
+            
+            if (roomDevices.length === 0) {
+                deviceList.innerHTML = '<div style="padding: 12px; text-align: center; color: #6b7280;">No devices found in this room</div>';
+                deviceList.classList.add('active');
+                return;
+            }
+
+            // Create device options
+            roomDevices.forEach(device => {
+                const deviceOption = document.createElement('div');
+                deviceOption.className = 'device-option';
+                
+                const deviceId = device.id || device._id || device.deviceId;
+                const deviceName = device.name || device.Device_name || 'Unknown Device';
+                const deviceType = device.type || device.Device_type || 'Unknown';
+                const isOn = device.status === 'On' || device.status === 'ON' || 
+                           device.status === true || device.status === 'true' ||
+                           device.state === true || device.state === 'true';
+                
+                deviceOption.innerHTML = `
+                    <div>
+                        <div class="device-name">${deviceName}</div>
+                        <div style="font-size: 12px; color: #6b7280;">${deviceType}</div>
+                    </div>
+                    <div class="device-status ${isOn ? 'on' : 'off'}">${isOn ? 'ON' : 'OFF'}</div>
+                `;
+                
+                deviceOption.addEventListener('click', () => {
+                    selectDevice(deviceId, deviceName, deviceType);
+                });
+                
+                deviceList.appendChild(deviceOption);
+            });
+
+            deviceList.classList.add('active');
+        }
+
+        // Select a device
+        function selectDevice(deviceId, deviceName, deviceType) {
+            document.getElementById('selectedDeviceId').value = deviceId;
+            document.getElementById('selectedDeviceName').value = deviceName;
+            document.getElementById('selectedDeviceNameText').textContent = deviceName;
+            document.getElementById('selectedDeviceTypeText').textContent = deviceType;
+            
+            const selectedDeviceDisplay = document.getElementById('selectedDeviceDisplay');
+            selectedDeviceDisplay.style.display = 'block';
+            
+            const deviceList = document.getElementById('deviceList');
+            deviceList.classList.remove('active');
+            
+            // Update selected state
+            const deviceOptions = document.querySelectorAll('.device-option');
+            deviceOptions.forEach(option => {
+                option.classList.remove('selected');
+                if (option.querySelector('.device-name').textContent === deviceName) {
+                    option.classList.add('selected');
+                }
+            });
+        }
+
+        // Clear device selection
+        function clearDeviceSelection() {
+            document.getElementById('selectedDeviceId').value = '';
+            document.getElementById('selectedDeviceName').value = '';
+            document.getElementById('selectedDeviceDisplay').style.display = 'none';
+            
+            const deviceOptions = document.querySelectorAll('.device-option');
+            deviceOptions.forEach(option => {
+                option.classList.remove('selected');
+            });
         }
 
         // ============================================
@@ -628,25 +991,47 @@
             item.setAttribute('data-device-type', schedule.deviceType);
             item.setAttribute('data-id', schedule.id);
 
+            // Find device info
+            const device = devices.find(d => d.id === schedule.deviceId);
+            const deviceName = device ? device.name : schedule.deviceName || 'Unknown Device';
+            const deviceType = schedule.deviceType || (device ? device.type : 'Unknown');
+            const room = schedule.location || schedule.room || 'Unknown Room';
+
             const timeDisplay = getTimeDisplay(schedule.timeOn, schedule.timeOff);
+            const statusClass = schedule.isActive ? 'status-active' : 'status-inactive';
+            const statusText = schedule.isActive ? 'Active' : 'Inactive';
+            const repeatDaysText = formatRepeatDays(schedule.repeatDays);
+            
+            // Check if schedule is upcoming
+            const isUpcomingOn = schedule.timeOn && isTimeUpcoming(schedule.timeOn, 10);
+            const isUpcomingOff = schedule.timeOff && isTimeUpcoming(schedule.timeOff, 10);
+            const isUpcoming = isUpcomingOn || isUpcomingOff;
+            const upcomingAction = isUpcomingOn ? 'ON' : (isUpcomingOff ? 'OFF' : '');
+            const upcomingTime = isUpcomingOn ? schedule.timeOn : schedule.timeOff;
 
             item.innerHTML = `
                 <div class="schedule-info">
-                    <h3>${schedule.location}</h3>
-                    <span class="schedule-code">${schedule.deviceId}</span>
+                    <h3>${room} ${isUpcoming ? `<span class="upcoming-badge">⏰ Soon</span>` : ''}</h3>
+                    <div class="schedule-device">${deviceName}</div>
                     <div class="schedule-time">${timeDisplay}</div>
+                    <div class="schedule-repeat">${repeatDaysText}</div>
+                    <div class="schedule-status ${statusClass}">${statusText}</div>
+                    ${isUpcoming ? `<div class="next-execution">Next: ${upcomingAction} at ${formatTime(upcomingTime)}</div>` : ''}
                     ${schedule.note ? `<div class="schedule-note">${schedule.note}</div>` : ''}
                 </div>
                 <div class="action-buttons">
                     <label class="toggle-switch">
                         <input type="checkbox" ${schedule.isActive ? 'checked' : ''} 
-                               onchange="toggleSchedule(${schedule.id}, this.checked)">
+                               onchange="toggleSchedule('${schedule.id}', this.checked)">
                         <span class="toggle-slider"></span>
                     </label>
-                    <button class="edit-btn" onclick="handleEdit(${schedule.id})">
+                    <button class="execute-btn" onclick="executeScheduleNow('${schedule.id}', '${deviceName}')" title="Execute Now">
+                        <span>▶️</span>
+                    </button>
+                    <button class="edit-btn" onclick="handleEdit('${schedule.id}')" title="Edit">
                         <span>✏️</span>
                     </button>
-                    <button class="delete-btn" onclick="handleDelete(${schedule.id})">
+                    <button class="delete-btn" onclick="handleDelete('${schedule.id}')" title="Delete">
                         <span>🗑️</span>
                     </button>
                 </div>
@@ -685,8 +1070,20 @@
 
         // Toggle schedule active/inactive
         async function toggleSchedule(id, isActive) {
-            await updateSchedule(id, { isActive });
+            await toggleScheduleStatus(id, isActive);
             console.log(`Schedule ${id} ${isActive ? 'enabled' : 'disabled'}`);
+            renderScheduleList();
+        }
+
+        // Execute schedule now
+        async function executeScheduleNow(id, deviceName) {
+            if (confirm(`Execute this schedule now for "${deviceName}"?\nThis will turn the device ON immediately.`)) {
+                await executeSchedule(id, 'ON');
+                // Refresh after execution
+                setTimeout(() => {
+                    fetchSchedules().then(renderScheduleList);
+                }, 1000);
+            }
         }
 
         // Delete schedule
@@ -704,12 +1101,26 @@
 
             // Populate form với data hiện tại
             editingScheduleId = id;
-            document.getElementById('location').value = schedule.location;
-            document.getElementById('deviceId').value = schedule.deviceId;
-            document.getElementById('deviceType').value = schedule.deviceType;
+            document.getElementById('room').value = schedule.location || schedule.room || '';
             document.getElementById('timeOn').value = schedule.timeOn || '';
             document.getElementById('timeOff').value = schedule.timeOff || '';
             document.getElementById('note').value = schedule.note || '';
+            
+            // Set repeat days
+            const repeatSelect = document.getElementById('repeatDays');
+            const repeatDays = schedule.repeatDays || ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            Array.from(repeatSelect.options).forEach(option => {
+                option.selected = repeatDays.includes(option.value);
+            });
+
+            // Load devices for the room
+            loadDevicesByRoom().then(() => {
+                // Select the device
+                const device = devices.find(d => d.id === schedule.deviceId);
+                if (device) {
+                    selectDevice(device.id, device.name, device.type);
+                }
+            });
 
             // Show form
             document.getElementById('scheduleList').style.display = 'none';
@@ -749,6 +1160,20 @@
             document.getElementById('headerTitle').textContent = 'Add Schedule';
             document.getElementById('headerAddBtn').style.display = 'none';
 
+            // Clear form
+            document.getElementById('room').value = '';
+            document.getElementById('timeOn').value = '';
+            document.getElementById('timeOff').value = '';
+            document.getElementById('note').value = '';
+            
+            // Reset repeat days to all selected
+            const repeatSelect = document.getElementById('repeatDays');
+            Array.from(repeatSelect.options).forEach(option => {
+                option.selected = true;
+            });
+            
+            clearDeviceSelection();
+
             // Reset button text
             const saveBtn = document.querySelector('.btn-save');
             saveBtn.textContent = 'Save Schedule';
@@ -763,12 +1188,11 @@
             document.getElementById('headerAddBtn').style.display = 'flex';
             
             // Clear form
-            document.getElementById('location').value = '';
-            document.getElementById('deviceId').value = '';
-            document.getElementById('deviceType').value = '';
+            document.getElementById('room').value = '';
             document.getElementById('timeOn').value = '';
             document.getElementById('timeOff').value = '';
             document.getElementById('note').value = '';
+            clearDeviceSelection();
 
             // Reset button text
             const saveBtn = document.querySelector('.btn-save');
@@ -777,25 +1201,38 @@
 
         // Save schedule
         async function saveSchedule() {
-            const location = document.getElementById('location').value.trim();
-            const deviceId = document.getElementById('deviceId').value.trim();
-            const deviceType = document.getElementById('deviceType').value;
+            const room = document.getElementById('room').value;
+            const deviceId = document.getElementById('selectedDeviceId').value;
+            const deviceName = document.getElementById('selectedDeviceName').value;
             const timeOn = document.getElementById('timeOn').value;
             const timeOff = document.getElementById('timeOff').value || null;
             const note = document.getElementById('note').value.trim();
+            
+            // Get selected repeat days
+            const repeatSelect = document.getElementById('repeatDays');
+            const repeatDays = Array.from(repeatSelect.selectedOptions).map(opt => opt.value);
 
-            if (!location || !deviceId || !deviceType || !timeOn) {
-                alert('Please fill in all required fields');
+            if (!room || !deviceId || !timeOn) {
+                alert('Please select a room, device, and turn on time');
+                return;
+            }
+
+            // Find device info
+            const device = devices.find(d => d.id === deviceId);
+            if (!device) {
+                alert('Selected device not found');
                 return;
             }
 
             const scheduleData = {
-                location,
                 deviceId,
-                deviceType,
+                deviceName: device.name || deviceName,
+                deviceType: device.type || 'Unknown',
+                location: room,
                 timeOn,
                 timeOff,
-                note
+                note,
+                repeatDays: repeatDays.length > 0 ? repeatDays : ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
             };
 
             // Check nếu đang edit hay add mới
@@ -807,13 +1244,15 @@
                 await createSchedule(scheduleData);
             }
 
+            // Refresh data
+            await fetchSchedules();
             renderScheduleList();
             cancelForm();
         }
 
         // Navigation
         function goHome() {
-            window.location.href = 'homepage.html';
+            window.location.href = '/';
         }
 
         // ============================================
@@ -821,11 +1260,52 @@
         // ============================================
 
         async function init() {
-            // Load schedules from database/API
-            schedules = await fetchSchedules();
+            // Load devices first
+            await fetchDevices();
+            
+            // Then load schedules
+            await fetchSchedules();
             
             // Render initial view
             renderScheduleList();
+            
+            // Start checking for upcoming schedules
+            setInterval(() => {
+                const upcomingItems = document.querySelectorAll('.schedule-item');
+                upcomingItems.forEach(item => {
+                    const scheduleId = item.getAttribute('data-id');
+                    const schedule = schedules.find(s => s.id === scheduleId);
+                    if (schedule) {
+                        const isUpcomingOn = schedule.timeOn && isTimeUpcoming(schedule.timeOn, 10);
+                        const isUpcomingOff = schedule.timeOff && isTimeUpcoming(schedule.timeOff, 10);
+                        
+                        // Add/remove upcoming badge
+                        const badge = item.querySelector('.upcoming-badge');
+                        const nextExec = item.querySelector('.next-execution');
+                        
+                        if (isUpcomingOn || isUpcomingOff) {
+                            const upcomingAction = isUpcomingOn ? 'ON' : 'OFF';
+                            const upcomingTime = isUpcomingOn ? schedule.timeOn : schedule.timeOff;
+                            
+                            if (!badge) {
+                                const h3 = item.querySelector('h3');
+                                h3.innerHTML = `${h3.textContent} <span class="upcoming-badge">⏰ Soon</span>`;
+                            }
+                            
+                            if (!nextExec) {
+                                const scheduleInfo = item.querySelector('.schedule-info');
+                                const nextExecDiv = document.createElement('div');
+                                nextExecDiv.className = 'next-execution';
+                                nextExecDiv.textContent = `Next: ${upcomingAction} at ${formatTime(upcomingTime)}`;
+                                scheduleInfo.appendChild(nextExecDiv);
+                            }
+                        } else {
+                            if (badge) badge.remove();
+                            if (nextExec) nextExec.remove();
+                        }
+                    }
+                });
+            }, 30000); // Check every 30 seconds
         }
 
         // Start app

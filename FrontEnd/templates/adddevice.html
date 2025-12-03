@@ -1,0 +1,593 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Device - Smart Home</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: 12px;
+            padding: 40px 35px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.2s;
+            background: #f9f9f9;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            background: #f9f9f9;
+            cursor: pointer;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .power-input {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .power-input input {
+            flex: 1;
+        }
+
+        .power-input span {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #666;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .error-message {
+            color: #e53e3e;
+            font-size: 14px;
+            margin-top: 8px;
+            display: none;
+            padding: 12px;
+            background: #fed7d7;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .success-message {
+            color: #38a169;
+            font-size: 14px;
+            margin-top: 8px;
+            display: none;
+            padding: 12px;
+            background: #c6f6d5;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 15px 0;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .device-preview {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .device-preview h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .preview-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .preview-item:last-child {
+            border-bottom: none;
+        }
+
+        .preview-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .preview-value {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+
+        .back-button:hover {
+            background: #f5f5f5;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 25px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Back Button -->
+    <div class="back-button" onclick="goBack()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                    <path d="M2 17l10 5 10-5"></path>
+                    <path d="M2 12l10 5 10-5"></path>
+                </svg>
+                Add New Device
+            </h1>
+            <p>Configure and add a new device to your smart home</p>
+        </div>
+
+        <!-- Messages -->
+        <div class="error-message" id="errorMessage"></div>
+        <div class="success-message" id="successMessage"></div>
+
+        <!-- Loading -->
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <span>Adding device...</span>
+        </div>
+
+        <!-- Device Preview -->
+        <div class="device-preview" id="devicePreview">
+            <h3>Device Preview</h3>
+            <div class="preview-item">
+                <span class="preview-label">Name:</span>
+                <span class="preview-value" id="previewName">-</span>
+            </div>
+            <div class="preview-item">
+                <span class="preview-label">Type:</span>
+                <span class="preview-value" id="previewType">-</span>
+            </div>
+            <div class="preview-item">
+                <span class="preview-label">Room:</span>
+                <span class="preview-value" id="previewRoom">-</span>
+            </div>
+            <div class="preview-item">
+                <span class="preview-label">Power:</span>
+                <span class="preview-value" id="previewPower">- W</span>
+            </div>
+            <div class="preview-item">
+                <span class="preview-label">Status:</span>
+                <span class="preview-value" id="previewStatus">Off</span>
+            </div>
+        </div>
+
+        <form id="addDeviceForm">
+            <div class="form-group">
+                <label class="form-label" for="deviceName">Device Name</label>
+                <input type="text" id="deviceName" class="form-input" 
+                       placeholder="Enter device name (e.g., Living Room Light)" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="deviceType">Device Type</label>
+                <select id="deviceType" class="form-select" required>
+                    <option value="">Select device type</option>
+                    <option value="Light">💡 Light</option>
+                    <option value="AC">❄️ Air Conditioner</option>
+                    <option value="TV">📺 Television</option>
+                    <option value="Fan">🌀 Fan</option>
+                    <option value="Camera">📷 Security Camera</option>
+                    <option value="Speaker">🔊 Smart Speaker</option>
+                    <option value="Refrigerator">❄️ Refrigerator</option>
+                    <option value="Oven">🔥 Oven</option>
+                    <option value="Washer">🌀 Washing Machine</option>
+                    <option value="Dryer">🌬️ Dryer</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="deviceRoom">Room</label>
+                <input type="text" id="deviceRoom" class="form-input" 
+                       placeholder="Enter room (e.g., Living Room)" required list="roomSuggestions">
+                <datalist id="roomSuggestions">
+                    <option value="Living Room">
+                    <option value="Bedroom">
+                    <option value="Kitchen">
+                    <option value="Bathroom">
+                    <option value="Hallway">
+                    <option value="Garage">
+                    <option value="Office">
+                    <option value="Garden">
+                </datalist>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="devicePower">Power (Watts)</label>
+                    <div class="power-input">
+                        <input type="number" id="devicePower" class="form-input" 
+                               placeholder="0" min="0" max="5000" value="0">
+                        <span>W</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="initialStatus">Initial Status</label>
+                    <select id="initialStatus" class="form-select">
+                        <option value="Off">Off</option>
+                        <option value="On">On</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="button" class="btn btn-secondary" onclick="previewDevice()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                    Preview
+                </button>
+                <button type="submit" class="btn btn-primary" id="submitButton">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5v14M5 12h14"></path>
+                    </svg>
+                    Add Device
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Try multiple API endpoints for flexibility
+        const API_ENDPOINTS = [
+            '/api/devices',  // Direct Flask proxy
+            'http://localhost:3000/api/devices'  // Direct Node.js backend
+        ];
+
+        // Show message
+        function showMessage(elementId, message, isSuccess = false) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.style.display = 'block';
+            element.className = isSuccess ? 'success-message' : 'error-message';
+            
+            if (!isSuccess) {
+                setTimeout(() => {
+                    element.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        // Set loading state
+        function setLoading(isLoading) {
+            document.getElementById('loading').style.display = isLoading ? 'block' : 'none';
+            document.getElementById('submitButton').disabled = isLoading;
+        }
+
+        // Preview device
+        function previewDevice() {
+            const name = document.getElementById('deviceName').value.trim();
+            const type = document.getElementById('deviceType').value;
+            const room = document.getElementById('deviceRoom').value.trim();
+            const power = document.getElementById('devicePower').value;
+            const status = document.getElementById('initialStatus').value;
+            
+            if (!name || !type || !room) {
+                showMessage('errorMessage', 'Please fill in all required fields');
+                return;
+            }
+            
+            // Update preview
+            document.getElementById('previewName').textContent = name;
+            document.getElementById('previewType').textContent = type;
+            document.getElementById('previewRoom').textContent = room;
+            document.getElementById('previewPower').textContent = power + ' W';
+            document.getElementById('previewStatus').textContent = status;
+            
+            // Show preview
+            document.getElementById('devicePreview').style.display = 'block';
+            
+            showMessage('successMessage', '✓ Device preview updated', true);
+        }
+
+        // Try different API endpoints
+        async function tryApiEndpoints(deviceData) {
+            for (const endpoint of API_ENDPOINTS) {
+                try {
+                    console.log(`Trying endpoint: ${endpoint}`);
+                    
+                    const response = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(deviceData)
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log(`✅ Success with endpoint: ${endpoint}`, data);
+                        return { success: true, data, endpoint };
+                    }
+                } catch (error) {
+                    console.log(`❌ Failed with endpoint ${endpoint}:`, error.message);
+                }
+            }
+            return { success: false, message: 'All API endpoints failed' };
+        }
+
+        // Add new device
+        async function addDevice(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('deviceName').value.trim();
+            const type = document.getElementById('deviceType').value;
+            const room = document.getElementById('deviceRoom').value.trim();
+            const power = parseInt(document.getElementById('devicePower').value) || 0;
+            const status = document.getElementById('initialStatus').value;
+            
+            // Clear messages
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
+            
+            // Validation
+            if (!name || !type || !room) {
+                showMessage('errorMessage', 'Please fill in all required fields');
+                return;
+            }
+            
+            if (power < 0 || power > 5000) {
+                showMessage('errorMessage', 'Power must be between 0 and 5000W');
+                return;
+            }
+            
+            setLoading(true);
+            
+            const deviceData = {
+                name: name,
+                type: type,
+                room: room,
+                power: power,
+                status: status
+            };
+            
+            try {
+                console.log('➕ Sending device data:', deviceData);
+                
+                // Try multiple endpoints
+                const result = await tryApiEndpoints(deviceData);
+                
+                if (result.success) {
+                    showMessage('successMessage', '✅ Device added successfully! Redirecting...', true);
+                    
+                    // Redirect to devices page after 2 seconds
+                    setTimeout(() => {
+                        window.location.href = '/devices';
+                    }, 2000);
+                    
+                } else {
+                    showMessage('errorMessage', '❌ Failed to connect to backend server. Make sure Node.js backend is running on port 3000.');
+                    setLoading(false);
+                }
+                
+            } catch (error) {
+                console.error('Add device error:', error);
+                showMessage('errorMessage', '❌ Network error. Please try again.');
+                setLoading(false);
+            }
+        }
+
+        // Navigation
+        function goBack() {
+            window.location.href = '/devices';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Auto-fill for testing
+            document.getElementById('deviceName').value = 'New Smart Light';
+            document.getElementById('deviceType').value = 'Light';
+            document.getElementById('deviceRoom').value = 'Living Room';
+            
+            // Add form submission handler
+            document.getElementById('addDeviceForm').addEventListener('submit', addDevice);
+            
+            // Real-time preview on input
+            const inputs = ['deviceName', 'deviceType', 'deviceRoom', 'devicePower'];
+            inputs.forEach(id => {
+                document.getElementById(id).addEventListener('input', () => {
+                    document.getElementById('devicePreview').style.display = 'none';
+                });
+            });
+            
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === 'Enter') {
+                    addDevice(e);
+                }
+                if (e.key === 'Escape') {
+                    goBack();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

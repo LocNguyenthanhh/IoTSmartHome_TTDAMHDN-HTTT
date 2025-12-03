@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -209,6 +210,7 @@
             <a href="/login" class="button button-secondary">🔐 Sign In</a>
             <a href="/createaccount" class="button button-secondary">📝 Create Account</a>
             <a href="/devices" class="button button-secondary">📱 Device Control</a>
+            <a href="/adddevice" class="button button-secondary">➕ Add Device</a>
             <a href="/analytics" class="button button-secondary">📊 Analytics</a>
         </div>
 
@@ -244,8 +246,8 @@
                     document.getElementById('backendStatus').className = 'status-value';
                     
                     // Show additional info if available
-                    if (data.devices_count !== undefined) {
-                        document.getElementById('backendStatus').textContent += ` (${data.devices_count} devices)`;
+                    if (data.services && data.services.devices_count !== undefined) {
+                        document.getElementById('backendStatus').textContent += ` (${data.services.devices_count} devices)`;
                     }
                 } else {
                     document.getElementById('backendStatus').textContent = '❌ Disconnected';
