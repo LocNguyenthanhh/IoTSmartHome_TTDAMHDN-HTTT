@@ -84,7 +84,7 @@ IOTSMARTHOME_TTDAMHDN-HTTT/
 
 4. **Tạo file .env**:
    ```bash
-   MONGO_URI= "MONGO_URI="mongodb+srv://dadnhttt:group1@cluster0.rotydvh.mongodb.net/mydb"
+   MONGO_URI= "mongodb+srv://dadnhttt:group1@cluster0.rotydvh.mongodb.net/mydb"
 
    PORT=3000 
    
