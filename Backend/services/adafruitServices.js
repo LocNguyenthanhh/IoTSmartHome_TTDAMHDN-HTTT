@@ -56,7 +56,7 @@ client.on('message', async (topic, message) => {
     console.log(`Feed update on ${topic}: ${data}`);
     const Dialog = require('../models/Dialog');
     const Device = require('../models/Device');
-    const deviceId = '68d6fa31e49fe3e1ff224306';
+    const deviceId = '69313a7d27fa074d0ad13d66';
     const newStatus = data === "1" ? "ON" : "OFF";
     const device = await Device.findById(deviceId);
     if (!device) {
