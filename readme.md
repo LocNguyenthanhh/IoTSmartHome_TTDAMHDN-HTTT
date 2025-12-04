@@ -1,37 +1,30 @@
-# IoT Smart Home Demo
+# IoT Smart Home Project
 
-Dự án demo hệ thống dùng **Node.js + MongoDB + Adafruit IO**  
-để quản lý dữ liệu từ thiết bị IoT và gửi lệnh điều khiển.
-
----
-
-## 🚀 Tính năng
-- Nhận và lưu trữ dữ liệu cảm biến từ Micro:bit.
-- Cung cấp REST API cho Frontend hoặc Dashboard.
-- Gửi lệnh điều khiển từ Server → IoT thông qua Adafruit IO.
-- Quản lý thiết bị và trạng thái trong MongoDB.
+Dự án hệ thống thông dùng **NodeJS + ExpressJS + MongoDB + Adafruit IO**  
+để quản lý năng lượng trong gia đình thông qua các thiết bị IoT và gửi lệnh điều khiển.
 
 ---
 
-## 🛠️ Công nghệ sử dụng
-- **Node.js + Express** – Backend server & REST API.
-- **MongoDB + Mongoose** – Lưu trữ và thao tác dữ liệu.
+## Công nghệ sử dụng
+- **NodeJS + ExpressJS** – Backend server & REST API.
+- **MongoDB + Mongoose + Mongo Atlas** – Lưu trữ và thao tác dữ liệu NoSQL.
 - **Adafruit IO** – Giao tiếp IoT.
 - **dotenv** – Quản lý biến môi trường.
 - **cors** – Cho phép truy cập API từ Frontend.
 - **mqtt**
-- **Flask và socketIO**
+- **Flask và socketIO** - Giao tiếp FE và BE
 ---
 
-## 📂 Cấu trúc thư mục
+## Cấu trúc thư mục
+```text
 IOTSMARTHOME_TTDAMHDN-HTTT/
-├── Backend/
+├── backend/
 │   ├── config/
 │   │   └── db.js
 │   ├── controllers/
 │   │   ├── DeviceController.js
 │   │   ├── DialogController.js
-│   │   ├── feedController.js
+│   │   ├── FeedController.js
 │   │   ├── HomeController.js
 │   │   ├── RoomController.js
 │   │   └── UserController.js
@@ -44,7 +37,7 @@ IOTSMARTHOME_TTDAMHDN-HTTT/
 │   ├── routes/
 │   │   ├── DeviceRoute.js
 │   │   ├── DialogRoute.js
-│   │   ├── feedRoute.js
+│   │   ├── FeedRoute.js
 │   │   ├── HomeRoute.js
 │   │   ├── RoomRoute.js
 │   │   └── UserRoute.js
@@ -55,25 +48,24 @@ IOTSMARTHOME_TTDAMHDN-HTTT/
 │   │   ├── seedRoom.js
 │   │   └── seedUser.js
 │   ├── services/
-│   │   └── adafruitServices.js
-│   ├── Utils/
+│   │   └── AdafruitService.js
+│   ├── utils/
 │   │   └── authMiddleware.js
 │   └── main.js
-└── FrontEnd/
-|   ├── templates/
-|   │   └── devicescontrol.html
-|   └── devicescontrol.py
-└── IoTGateWay/
-|   └── IoTSmartHome_demo_button.json
-└── .env
-└── requirements.text
-└── readme.md
-|
-...
+├── frontend/
+│   ├── templates/
+│   │   └── devices_control.html
+│   └── devices_control.py
+├── iot_gateway/
+│   └── IoTSmartHome_demo_button.json
+├── .env
+├── README.md
+└── requirements.txt
+```
 
 ---
 
-## ⚡ Cài đặt & Chạy
+## Cài đặt & Chạy
 1. **Clone** dự án:
    ```bash
    git clone https://github.com/LocNguyenthanhh/IoTSmartHome_TTDAMHDN-HTTT.git
@@ -89,9 +81,9 @@ IOTSMARTHOME_TTDAMHDN-HTTT/
    PORT=3000 
    
    ADAFRUIT_AIO_USERNAME = "NTLoc"
-   ADAFRUIT_AIO_KEY      = "aio_uAug74KEjnsR###wJ6G1jP7gbuuHQ9H" //delete triple ### before write into your .env file 
+   ADAFRUIT_AIO_KEY      = "aio_uAug74KEjnsR_###_wJ6G1jP7gbuuHQ9H" //delete triple _###_ before write into your .env file 
    AIO_LED_KEY           = "bbc-led"
-
+   AIO_SENSOR_LIGHT_KEY  = "sensor-light"
 6. **Chạy server**:
    ```bash
    node Backend\main.js
