@@ -1,11 +1,11 @@
 from flask import Flask, render_template, request, jsonify
 import requests
 from flask_socketio import SocketIO, emit
-
+DEVIDE_ID = '69313a7d27fa074d0ad13d65'
 app = Flask(__name__)
 socketio = SocketIO(app)
 devices = [
-    {"id": "68d6ce1d5301347504febdd7", "name": "Light bulbs", "brand": "Philips Hue", "state": True, "icon": "💡"},
+    {"id": DEVIDE_ID, "name": "Light bulbs", "brand": "Philips Hue", "state": True, "icon": "💡"},
     {"id": 2, "name": "Smart TV", "brand": "Panasonic", "state": False, "icon": "📺"},
     {"id": 3, "name": "Wi-Fi Router", "brand": "TP Link", "state": False, "icon": "📶"},
     {"id": 4, "name": "CCTV", "brand": "Security Camera 360°", "state": False, "icon": "📹"}

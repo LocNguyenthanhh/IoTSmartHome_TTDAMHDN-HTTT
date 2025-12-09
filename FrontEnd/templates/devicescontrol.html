@@ -1,799 +1,477 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Device Control</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #e3f2fd 100%);
-            min-height: 100vh;
-        }
-
-        .container {
-            max-width: 480px;
-            margin: 0 auto;
-        }
-
-        .header {
-            background: white;
-            padding: 16px 24px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .add-btn, .home-btn {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            border: none;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            color: white;
-            font-size: 20px;
-            font-weight: 300;
-        }
-
-        .home-btn {
-            background: #f3f4f6;
-            color: #1f2937;
-        }
-
-        .add-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-        }
-
-        .home-btn:hover {
-            background: #e5e7eb;
-            transform: scale(1.05);
-        }
-
-        .header-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: #1f2937;
-        }
-
-        .nav-tabs {
-            background: white;
-            padding: 16px 24px;
-            display: flex;
-            gap: 16px;
-            overflow-x: auto;
-            border-bottom: 1px solid #e5e7eb;
-            position: sticky;
-            top: 72px;
-            z-index: 99;
-        }
-
-        .nav-tabs::-webkit-scrollbar {
-            display: none;
-        }
-
-        .nav-tab {
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: all 0.3s;
-            background: #f3f4f6;
-            color: #6b7280;
-            border: none;
-        }
-
-        .nav-tab.active {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            color: white;
-        }
-
-        .content {
-            padding: 24px;
-        }
-
-        .device-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            margin-bottom: 100px;
-        }
-
-        .device-card {
-            background: white;
-            border-radius: 16px;
-            padding: 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            transition: all 0.3s;
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            border: 2px solid transparent;
+            align-items: center;
+            height: 100vh;
+            font-size: 14px;
+            position: relative;
+            overflow-y: auto;
         }
-
-        .device-card.active {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            color: white;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        .container {
+            max-width: 393px;
+            width: 100%;
+            margin: 0 auto;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            box-sizing: border-box;
+            padding-top: 110px;
         }
-
-        .device-header {
+        .header {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            padding: 5px 10px;
+            color: #000;
+            height: 60px;
+            position: fixed;
+            top: 40px;
+            left: 0;
+            z-index: 10;
+            border: none;
+            box-shadow: none;
+        }
+        .header .icon-row {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            align-items: center;
+            margin-bottom: 2px;
+        }
+        .header .back {
+            font-size: 25px;
+            cursor: pointer;
+            padding-left: 25px;
+        }
+        .header .title {
+            font-size: 30px;
+            font-weight: bold;
+            font-style: italic;
+            text-align: center;
+            width: 100;
+        }
+        .header .home {
+            font-size: 25px;
+            cursor: pointer;
+            padding-right: 35px;
+        }
+        .nav-tabs {
+            display: flex;
+            justify-content: flex-start;
+            width: 100%;
+            padding: 10px 15px;
+            color: #8e8e93;
+            font-size: 14.5px;
+            overflow-x: auto; /* Cho phép cuộn ngang */
+            white-space: nowrap; /* Ngăn các tab xuống dòng */
+            height: 60px;
+            position: fixed;
+            top: 130px;
+            z-index: 10;
+            border-bottom: 1px solid #e5e5e7;
+            box-sizing: border-box;
+            -webkit-overflow-scrolling: touch; /* Hỗ trợ cuộn mượt trên iOS */
+        }
+        .nav-tabs::-webkit-scrollbar {
+            display: none; /* Ẩn thanh cuộn trên Webkit (Chrome, Safari) */
+        }
+        .nav-tabs span {
+            margin-right: 20px;
+            cursor: pointer;
+            padding: 5px 10px;
+            transition: color 0.3s;
+        }
+        .nav-tabs span:hover {
+            color: #000;
+        }
+        .nav-tabs .active {
+            color: #000;
+            font-weight: 600;
+            border-bottom: 2px solid #007aff;
+        }
+        .device-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-gap: 10px;
+            width: 100%;
+            max-width: 360px;
+            margin: 190px auto 20px;
+            padding: 0 10px;
+            box-sizing: border-box;
+            border: none;
+            display: none; /* Ẩn mặc định, chỉ hiển thị khi không ở chế độ add */
+        }
+        .device-grid.active {
+            display: grid;
+        }
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 180px;
+            box-sizing: border-box;
+            transition: all 0.3s;
+            border: 1px solid #000;
+            border-radius: 15px;
+            position: relative;
+        }
+        .card.active {
+            background: #007aff;
+            color: #fff;
+            border: none;
+        }
+        .card .icon {
+            font-size: 30px;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        .top-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: auto;
         }
-
-        .device-icon {
-            width: 48px;
-            height: 48px;
-            background: #f3f4f6;
+        .card-content {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-top: auto;
+        }
+        .device-type {
+            font-size: 22px;
+            font-weight: 600;
+            margin: 0 0 2px 0;
+            word-wrap: break-word;
+        }
+        .device-brand {
+            font-size: 18px;
+            color: #8e8e93;
+            margin: 0;
+            word-wrap: break-word;
+        }
+        .card.active .device-brand {
+            color: rgba(255,255,255,0.8);
+        }
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #e5e5e7;
+            transition: 0.4s;
             border-radius: 12px;
+        }
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 2px;
+            bottom: 2px;
+            background-color: #fff;
+            transition: 0.4s;
+            border-radius: 50%;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        input:checked + .toggle-slider {
+            background-color: #669BF7;
+        }
+        input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+            background-color: #fff;
+        }
+        .add-device-form {
+            weight:320px;
+            height: auto;;
+            padding: 20px;
+            background-color: #BFECF5;
+            border-radius: 12px;
+            margin: 20px 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: none; /* Ẩn mặc định, chỉ hiển thị khi thêm thiết bị */
+            position: relative;
+            top: 100px; /* Thêm khoảng cách từ nav-tabs */
+        }
+        .add-device-form.active {
+            display: flex;
+            flex-direction: column;
+            gap: 10px; /* Khoảng cách đều giữa các mục */
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 2px; /* Giảm khoảng cách giữa label và input */
+        }
+        .form-group:first-child {
+            margin-top: 0; /* Loại bỏ margin-top cho mục đầu tiên */
+        }
+        .form-group label {
+            font-size: 18px;
+            color: #333;
+            font-weight: bold;
+        }
+        .form-group input {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #e5e5e7;
+            border-radius: 8px;
+            outline: none;
+        }
+        .form-group input:focus {
+            border-color: #007aff;
+        }
+        .buttons {
+            margin-top: 10px; /* Khoảng cách đều với mục trên */
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+        }
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            flex: 1;
+            transition: background-color 0.3s;
+        }
+        .btn-save {
+            background-color: #DD1010;
+            color: #ffffff;
+        }
+        .btn-save:hover {
+            background-color: #f57e7e;
+        }
+        .btn-cancel {
+            background-color: #4CAF50;
+            color: #fff;
+        }
+        .btn-cancel:hover {
+            background-color: #45a049;
+        }
+        .add-btn {
+            width: 60px;
+            height: 60px;
+            background: #C0DBF3;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-        }
-
-        .device-card.active .device-icon {
-            background: rgba(255,255,255,0.2);
-        }
-
-        .toggle-switch {
-            width: 48px;
-            height: 28px;
-            background: #e5e7eb;
-            border-radius: 14px;
-            position: relative;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .toggle-switch.on {
-            background: #22c55e;
-        }
-
-        .device-card.active .toggle-switch {
-            background: rgba(255,255,255,0.3);
-        }
-
-        .device-card.active .toggle-switch.on {
-            background: rgba(255,255,255,0.5);
-        }
-
-        .toggle-knob {
-            width: 20px;
-            height: 20px;
-            background: white;
-            border-radius: 50%;
-            position: absolute;
-            top: 4px;
-            left: 4px;
-            transition: all 0.3s;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .toggle-switch.on .toggle-knob {
-            left: 24px;
-        }
-
-        .device-info {
-            flex: 1;
-        }
-
-        .device-name {
-            font-size: 16px;
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 4px;
-        }
-
-        .device-card.active .device-name {
-            color: white;
-        }
-
-        .device-brand {
-            font-size: 13px;
-            color: #6b7280;
-        }
-
-        .device-card.active .device-brand {
-            color: rgba(255,255,255,0.8);
-        }
-
-        .device-actions {
-            display: flex;
-            gap: 8px;
-            padding-top: 8px;
-            border-top: 1px solid #e5e7eb;
-        }
-
-        .device-card.active .device-actions {
-            border-top-color: rgba(255,255,255,0.2);
-        }
-
-        .btn-action {
-            flex: 1;
-            padding: 6px 12px;
+            color: rgb(0, 0, 0);
+            font-size: 18px; /* Giảm font-size để vừa với nút */
+            font-weight: bold;
+            line-height: 60px; /* Căn giữa theo chiều cao nút */
+            text-align: center;
+            text-decoration: none;
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 20px;
+            box-shadow: 0 6px 12px rgba(192, 219, 243, 0.4);
             border: none;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-            background: #f3f4f6;
-            color: #3b82f6;
+            transition: opacity 0.3s;
+            z-index: 5;
+            display: block; /* Hiển thị mặc định */
         }
-
-        .device-card.active .btn-action {
-            background: rgba(255,255,255,0.2);
-            color: white;
+        .add-btn.hidden {
+            display: none; /* Ẩn khi form hiển thị */
         }
-
-        .btn-action:hover {
+        .add-btn:hover {
             opacity: 0.8;
-        }
-
-        .add-form {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            margin-bottom: 100px;
-            display: none;
-        }
-
-        .add-form.active {
-            display: block;
-        }
-
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 14px;
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 8px;
-        }
-
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: all 0.2s;
-        }
-
-        .form-group input:focus, .form-group select:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-
-        .form-buttons {
-            display: flex;
-            gap: 12px;
-            margin-top: 24px;
-        }
-
-        .btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-save {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            color: white;
-        }
-
-        .btn-save:hover {
-            opacity: 0.9;
-        }
-
-        .btn-cancel {
-            background: #f3f4f6;
-            color: #6b7280;
-        }
-
-        .btn-cancel:hover {
-            background: #e5e7eb;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 48px 24px;
-            display: none;
-        }
-
-        .empty-state.show {
-            display: block;
-        }
-
-        .empty-state svg {
-            margin-bottom: 16px;
-            opacity: 0.5;
-        }
-
-        .empty-state h3 {
-            font-size: 18px;
-            color: #1f2937;
-            margin-bottom: 8px;
-        }
-
-        .empty-state p {
-            font-size: 14px;
-            color: #6b7280;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #6b7280;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <div class="header-left">
-                <h1 class="header-title" id="headerTitle">Devices Control</h1>
+            <div class="icon-row">
+                <span class="back">&lt;</span>
+                <span class="home">🏠</span>
             </div>
-            <div class="header-left">
-                <button class="add-btn" id="headerAddBtn" onclick="showAddForm()">+</button>
-                <button class="home-btn" onclick="goHome()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                    </svg>
-                </button>
+            <span class="title">Devices Control</span>
+        </div>
+        <div class="nav-tabs">
+            <span class="active">Living Room</span>
+            <span>Bedroom</span>
+            <span>Bathroom</span>
+            <span>Kitchen-Dining</span>
+            
+        </div>
+        <div class="device-grid active">
+            <div class="card active" data-device-id='69313a7d27fa074d0ad13d65'>
+                <div class="top-row">
+                    <span class="icon">💡</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked onchange="toggleSwitch(this, '69313a7d27fa074d0ad13d65')">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="card-content">
+                    <div class="device-type">Light bulbs</div>
+                    <div class="device-brand">Philips Hue</div>
+                </div>
+            </div>
+            <div class="card" data-device-id="2">
+                <div class="top-row">
+                    <span class="icon">📺</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" onchange="toggleSwitch(this, 2)">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="card-content">
+                    <div class="device-type">Smart TV</div>
+                    <div class="device-brand">Panasonic</div>
+                </div>
+            </div>
+            <div class="card" data-device-id="3">
+                <div class="top-row">
+                    <span class="icon">📶</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" onchange="toggleSwitch(this, 3)">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="card-content">
+                    <div class="device-type">Wi-Fi Router</div>
+                    <div class="device-brand">TP Link</div>
+                </div>
+            </div>
+            <div class="card" data-device-id="4">
+                <div class="top-row">
+                    <span class="icon">📹</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" onchange="toggleSwitch(this, 4)">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="card-content">
+                    <div class="device-type">CCTV</div>
+                    <div class="device-brand">Security Camera 360°</div>
+                </div>
             </div>
         </div>
-
-        <div class="nav-tabs" id="navTabs">
-            <button class="nav-tab active" onclick="filterDevices('All')">All Rooms</button>
-        </div>
-
-        <div class="content">
-            <div class="device-grid" id="deviceGrid">
-                <div class="loading">Loading devices...</div>
+        <div class="add-device-form">
+            <div class="form-group">
+                <label for="device-type">Device Type</label>
+                <input type="text" id="device-type" placeholder="Enter device type">
             </div>
-
-            <div class="empty-state" id="emptyState">
-                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                    <line x1="9" y1="9" x2="15" y2="15"></line>
-                    <line x1="15" y1="9" x2="9" y2="15"></line>
-                </svg>
-                <h3>No devices found</h3>
-                <p>Add your first device to get started</p>
+            <div class="form-group">
+                <label for="device-id">Device ID</label>
+                <input type="text" id="device-id" placeholder="Enter device ID">
             </div>
-
-            <div class="add-form" id="addForm">
-                <div class="form-group">
-                    <label for="deviceName">Device Name</label>
-                    <input type="text" id="deviceName" placeholder="e.g., Smart Light">
-                </div>
-                <div class="form-group">
-                    <label for="deviceBrand">Brand</label>
-                    <input type="text" id="deviceBrand" placeholder="e.g., Philips">
-                </div>
-                <div class="form-group">
-                    <label for="deviceRoom">Room</label>
-                    <select id="deviceRoom">
-                        <option value="">Select Room</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="deviceIcon">Icon</label>
-                    <select id="deviceIcon">
-                        <option value="💡">💡 Light Bulb</option>
-                        <option value="📺">📺 TV</option>
-                        <option value="🌀">🌀 Fan/AC</option>
-                        <option value="❄️">❄️ Refrigerator</option>
-                        <option value="📹">📹 Camera</option>
-                        <option value="🔌">🔌 Socket</option>
-                        <option value="🚪">🚪 Door Lock</option>
-                        <option value="🔊">🔊 Speaker</option>
-                    </select>
-                </div>
-                <div class="form-buttons">
-                    <button class="btn btn-save" onclick="saveDevice()">Save Device</button>
-                    <button class="btn btn-cancel" onclick="cancelForm()">Cancel</button>
-                </div>
+            <!-- <div class="form-group">
+                <label for="brand">Brand</label>
+                <input type="text" id="brand" placeholder="Enter brand">
+            </div> -->
+            <div class="buttons">
+                <button class="btn btn-save" onclick="saveDevice()">Save</button>
+                <button class="btn btn-cancel" onclick="cancelAdd()">Cancel</button>
             </div>
         </div>
+        <a href="#" class="add-btn" onclick="showAddForm()">Add</a>
     </div>
-
     <script>
-        // ===== DATA STRUCTURE =====
-        const MOCK_DATA = {
-            rooms: [
-                'Living Room',
-                'Bedroom',
-                'Bathroom',
-                'Kitchen',
-                'Garage'
-            ],
-            devices: [
-                {
-                    id: 1,
-                    name: 'Light Bulbs',
-                    brand: 'Philips Hue',
-                    room: 'Living Room',
-                    icon: '💡',
-                    status: true // true = ON, false = OFF
-                },
-                {
-                    id: 2,
-                    name: 'Smart TV',
-                    brand: 'Samsung',
-                    room: 'Living Room',
-                    icon: '📺',
-                    status: false
-                },
-                {
-                    id: 3,
-                    name: 'Refrigerator',
-                    brand: 'LG',
-                    room: 'Kitchen',
-                    icon: '❄️',
-                    status: true
-                },
-                {
-                    id: 4,
-                    name: 'Air Conditioner',
-                    brand: 'Daikin',
-                    room: 'Bedroom',
-                    icon: '🌀',
-                    status: false
-                }
-            ]
-        };
-
-        // ===== STATE MANAGEMENT =====
-        let allDevices = [];
-        let allRooms = [];
-        let currentFilter = 'All';
-        let editingDeviceId = null;
-
-        // ===== API FUNCTIONS =====
-        // Thay thế các function này bằng real API calls
-
-        async function fetchDevices() {
-            // TODO: Replace with actual API call
-            // const response = await fetch('/api/devices');
-            // return await response.json();
-            
-            return new Promise((resolve) => {
-                setTimeout(() => resolve(MOCK_DATA.devices), 500);
-            });
-        }
-
-        async function fetchRooms() {
-            // TODO: Replace with actual API call
-            // const response = await fetch('/api/rooms');
-            // return await response.json();
-            
-            return new Promise((resolve) => {
-                setTimeout(() => resolve(MOCK_DATA.rooms), 300);
-            });
-        }
-
-        async function createDevice(deviceData) {
-            // TODO: Replace with actual API call
-            // const response = await fetch('/api/devices', {
-            //     method: 'POST',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify(deviceData)
-            // });
-            // return await response.json();
-            
-            return new Promise((resolve) => {
-                const newDevice = {
-                    id: Date.now(),
-                    ...deviceData,
-                    status: false
-                };
-                setTimeout(() => resolve(newDevice), 300);
-            });
-        }
-
-        async function updateDevice(id, deviceData) {
-            // TODO: Replace with actual API call
-            // const response = await fetch(`/api/devices/${id}`, {
-            //     method: 'PUT',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify(deviceData)
-            // });
-            // return await response.json();
-            
-            return new Promise((resolve) => {
-                setTimeout(() => resolve({ id, ...deviceData }), 300);
-            });
-        }
-
-        async function deleteDeviceAPI(id) {
-            // TODO: Replace with actual API call
-            // const response = await fetch(`/api/devices/${id}`, {
-            //     method: 'DELETE'
-            // });
-            // return await response.json();
-            
-            return new Promise((resolve) => {
-                setTimeout(() => resolve({ success: true }), 300);
-            });
-        }
-
-        async function toggleDeviceStatus(id, status) {
-            // TODO: Replace with actual API call
-            // const response = await fetch(`/api/devices/${id}/toggle`, {
-            //     method: 'PATCH',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify({ status })
-            // });
-            // return await response.json();
-            
-            return new Promise((resolve) => {
-                setTimeout(() => resolve({ id, status }), 200);
-            });
-        }
-
-        // ===== RENDER FUNCTIONS =====
-
-        function renderDeviceCard(device) {
-            const activeClass = device.status ? 'active' : '';
-            const toggleClass = device.status ? 'on' : '';
-            
-            return `
-                <div class="device-card ${activeClass}" data-id="${device.id}" data-room="${device.room}">
-                    <div class="device-header">
-                        <div class="device-icon">${device.icon}</div>
-                        <div class="toggle-switch ${toggleClass}" onclick="handleToggleDevice(${device.id})">
-                            <div class="toggle-knob"></div>
-                        </div>
-                    </div>
-                    <div class="device-info">
-                        <div class="device-name">${device.name}</div>
-                        <div class="device-brand">${device.brand || 'Unknown'}</div>
-                    </div>
-                    <div class="device-actions">
-                        <button class="btn-action" onclick="editDevice(${device.id})">Edit</button>
-                        <button class="btn-action" onclick="deleteDevice(${device.id})">Delete</button>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderDevices(devices) {
-            const grid = document.getElementById('deviceGrid');
-            const emptyState = document.getElementById('emptyState');
-            
-            if (devices.length === 0) {
-                grid.innerHTML = '';
-                emptyState.classList.add('show');
+        function toggleSwitch(checkbox, deviceId) {
+            const card = checkbox.closest('.card');
+            const isActive = checkbox.checked;
+            if (isActive) {
+                card.classList.add('active');
             } else {
-                emptyState.classList.remove('show');
-                grid.innerHTML = devices.map(device => renderDeviceCard(device)).join('');
+                card.classList.remove('active');
             }
-        }
+            console.log(`Device updated to ${isActive ? 'ON' : 'OFF'} by toggle`);
 
-        function renderRoomTabs(rooms) {
-            const navTabs = document.getElementById('navTabs');
-            const roomSelect = document.getElementById('deviceRoom');
-            
-            // Render navigation tabs
-            const allTab = '<button class="nav-tab active" onclick="filterDevices(\'All\')">All Rooms</button>';
-            const roomTabs = rooms.map(room => 
-                `<button class="nav-tab" onclick="filterDevices('${room}')">${room}</button>`
-            ).join('');
-            navTabs.innerHTML = allTab + roomTabs;
-            
-            // Render room select options
-            roomSelect.innerHTML = '<option value="">Select Room</option>' + 
-                rooms.map(room => `<option value="${room}">${room}</option>`).join('');
-        }
-
-        // ===== DEVICE ACTIONS =====
-
-        async function handleToggleDevice(id) {
-            const card = document.querySelector(`[data-id="${id}"]`);
-            if (!card) return;
-
-            const toggle = card.querySelector('.toggle-switch');
-            const newStatus = !toggle.classList.contains('on');
-            
-            try {
-                await toggleDeviceStatus(id, newStatus);
-                
-                // Update UI
-                toggle.classList.toggle('on');
-                card.classList.toggle('active');
-                
-                // Update local data
-                const device = allDevices.find(d => d.id === id);
-                if (device) {
-                    device.status = newStatus;
+            // Gửi request POST tới Flask
+            fetch("/toggle_device", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: deviceId, state: isActive })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success){
+                    console.log(`Server updated device ${deviceId} successfully`);
+                } else {
+                    console.error(`Failed to update device ${deviceId}:`, data.message);
                 }
-                
-                console.log(`Device ${id} toggled to ${newStatus ? 'ON' : 'OFF'}`);
-            } catch (error) {
-                console.error('Error toggling device:', error);
-                alert('Failed to toggle device. Please try again.');
-            }
+            })
+            .catch(err => console.error("Error sending toggle:", err));
         }
-
-        function filterDevices(room) {
-            currentFilter = room;
-            
-            const tabs = document.querySelectorAll('.nav-tab');
-            tabs.forEach(tab => tab.classList.remove('active'));
-            event.target.classList.add('active');
-
-            const filteredDevices = room === 'All' 
-                ? allDevices 
-                : allDevices.filter(device => device.room === room);
-
-            renderDevices(filteredDevices);
-        }
-
-        // ===== FORM ACTIONS =====
 
         function showAddForm() {
-            document.getElementById('deviceGrid').style.display = 'none';
-            document.getElementById('emptyState').style.display = 'none';
-            document.getElementById('addForm').classList.add('active');
-            document.getElementById('headerTitle').textContent = 'Add Device';
-            document.getElementById('headerAddBtn').style.display = 'none';
-            editingDeviceId = null;
+            document.querySelector('.device-grid').classList.remove('active');
+            document.querySelector('.add-device-form').classList.add('active');
+            document.querySelector('.header .title').textContent = 'Add Device';
+            document.querySelector('.add-btn').classList.add('hidden'); // Ẩn nút Add
         }
 
-        function cancelForm() {
-            document.getElementById('deviceGrid').style.display = 'grid';
-            document.getElementById('addForm').classList.remove('active');
-            document.getElementById('headerTitle').textContent = 'Devices Control';
-            document.getElementById('headerAddBtn').style.display = 'flex';
-            
-            // Clear form
-            document.getElementById('deviceName').value = '';
-            document.getElementById('deviceBrand').value = '';
-            document.getElementById('deviceRoom').value = '';
-            document.getElementById('deviceIcon').value = '💡';
-            editingDeviceId = null;
-            
-            filterDevices(currentFilter);
+        function cancelAdd() {
+            document.querySelector('.add-device-form').classList.remove('active');
+            document.querySelector('.device-grid').classList.add('active');
+            document.querySelector('.header .title').textContent = 'Devices Control';
+            document.querySelector('.add-btn').classList.remove('hidden'); // Hiện lại nút Add
+            // Reset form
+            document.getElementById('device-type').value = '';
+            document.getElementById('device-type').value = '';
+            document.getElementById('brand').value = '';
         }
 
-        async function saveDevice() {
-            const name = document.getElementById('deviceName').value.trim();
-            const brand = document.getElementById('deviceBrand').value.trim();
-            const room = document.getElementById('deviceRoom').value;
-            const icon = document.getElementById('deviceIcon').value;
-
-            if (!name || !room) {
-                alert('Please fill in Device Name and Room');
-                return;
-            }
-
-            const deviceData = { name, brand, room, icon };
-
-            try {
-                if (editingDeviceId) {
-                    // Update existing device
-                    const updatedDevice = await updateDevice(editingDeviceId, deviceData);
-                    const index = allDevices.findIndex(d => d.id === editingDeviceId);
-                    if (index !== -1) {
-                        allDevices[index] = { ...allDevices[index], ...updatedDevice };
-                    }
-                } else {
-                    // Create new device
-                    const newDevice = await createDevice(deviceData);
-                    allDevices.push(newDevice);
-                }
-
-                cancelForm();
-            } catch (error) {
-                console.error('Error saving device:', error);
-                alert('Failed to save device. Please try again.');
-            }
+        function saveDevice() {
+            // Logic lưu thiết bị (giả lập)
+            alert('Device saved! (Mockup)');
+            cancelAdd();
         }
-
-        function editDevice(id) {
-            const device = allDevices.find(d => d.id === id);
-            if (!device) return;
-
-            document.getElementById('deviceName').value = device.name;
-            document.getElementById('deviceBrand').value = device.brand || '';
-            document.getElementById('deviceRoom').value = device.room;
-            document.getElementById('deviceIcon').value = device.icon;
-
-            editingDeviceId = id;
-            showAddForm();
-        }
-
-        async function deleteDevice(id) {
-            if (!confirm('Are you sure you want to delete this device?')) {
-                return;
-            }
-
-            try {
-                await deleteDeviceAPI(id);
-                allDevices = allDevices.filter(d => d.id !== id);
-                filterDevices(currentFilter);
-            } catch (error) {
-                console.error('Error deleting device:', error);
-                alert('Failed to delete device. Please try again.');
-            }
-        }
-
-        // ===== NAVIGATION =====
-
-        function goHome() {
-            window.location.href = 'homepage.html';
-        }
-
-        // ===== INITIALIZATION =====
-
-        async function initializePage() {
-            try {
-                // Load rooms and devices
-                const [rooms, devices] = await Promise.all([
-                    fetchRooms(),
-                    fetchDevices()
-                ]);
-
-                allRooms = rooms;
-                allDevices = devices;
-
-                renderRoomTabs(rooms);
-                renderDevices(devices);
-            } catch (error) {
-                console.error('Error loading data:', error);
-                document.getElementById('deviceGrid').innerHTML = 
-                    '<div style="text-align: center; padding: 40px; color: #dc2626;">Failed to load devices. Please refresh the page.</div>';
-            }
-        }
-
-        // Load data when page loads
-        window.addEventListener('load', initializePage);
-
-        // Optional: Auto-refresh every 30 seconds
-        // setInterval(async () => {
-        //     const devices = await fetchDevices();
-        //     allDevices = devices;
-        //     filterDevices(currentFilter);
-        // }, 30000);
     </script>
+    <script src="//cdn.socket.io/4.5.1/socket.io.min.js"></script>
+    <script>
+        
+        const socket = io('http://127.0.0.1:5000');
+        socket.on('deviceUpdated', (device) => {
+            console.log('Device updated:', device);
+            const el = document.querySelector(`[data-device-id="${device.id}"]`);
+            if (el) {
+                const checkbox = el.querySelector('input[type="checkbox"]');
+                checkbox.checked = device.state;
+                if(device.state){
+                    el.classList.add('active');
+                } else {
+                    el.classList.remove('active');
+                }
+            }
+        });
+        
+    </script>
+
 </body>
 </html>
