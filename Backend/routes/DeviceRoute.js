@@ -12,7 +12,7 @@ router.post('/toggle', async (req, res) => {
     if (!device) return res.status(404).json({ success: false, message: 'Device not found' });
 
     // Gửi lên Adafruit feed luôn
-    await adafruitService.sendFeedData("bbc-led", state ? "1" : "0");
+    await adafruitService.sendFeedData("welcome-feed", state ? "1" : "0");
 
     // Gửi POST tới Flask để emit realtime
     await adafruitService.updateFlaskRealtime(id, state);
@@ -26,6 +26,19 @@ router.post('/toggle', async (req, res) => {
 
 // Xem danh sách tất cả thiết bị
 router.get("/", deviceController.getDevices);
+
+// Lấy 1 thiết bị theo ID
+router.get("/:id", async (req, res) => {
+  try {
+    const device = await Device.findById(req.params.id);
+    if (!device) {
+      return res.status(404).json({ success: false, message: "Device not found" });
+    }
+    res.json(device);
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
 
 // Thêm thiết bị mới
 router.post("/", deviceController.createDevice);

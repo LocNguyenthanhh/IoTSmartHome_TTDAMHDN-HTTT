@@ -41,7 +41,7 @@ const client = mqtt.connect('mqtts://io.adafruit.com', {
 
 client.on('connect', () => {
   console.log('Connected to Adafruit IO via MQTT');
-  client.subscribe(`${ADAFRUIT_IO_USERNAME}/feeds/BBC_LED`, (err) => {
+  client.subscribe(`${ADAFRUIT_IO_USERNAME}/feeds/welcome-feed`, (err) => {
     if (err) {
       console.error('Failed to subscribe:', err);
     } else {

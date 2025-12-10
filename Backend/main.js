@@ -21,7 +21,8 @@ mongoose.connect(process.env.MONGO_URI, {})
 
 // Routes (có thể thêm authMiddleware nếu cần)
 app.use('/feed', feedRoutes); // Route cho Adafruit IO
-app.use("/api", deviceRoute); //Route cho ket noi FE
+app.use("/api/devices", deviceRoute); //Route cho ket noi FE
+
 // Khởi động server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
