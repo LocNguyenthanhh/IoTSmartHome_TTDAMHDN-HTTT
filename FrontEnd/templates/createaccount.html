@@ -3,524 +3,307 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Home - Create Account</title>
+    <title>Create Account</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #e3f2fd 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 400px;
-            background: white;
-            border-radius: 24px;
-            padding: 40px 30px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        }
-
-        .logo {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .logo h1 {
-            font-size: 32px;
-            font-weight: 700;
-            color: #2563eb;
-            margin-bottom: 8px;
-        }
-
-        .logo p {
-            color: #6b7280;
-            font-size: 14px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .input-label {
-            display: block;
-            font-size: 14px;
-            font-weight: 500;
-            color: #374151;
-            margin-bottom: 8px;
-        }
-
-        .input-field {
-            width: 100%;
-            padding: 16px;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            font-size: 16px;
-            transition: all 0.2s;
-        }
-
-        .input-field:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-
-        .error-message {
-            color: #dc2626;
-            font-size: 14px;
-            margin-top: 8px;
-            display: none;
-        }
-
-        .terms-group {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-
-        .checkbox {
-            width: 20px;
-            height: 20px;
-            border: 2px solid #d1d5db;
-            border-radius: 6px;
-            margin-top: 2px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .checkbox.checked {
-            background: #3b82f6;
-            border-color: #3b82f6;
-        }
-
-        .checkbox.checked::after {
-            content: '✓';
-            color: white;
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        .terms-text {
-            font-size: 14px;
-            color: #6b7280;
-            line-height: 1.5;
-        }
-
-        .terms-text a {
-            color: #3b82f6;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .submit-button {
-            width: 100%;
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            color: white;
-            border: none;
-            padding: 18px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-bottom: 20px;
-        }
-
-        .submit-button:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
-        }
-
-        .submit-button:disabled {
-            background: #9ca3af;
-            cursor: not-allowed;
-        }
-
-        .login-link {
-            text-align: center;
-            font-size: 14px;
-            color: #6b7280;
-        }
-
-        .login-link a {
-            color: #3b82f6;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .success-message {
-            color: #16a34a;
-            font-size: 14px;
-            margin-top: 8px;
-            display: none;
-            padding: 12px;
-            background: #dcfce7;
-            border-radius: 8px;
-            border-left: 4px solid #16a34a;
-            margin-bottom: 20px;
-        }
-
-        .back-button {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: white;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .back-button:hover {
-            background: #f3f4f6;
-        }
-
-        .loading {
-            display: none;
-            text-align: center;
-            margin: 10px 0;
-        }
-
-        .loading-spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #3b82f6;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .gmail-note {
-            font-size: 12px;
-            color: #6b7280;
-            margin-top: 5px;
-            font-style: italic;
-        }
-        
-        .gmail-note::before {
-            content: "ℹ️ ";
-        }
+        /* GIỮ NGUYÊN TOÀN BỘ CSS CỦA BẠN */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; margin: 0; }
+        .container { width: 100%; max-width: 400px; background: white; border-radius: 20px; padding: 40px 30px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3); animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { font-size: 24px; font-weight: 800; font-style: italic; letter-spacing: -0.5px; margin-bottom: 5px; }
+        .header p { font-size: 14px; font-weight: 600; color: #666; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: #333; }
+        .input-wrapper { position: relative; }
+        .input-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #999; font-size: 18px; }
+        input { width: 100%; padding: 15px 15px 15px 45px; border: none; background: #f5f5f5; border-radius: 10px; font-size: 14px; color: #333; transition: all 0.3s; }
+        input.error { background: #ffebee; border: 1px solid #f44336; }
+        input.success { background: #e8f5e9; border: 1px solid #4caf50; }
+        input::placeholder { color: #999; }
+        input:focus { outline: none; background: #ebebeb; }
+        .password-toggle { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #999; width: 20px; height: 20px; user-select: none; }
+        .password-toggle:hover { color: #666; }
+        .password-toggle svg { width: 100%; height: 100%; }
+        .create-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, #ff8c00, #ff6600); border: none; border-radius: 10px; color: white; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 10px; transition: transform 0.2s; }
+        .create-btn:hover { transform: translateY(-2px); }
+        .create-btn:active { transform: translateY(0); }
+        .divider { text-align: center; margin: 25px 0; position: relative; }
+        .divider::before, .divider::after { content: ''; position: absolute; top: 50%; width: 40%; height: 1px; background: #ddd; }
+        .divider::before { left: 0; }
+        .divider::after { right: 0; }
+        .divider span { font-size: 20px; font-weight: 800; color: #000000; }
+        .social-login { display: flex; gap: 15px; margin-bottom: 25px; }
+        .social-btn { flex: 1; padding: 12px; border: 1px solid #ddd; background: white; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; }
+        .social-btn:hover { background: #f9f9f9; border-color: #ccc; }
+        .footer { text-align: center; font-size: 14px; }
+        .footer a { color: #ff6600; text-decoration: none; font-weight: 600; cursor: pointer; }
+        .footer a:hover { text-decoration: underline; }
+        .error-message { color: #f44336; font-size: 12px; margin-top: 5px; display: none; }
+        .error-message.show { display: block; }
+        .success-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
+        .success-modal.show { display: flex; animation: fadeIn 0.3s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .success-content { background: white; border-radius: 20px; padding: 40px 30px; text-align: center; max-width: 400px; width: 100%; animation: scaleUp 0.3s ease-out; }
+        @keyframes scaleUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .success-icon { width: 80px; height: 80px; margin: 0 auto 20px; background: #4caf50; border-radius: 50%; display: flex; align-items: center; justify-content: center; animation: checkmarkPop 0.5s ease-out 0.2s backwards; }
+        @keyframes checkmarkPop { 0% { transform: scale(0); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+        .success-icon svg { width: 50px; height: 50px; stroke: white; }
+        .success-content h2 { font-size: 24px; font-weight: 800; margin-bottom: 10px; color: #333; }
+        .success-content p { font-size: 14px; color: #666; margin-bottom: 20px; line-height: 1.6; }
+        .verify-email { background: #e3f2fd; border-left: 4px solid #2196f3; padding: 15px; border-radius: 8px; margin: 20px 0; text-align: left; }
+        .verify-email p { margin: 0; font-size: 13px; color: #1976d2; }
+        .ok-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, #4caf50, #45a049); border: none; border-radius: 10px; color: white; font-size: 16px; font-weight: 700; cursor: pointer; transition: transform 0.2s; }
+        .ok-btn:hover { transform: translateY(-2px); }
+        .ok-btn:active { transform: translateY(0); }
     </style>
 </head>
 <body>
-    <!-- Back Button -->
-    <div class="back-button" onclick="goBack()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="15 18 9 12 15 6"></polyline>
-        </svg>
-    </div>
-
     <div class="container">
-        <div class="logo">
-            <h1>Create Account</h1>
-            <p>Join Smart Home and control your devices</p>
+        <div class="header">
+            <h1>CREATE ACCOUNT</h1>
+            <p>Sign up to get started</p>
         </div>
 
-        <!-- Success Message -->
-        <div class="success-message" id="successMessage"></div>
-
-        <form id="accountForm">
-            <div class="form-group">
-                <label class="input-label" for="name">Full Name</label>
-                <input type="text" id="name" class="input-field" placeholder="Enter your full name" required>
-                <div class="error-message" id="nameError"></div>
+        <div class="form-group">
+            <label>Username</label>
+            <div class="input-wrapper">
+                <span class="input-icon">👤</span>
+                <input type="text" id="username" placeholder="Enter your username">
             </div>
+            <div class="error-message" id="usernameError"></div>
+        </div>
 
-            <div class="form-group">
-                <label class="input-label" for="email">Email Address</label>
-                <input type="email" id="email" class="input-field" placeholder="example@gmail.com" required>
-                <div class="gmail-note">Only Gmail addresses are accepted</div>
-                <div class="error-message" id="emailError"></div>
+        <div class="form-group">
+            <label>Email Address</label>
+            <div class="input-wrapper">
+                <span class="input-icon">✉️</span>
+                <input type="email" id="email" placeholder="Enter your email">
             </div>
+            <div class="error-message" id="emailError"></div>
+        </div>
 
-            <div class="form-group">
-                <label class="input-label" for="phone">Phone Number (Optional)</label>
-                <input type="tel" id="phone" class="input-field" placeholder="Enter your phone number">
-                <div class="error-message" id="phoneError"></div>
+        <div class="form-group">
+            <label>Password</label>
+            <div class="input-wrapper">
+                <span class="input-icon">🔒</span>
+                <input type="password" id="password" placeholder="Enter your password">
+                <span class="password-toggle" id="toggleIcon" onclick="togglePassword()">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                    </svg>
+                </span>
             </div>
+            <div class="error-message" id="passwordError"></div>
+        </div>
 
-            <div class="form-group">
-                <label class="input-label" for="password">Password</label>
-                <input type="password" id="password" class="input-field" placeholder="Create a strong password" required>
-                <div class="error-message" id="passwordError"></div>
+        <button class="create-btn" onclick="handleCreateAccount()">Create Account</button>
+
+
+        <div class="footer">
+    Already have an account? <a href="/login" id="loginLink">Login</a>
+</div>
+    </div>
+
+    <div class="success-modal" id="successModal">
+        <div class="success-content">
+            <div class="success-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                </svg>
             </div>
-
-            <div class="form-group">
-                <label class="input-label" for="confirmPassword">Confirm Password</label>
-                <input type="password" id="confirmPassword" class="input-field" placeholder="Confirm your password" required>
-                <div class="error-message" id="confirmPasswordError"></div>
+            <h2>Account Created!</h2>
+            <p>Your account has been successfully created.</p>
+            <div class="verify-email">
+                <p><strong>📧 Welcome!</strong></p>
+                <p>You can now login with your new account.</p>
             </div>
-
-            <div class="terms-group">
-                <div class="checkbox" id="termsCheckbox" onclick="toggleCheckbox()"></div>
-                <div class="terms-text">
-                    I agree to the <a href="#" onclick="showTerms()">Terms of Service</a> and <a href="#" onclick="showPrivacy()">Privacy Policy</a>.
-                </div>
-            </div>
-
-            <!-- Loading -->
-            <div class="loading" id="loading">
-                <div class="loading-spinner"></div>
-                <p>Creating account...</p>
-            </div>
-
-            <button type="submit" class="submit-button" id="submitButton" disabled>Create Account</button>
-        </form>
-
-        <div class="login-link">
-            Already have an account? <a href="/login">Sign in here</a>
+            <button class="ok-btn" onclick="closeSuccessModal()">Go to Login</button>
         </div>
     </div>
 
     <script>
-        // IMPORTANT: Use relative URL so Flask can proxy to backend
-        const API_URL = '/api';
-
-        // Validate email chỉ chấp nhận @gmail.com
-        function isValidGmail(email) {
-            const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
-            return gmailRegex.test(email);
+        // Validation functions
+        function validateUsername(username) {
+            if (username.trim() === '') return 'Username is required';
+            if (username.length < 3) return 'Username must be at least 3 characters';
+            if (!/^[a-zA-Z0-9_]+$/.test(username)) return 'Username can only contain letters, numbers, and underscores';
+            return null;
         }
 
-        // Toggle checkbox
-        function toggleCheckbox() {
-            const checkbox = document.getElementById('termsCheckbox');
-            checkbox.classList.toggle('checked');
-            validateForm();
+        function validateEmail(email) {
+            if (email.trim() === '') return 'Email is required';
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) return 'Please enter a valid email address';
+            return null;
         }
 
-        // Validate form
-        function validateForm() {
-            const name = document.getElementById('name').value.trim();
-            const email = document.getElementById('email').value.trim();
+        function validatePassword(password) {
+            if (password.trim() === '') return 'Password is required';
+            if (password.length < 6) return 'Password must be at least 6 characters';
+            return null;
+        }
+
+        // Show/Hide Error/Success UI functions
+        function showError(inputId, errorId, message) {
+            const input = document.getElementById(inputId);
+            const error = document.getElementById(errorId);
+            input.classList.add('error');
+            input.classList.remove('success');
+            error.textContent = message;
+            error.classList.add('show');
+        }
+
+        function showSuccess(inputId, errorId) {
+            const input = document.getElementById(inputId);
+            const error = document.getElementById(errorId);
+            input.classList.remove('error');
+            input.classList.add('success');
+            error.classList.remove('show');
+        }
+
+        function clearValidation(inputId, errorId) {
+            const input = document.getElementById(inputId);
+            const error = document.getElementById(errorId);
+            input.classList.remove('error', 'success');
+            error.classList.remove('show');
+        }
+
+        // --- HÀM XỬ LÝ ĐĂNG KÝ GỌI API ---
+        async function handleCreateAccount() {
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            const termsAccepted = document.getElementById('termsCheckbox').classList.contains('checked');
-            
+
             let isValid = true;
-            
-            // Clear errors
-            document.getElementById('nameError').style.display = 'none';
-            document.getElementById('emailError').style.display = 'none';
-            document.getElementById('passwordError').style.display = 'none';
-            document.getElementById('confirmPasswordError').style.display = 'none';
-            
-            // Validate name
-            if (name.length < 2) {
-                document.getElementById('nameError').textContent = 'Name must be at least 2 characters';
-                document.getElementById('nameError').style.display = 'block';
-                isValid = false;
-            }
-            
-            // Validate email - CHỈ CHẤP NHẬN @gmail.com
-            if (!isValidGmail(email)) {
-                document.getElementById('emailError').textContent = 'Please enter a valid Gmail address (example@gmail.com)';
-                document.getElementById('emailError').style.display = 'block';
-                isValid = false;
-            }
-            
-            // Validate password
-            if (password.length < 6) {
-                document.getElementById('passwordError').textContent = 'Password must be at least 6 characters';
-                document.getElementById('passwordError').style.display = 'block';
-                isValid = false;
-            }
-            
-            // Validate confirm password
-            if (password !== confirmPassword) {
-                document.getElementById('confirmPasswordError').textContent = 'Passwords do not match';
-                document.getElementById('confirmPasswordError').style.display = 'block';
-                isValid = false;
-            }
-            
-            // Check terms
-            if (!termsAccepted) {
-                isValid = false;
-            }
-            
-            // Enable/disable submit button
-            document.getElementById('submitButton').disabled = !isValid;
-            
-            return isValid;
-        }
 
-        // Real-time email validation
-        function validateEmailInRealTime() {
-            const email = document.getElementById('email').value.trim();
-            const errorElement = document.getElementById('emailError');
-            
-            if (!email) {
-                errorElement.style.display = 'none';
-                return;
-            }
-            
-            if (!isValidGmail(email)) {
-                errorElement.textContent = 'Please enter a valid Gmail address (example@gmail.com)';
-                errorElement.style.display = 'block';
+            // Validate Frontend
+            const usernameError = validateUsername(username);
+            if (usernameError) {
+                showError('username', 'usernameError', usernameError);
+                isValid = false;
             } else {
-                errorElement.style.display = 'none';
+                showSuccess('username', 'usernameError');
             }
-        }
 
-        // Show/hide loading
-        function setLoading(isLoading) {
-            document.getElementById('loading').style.display = isLoading ? 'block' : 'none';
-            document.getElementById('submitButton').disabled = isLoading;
-            document.getElementById('submitButton').style.display = isLoading ? 'none' : 'block';
-        }
-
-        // Show success message
-        function showSuccess(message) {
-            const element = document.getElementById('successMessage');
-            element.textContent = message;
-            element.style.display = 'block';
-        }
-
-        // Handle form submission
-        async function handleSubmit(event) {
-            event.preventDefault();
-            
-            if (!validateForm()) {
-                return;
+            const emailError = validateEmail(email);
+            if (emailError) {
+                showError('email', 'emailError', emailError);
+                isValid = false;
+            } else {
+                showSuccess('email', 'emailError');
             }
-            
-            setLoading(true);
-            
-            const userData = {
-                name: document.getElementById('name').value.trim(),
-                email: document.getElementById('email').value.trim(),
-                password: document.getElementById('password').value,
-                phone: document.getElementById('phone').value.trim()
-            };
-            
-            // Tạo username từ tên
-            const username = userData.name.toLowerCase().replace(/\s+/g, '');
-            userData.username = username;
-            
-            try {
-                console.log('📝 Sending registration request to:', `${API_URL}/auth/register`);
-                console.log('📝 User data:', { ...userData, password: '***' });
-                
-                const response = await fetch(`${API_URL}/auth/register`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(userData)
-                });
-                
-                const data = await response.json();
-                console.log('📝 Backend response:', data);
-                
-                if (response.ok && data.success) {
-                    // Save username to history for auto-complete
-                    const usernameHistory = JSON.parse(localStorage.getItem('userHistory') || '[]');
-                    usernameHistory.unshift({
-                        username: username,
-                        timestamp: new Date().toISOString()
+
+            const passwordError = validatePassword(password);
+            if (passwordError) {
+                showError('password', 'passwordError', passwordError);
+                isValid = false;
+            } else {
+                showSuccess('password', 'passwordError');
+            }
+
+            // NẾU VALIDATION OK -> GỌI API BACKEND
+            if (isValid) {
+                try {
+                    // Disable nút bấm để tránh spam
+                    const btn = document.querySelector('.create-btn');
+                    btn.textContent = 'Creating...';
+                    btn.disabled = true;
+
+                    const response = await fetch('http://localhost:3000/api/users/register', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            username: username,
+                            email: email,
+                            password: password
+                        })
                     });
-                    localStorage.setItem('userHistory', JSON.stringify(usernameHistory.slice(0, 10)));
-                    
-                    // Save token and user data
-                    localStorage.setItem('token', data.token);
-                    localStorage.setItem('userData', JSON.stringify(data.user));
-                    
-                    showSuccess('✅ Account created successfully! Your username is: ' + username + '. Redirecting...');
-                    
-                    // Redirect to homepage after 2 seconds
-                    setTimeout(() => {
-                        window.location.href = '/homepage';
-                    }, 2000);
-                    
-                } else {
-                    // Show error
-                    const errorMsg = data.message || 'Registration failed';
-                    showSuccess(`❌ ${errorMsg}`);
-                    setLoading(false);
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        // Thành công: Hiện modal
+                        document.getElementById('successModal').classList.add('show');
+                        document.body.style.overflow = 'hidden';
+                    } else {
+                        // Thất bại (ví dụ: Email trùng)
+                        alert(data.message || 'Đăng ký thất bại. Vui lòng thử lại.');
+                        // Reset trạng thái lỗi cho email nếu cần
+                        if (data.message.includes("Email")) {
+                            showError('email', 'emailError', data.message);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Không thể kết nối đến Server (Port 3000). Hãy chắc chắn Backend đang chạy.');
+                } finally {
+                    // Bật lại nút bấm
+                    const btn = document.querySelector('.create-btn');
+                    btn.textContent = 'Create Account';
+                    btn.disabled = false;
                 }
-                
-            } catch (error) {
-                console.error('Registration error:', error);
-                showSuccess('❌ Network error. Please check if backend server is running on port 3000.');
-                setLoading(false);
             }
         }
 
-        // Navigation
-        function goBack() {
-            window.history.back();
+        // Close success modal & Redirect
+        // Close success modal
+        function closeSuccessModal() {
+            // 1. Ẩn modal
+            document.getElementById('successModal').classList.remove('show');
+            document.body.style.overflow = '';
+            
+            // 2. Reset form (để xóa dữ liệu cũ nếu người dùng quay lại)
+            document.getElementById('username').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('password').value = '';
+            clearValidation('username', 'usernameError');
+            clearValidation('email', 'emailError');
+            clearValidation('password', 'passwordError');
+            
+            // 3. CHUYỂN HƯỚNG VỀ TRANG LOGIN (Đã sửa)
+            window.location.href = '/login'; 
         }
 
-        function showTerms() {
-            alert('Terms of Service:\n\n1. You must use a valid Gmail address\n2. Keep your password secure\n3. Use the service responsibly\n4. Follow all applicable laws');
-        }
-
-        function showPrivacy() {
-            alert('Privacy Policy:\n\n1. We collect only necessary information\n2. Your data is encrypted and secure\n3. We do not share your personal information\n4. You can delete your account anytime');
-        }
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            // Auto-fill for testing (remove in production)
-            document.getElementById('name').value = 'Demo User';
-            document.getElementById('email').value = 'demo@gmail.com';
-            document.getElementById('password').value = 'password123';
-            document.getElementById('confirmPassword').value = 'password123';
-            document.getElementById('termsCheckbox').classList.add('checked');
-            validateForm();
-            
-            // Add input validation
-            const inputs = document.querySelectorAll('.input-field');
-            inputs.forEach(input => {
-                input.addEventListener('input', validateForm);
-            });
-            
-            // Special real-time validation for email
-            document.getElementById('email').addEventListener('input', function() {
-                validateEmailInRealTime();
-                validateForm();
-            });
-            
-            // Validate email on blur
-            document.getElementById('email').addEventListener('blur', validateEmailInRealTime);
-            
-            // Handle form submission
-            document.getElementById('accountForm').addEventListener('submit', handleSubmit);
-            
-            // Keyboard shortcuts
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter' && !document.getElementById('submitButton').disabled) {
-                    handleSubmit(e);
-                }
-                if (e.key === 'Escape') {
-                    goBack();
-                }
-            });
+        // --- Real-time validation listeners (Giữ nguyên) ---
+        document.getElementById('username').addEventListener('input', function() {
+            const error = validateUsername(this.value);
+            if (this.value === '') clearValidation('username', 'usernameError');
+            else if (error) showError('username', 'usernameError', error);
+            else showSuccess('username', 'usernameError');
         });
+
+        document.getElementById('email').addEventListener('input', function() {
+            const error = validateEmail(this.value);
+            if (this.value === '') clearValidation('email', 'emailError');
+            else if (error) showError('email', 'emailError', error);
+            else showSuccess('email', 'emailError');
+        });
+
+        document.getElementById('password').addEventListener('input', function() {
+            const error = validatePassword(this.value);
+            if (this.value === '') clearValidation('password', 'passwordError');
+            else if (error) showError('password', 'passwordError', error);
+            else showSuccess('password', 'passwordError');
+        });
+
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('toggleIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>`;
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>`;
+            }
+        }
     </script>
 </body>
 </html>
