@@ -3,473 +3,174 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Home - Login</title>
+    <title>Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 400px;
-            background: white;
-            border-radius: 10px;
-            padding: 40px 35px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-            position: relative;
-        }
-
-        .logo {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .logo h1 {
-            font-size: 28px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        .logo p {
-            color: #666;
-            font-size: 14px;
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-        }
-
-        .input-label {
-            display: block;
-            font-size: 14px;
-            font-weight: 500;
-            color: #555;
-            margin-bottom: 8px;
-        }
-
-        .input-field {
-            width: 100%;
-            padding: 14px 16px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 16px;
-            transition: all 0.2s;
-            background: #f9f9f9;
-        }
-
-        .input-field:focus {
-            outline: none;
-            border-color: #667eea;
-            background: white;
-            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
-        }
-
-        .input-field::placeholder {
-            color: #999;
-        }
-
-        /* Datalist style */
-        .input-field[list] {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23666' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 16px center;
-            background-size: 16px;
-            padding-right: 40px;
-        }
-
-        datalist {
-            position: absolute;
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            max-height: 200px;
-            overflow-y: auto;
-            z-index: 1000;
-        }
-
-        datalist option {
-            padding: 10px 15px;
-            cursor: pointer;
-            border-bottom: 1px solid #eee;
-        }
-
-        datalist option:hover {
-            background: #f5f5f5;
-        }
-
-        .forgot-password {
-            text-align: right;
-            margin-top: -10px;
-            margin-bottom: 25px;
-        }
-
-        .forgot-password a {
-            color: #667eea;
-            text-decoration: none;
-            font-size: 14px;
-        }
-
-        .forgot-password a:hover {
-            text-decoration: underline;
-        }
-
-        .submit-button {
-            width: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 16px;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 10px;
-        }
-
-        .submit-button:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 7px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        .submit-button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-
-        .register-link {
-            text-align: center;
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-            color: #666;
-            font-size: 14px;
-        }
-
-        .register-link a {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .register-link a:hover {
-            text-decoration: underline;
-        }
-
-        .error-message {
-            color: #e53e3e;
-            font-size: 14px;
-            margin-top: 8px;
-            display: none;
-            padding: 12px;
-            background: #fed7d7;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        .success-message {
-            color: #38a169;
-            font-size: 14px;
-            margin-top: 8px;
-            display: none;
-            padding: 12px;
-            background: #c6f6d5;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        .loading {
-            display: none;
-            text-align: center;
-            margin: 15px 0;
-        }
-
-        .loading-spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-right: 10px;
-            vertical-align: middle;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .back-button {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: white;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            z-index: 10;
-        }
-
-        .back-button:hover {
-            background: #f5f5f5;
-        }
-
-        /* Responsive */
-        @media (max-width: 480px) {
-            .container {
-                padding: 30px 25px;
-            }
-            
-            .logo h1 {
-                font-size: 24px;
-            }
-        }
+        /* CSS GIỮ NGUYÊN */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #ffffff; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .login-container { width: 100%; max-width: 400px; }
+        .header { text-align: center; margin-bottom: 40px; }
+        .header h1 { font-size: 32px; font-weight: 800; font-style: italic; letter-spacing: -0.5px; color: #000; }
+        .login-form { background: #f5f5f5; border-radius: 20px; padding: 30px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: #333; }
+        .password-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .forgot-password { font-size: 12px; color: #ff8c00; text-decoration: none; font-weight: 600; cursor: pointer; }
+        .forgot-password:hover { text-decoration: underline; }
+        .input-wrapper { position: relative; }
+        input { width: 100%; padding: 15px 15px 15px 45px; border: none; background: #e8e8e8; border-radius: 10px; font-size: 14px; color: #333; font-family: 'Inter', sans-serif; }
+        input::placeholder { color: #999; }
+        input:focus { outline: none; background: #dedede; }
+        .password-toggle { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #999; width: 20px; height: 20px; user-select: none; }
+        .password-toggle:hover { color: #666; }
+        .password-toggle svg { width: 100%; height: 100%; }
+        .input-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #999; width: 18px; height: 18px; }
+        .input-icon svg { width: 100%; height: 100%; }
+        .login-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, #ff8c00, #ff6600); border: none; border-radius: 10px; color: white; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 20px; transition: transform 0.2s; }
+        .login-btn:hover { transform: translateY(-2px); }
+        .login-btn:active { transform: translateY(0); }
+        .footer { text-align: center; margin-top: 20px; font-size: 14px; color: #333; }
+        .footer a { color: #00a8e8; text-decoration: none; font-weight: 600; }
+        .footer a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
-    <!-- Back Button -->
-    <div class="back-button" onclick="goBack()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="15 18 9 12 15 6"></polyline>
-        </svg>
-    </div>
-
-    <div class="container">
-        <div class="logo">
+    <div class="login-container">
+        <div class="header">
             <h1>LOGIN</h1>
         </div>
 
-        <!-- Messages -->
-        <div class="error-message" id="errorMessage"></div>
-        <div class="success-message" id="successMessage"></div>
-
-        <!-- Loading -->
-        <div class="loading" id="loading">
-            <div class="loading-spinner"></div>
-            <span>Logging in...</span>
-        </div>
-
-        <form id="loginForm">
+        <div class="login-form">
             <div class="form-group">
-                <label class="input-label" for="username">Username</label>
-                <input type="text" id="username" class="input-field" 
-                       placeholder="Enter your username" 
-                       list="usernameList" autocomplete="username" required>
-                <datalist id="usernameList"></datalist>
+                <label>Username</label>
+                <div class="input-wrapper">
+                    <span class="input-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </span>
+                    <input type="text" id="loginUsername" placeholder="Enter your username">
+                </div>
             </div>
 
             <div class="form-group">
-                <label class="input-label" for="password">Password</label>
-                <input type="password" id="password" class="input-field" 
-                       placeholder="Enter your password" autocomplete="current-password" required>
+                <div class="password-header">
+                    <label>Password</label>
+                    <a href="/forgot-password" class="forgot-password">Forgot password?</a>
+                </div>
+                <div class="input-wrapper">
+                    <span class="input-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                    </span>
+                    <input type="password" id="loginPassword" placeholder="Enter your password">
+                    <span class="password-toggle" id="loginToggleIcon" onclick="toggleLoginPassword()">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                        </svg>
+                    </span>
+                </div>
             </div>
 
-            <div class="forgot-password">
-                <a href="javascript:void(0)" onclick="showForgotPassword()">Forgot password?</a>
+            <button class="login-btn" onclick="handleLogin()">Login</button>
+
+            <div class="footer">
+                Don't have account? <a href="/create-account">Create new account</a>
             </div>
-
-            <button type="submit" class="submit-button" id="submitButton">Login</button>
-        </form>
-
-        <div class="register-link">
-            Don't have account? <a href="/createaccount">Create new account</a>
         </div>
     </div>
 
     <script>
-        const API_URL = '/api';
-
-        // Load username history from localStorage
-        function loadUsernameHistory() {
-            try {
-                const savedUsers = JSON.parse(localStorage.getItem('userHistory') || '[]');
-                const datalist = document.getElementById('usernameList');
-                
-                datalist.innerHTML = '';
-                savedUsers.forEach(user => {
-                    const option = document.createElement('option');
-                    option.value = user.username;
-                    datalist.appendChild(option);
-                });
-            } catch (error) {
-                console.log('No user history found');
-            }
-        }
-
-        // Save username to history
-        function saveUsernameToHistory(username) {
-            try {
-                let userHistory = JSON.parse(localStorage.getItem('userHistory') || '[]');
-                
-                // Remove if already exists
-                userHistory = userHistory.filter(u => u.username !== username);
-                
-                // Add to beginning
-                userHistory.unshift({
-                    username: username,
-                    timestamp: new Date().toISOString()
-                });
-                
-                // Keep only last 10
-                userHistory = userHistory.slice(0, 10);
-                
-                localStorage.setItem('userHistory', JSON.stringify(userHistory));
-                loadUsernameHistory();
-            } catch (error) {
-                console.error('Error saving username:', error);
-            }
-        }
-
-        // Check if already logged in
-        function checkExistingLogin() {
-            const token = localStorage.getItem('token');
-            if (token) {
-                // Optional: Verify token with backend
-                window.location.href = '/homepage';
-            }
-        }
-
-        // Show message
-        function showMessage(elementId, message, isSuccess = false) {
-            const element = document.getElementById(elementId);
-            element.textContent = message;
-            element.style.display = 'block';
+        // Toggle password visibility
+        function toggleLoginPassword() {
+            const passwordInput = document.getElementById('loginPassword');
+            const toggleIcon = document.getElementById('loginToggleIcon');
             
-            if (isSuccess) {
-                element.className = 'success-message';
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                `;
             } else {
-                element.className = 'error-message';
-            }
-            
-            // Auto hide after 5 seconds for error messages
-            if (!isSuccess) {
-                setTimeout(() => {
-                    element.style.display = 'none';
-                }, 5000);
+                passwordInput.type = 'password';
+                toggleIcon.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                    </svg>
+                `;
             }
         }
 
-        // Set loading state
-        function setLoading(isLoading) {
-            document.getElementById('loading').style.display = isLoading ? 'block' : 'none';
-            document.getElementById('submitButton').disabled = isLoading;
-        }
+        // Handle login (Gọi API Backend)
+        async function handleLogin() {
+            const usernameInput = document.getElementById('loginUsername');
+            const passwordInput = document.getElementById('loginPassword');
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
 
-        // Handle login
-        async function handleLogin(event) {
-            event.preventDefault();
-            
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value;
-            
-            // Clear messages
-            document.getElementById('errorMessage').style.display = 'none';
-            document.getElementById('successMessage').style.display = 'none';
-            
             if (!username || !password) {
-                showMessage('errorMessage', 'Please fill in all fields');
+                alert('Vui lòng nhập tên đăng nhập và mật khẩu!');
                 return;
             }
-            
-            setLoading(true);
-            
+
             try {
-                console.log('🔐 Sending login request with username:', username);
-                
-                const response = await fetch(`${API_URL}/auth/login`, {
+                // Hiển thị trạng thái đang xử lý
+                const btn = document.querySelector('.login-btn');
+                const originalText = btn.innerText;
+                btn.innerText = "Logging in...";
+                btn.disabled = true;
+
+                // Gọi API Login
+                const response = await fetch('http://localhost:3000/api/users/login', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password })
                 });
-                
+
                 const data = await response.json();
-                console.log('🔐 Backend response:', data);
-                
-                if (response.ok && data.success) {
-                    // Save username to history
-                    saveUsernameToHistory(username);
+
+                if (response.ok) {
+                    // Xử lý dữ liệu thành công
                     
-                    // Save token and user data
-                    localStorage.setItem('token', data.token);
-                    localStorage.setItem('userData', JSON.stringify(data.user));
-                    
-                    showMessage('successMessage', '✅ Login successful! Redirecting...', true);
-                    
-                    // Redirect after 1 second
-                    setTimeout(() => {
-                        window.location.href = '/homepage';
-                    }, 1000);
-                    
+                    // Lưu thông tin user vào localStorage để dùng ở các trang khác
+                    const userData = {
+                        name: data.user.name,
+                        email: data.user.email,
+                        phone: data.user.phone || '',
+                        avatar: data.user.avatar || 'JD',
+                        avatarImage: null,
+                        token: data.token, // Lưu token
+                        stats: { devices: 0, schedules: 0, rooms: 0 },
+                        settings: { darkMode: false, biometric: false }
+                    };
+                    localStorage.setItem('userData', JSON.stringify(userData));
+
+                    // Chuyển hướng về trang chủ
+                    window.location.href = '/'; 
                 } else {
-                    const errorMsg = data.message || 'Login failed';
-                    showMessage('errorMessage', `❌ ${errorMsg}`);
-                    setLoading(false);
+                    alert(data.message || 'Đăng nhập thất bại!');
                 }
-                
+
+                // Khôi phục nút
+                btn.innerText = originalText;
+                btn.disabled = false;
+
             } catch (error) {
-                console.error('Login error:', error);
-                showMessage('errorMessage', '❌ Network error. Please check backend server.');
-                setLoading(false);
+                console.error('Login Error:', error);
+                alert('Lỗi kết nối Server!');
+                
+                const btn = document.querySelector('.login-btn');
+                btn.innerText = "Login";
+                btn.disabled = false;
             }
         }
-
-        // Navigation
-        function goBack() {
-            window.history.back();
-        }
-
-        // Forgot password handler
-        function showForgotPassword() {
-            const email = prompt('Please enter your email to reset password:');
-            if (email) {
-                alert(`Password reset link will be sent to ${email} (demo mode)`);
-                // In real app: Make API call to reset password
-            }
-        }
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            checkExistingLogin();
-            loadUsernameHistory();
-            
-            // Auto-fill last used username
-            const lastUser = JSON.parse(localStorage.getItem('userHistory') || '[]')[0];
-            if (lastUser) {
-                document.getElementById('username').value = lastUser.username;
-            }
-            
-            // Add form submission handler
-            document.getElementById('loginForm').addEventListener('submit', handleLogin);
-            
-            // Test auto-fill for demo
-            document.getElementById('username').value = 'fbfdbdb';
-            document.getElementById('password').value = 'password123';
-        });
     </script>
 </body>
 </html>
